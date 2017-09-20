@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = 'Joris Van den Bossche'
 SITENAME = 'Joris Van den Bossche'
-SITEURL = 'https://jorisvandenbossche.github.io'
+SITEURL = ''
 
 TIMEZONE = 'Europe/Brussels'
 DEFAULT_LANG = 'en'
@@ -17,6 +17,9 @@ STATIC_PATHS = [
     "downloads/",
 ]
 
+# Set the article URL
+ARTICLE_URL = 'blog/{date:%Y}/{date:%m}/{date:%d}/{slug}/'
+ARTICLE_SAVE_AS = 'blog/{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
@@ -25,17 +28,22 @@ TRANSLATION_FEED_ATOM = None
 AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
-# Set the article URL
-ARTICLE_URL = 'blog/{date:%Y}/{date:%m}/{date:%d}/{slug}/'
-ARTICLE_SAVE_AS = 'blog/{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
-
-# PLugins
+# Plugins
 PLUGIN_PATHS = ['./plugins', './plugins/pelican-plugins']
 PLUGINS = [
     'summary', # auto-summarizing articles
     'ipynb.liquid',  # for embedding notebooks
 ]
 
+MARKDOWN = {
+    'extension_configs': {
+        'markdown.extensions.codehilite': {'css_class': 'highlight'},
+        'markdown.extensions.extra': {},
+        'markdown.extensions.meta': {},
+        'markdown.extensions.toc': {'anchorlink': True},
+    },
+    'output_format': 'html5',
+}
 
 # Theme
 THEME = "pelican-themes/pelican-sober"

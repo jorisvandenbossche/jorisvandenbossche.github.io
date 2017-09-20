@@ -2,6 +2,7 @@ Title: GeoPandas developments: improved performance
 Date: 2017-09-19 20:00
 Tags: python, geospatial, geopandas, shapely
 Slug: geopandas-cython
+Comments: true
 Summary: Short version for index and feeds
 
 *This work is a collaboration with [Matthew Rocklin](http://matthewrocklin.com/). This blogpost shows our recent work on the GeoPandas library and is partly based on the [EuroSciPy talk](https://www.youtube.com/watch?v=bWsA2R707BM) ([slides](https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1)) I recently gave on the same topic.*
@@ -119,7 +120,7 @@ ax = df.plot(column='n_stations_relative', figsize=(15, 6))
 ax.set_axis_off()
 ```
 
-<img src="{filename}figures/quartiers-paris-bike-stations.png">
+<img src="{filename}/figures/quartiers-paris-bike-stations.png">
 
 Full demo notebook see ... from EuroScipy presentation.
 
@@ -137,7 +138,7 @@ a GeoDataFrame basically is a pandas dataframe with a special `object`-dtype col
 stores Shapely geometries (the 'geometry' column). Shapely geometries are Python objects that provide
 a Python interface and reference to GEOS Geometry objects in C:
 
-<img src="{filename}images/geopandas-shapely-1.svg"
+<img src="{filename}/images/geopandas-shapely-1.svg"
      width="50%">
 
 The easy-to-use vectorized operations that GeoPandas provides, such as calculating the distance from every geometry in my dataframe to a certain point:
@@ -194,12 +195,12 @@ Cython, and then by parallelizing it with Dask.
 So instead of using a Pandas `object`-dtype column that *holds shapely objects*
 like the following image:
 
-<img src="{filename}images/geopandas-shapely-1.svg"
+<img src="{filename}/images/geopandas-shapely-1.svg"
      width="49%">
 
 We instead store a NumPy array of *direct pointers to the GEOS objects*.
 
-<img src="{filename}images/geopandas-shapely-2.svg"
+<img src="{filename}/images/geopandas-shapely-2.svg"
      width="49%">
 
 This allows us to store data more efficiently, and also requires us to now
@@ -224,7 +225,7 @@ with nogil:
             distance = NaN
 ```
 
-For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my [previous blogpost]({filename}/2017-03-18-vectorized-shapely-cython.md).
+For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my [previous blogpost]({filename}/articles/2017-03-18-vectorized-shapely-cython.md).
 
 
 Some benchmarks
@@ -318,15 +319,3 @@ You can track future progress on this effort at
 which includes installation instructions.
 
 Feedback -> github
-
-Conclusion
-----------
-
-With established technologies in the PyData space like Cython and Dask we've
-been able to accelerate and scale GeoPandas operations above and beyond
-industry standards.  However this work is still experimental and not ready for
-production use.  This work is a bit of a side project for both Joris and
-Matthew and they would welcome effort from other experienced open source
-developers.  We believe that this project can have a large social impact and
-are enthusiastic about pursuing it in the future.  We hope that you share our
-enthusiasm.
