@@ -1,0 +1,3337 @@
+<!doctype html>
+<html lang="">	
+<head>
+	<meta charset="utf-8"/>
+	<title>Vectorized shapely operations using Cython - Joris Van den Bossche</title>	
+	<meta name="author" content="Joris Van den Bossche">
+	
+
+  <meta name="description" content="/*! * * IPython notebook * */ /* CSS font colors for translated ANSI colors. */ .ansibold { font-weight: bold; } /* use dark versions for foreground, to improve visibility */ .ansiblack { color: black; } .ansired { color: darkred; } .ansigreen { color: darkgreen; } .ansiyellow { color: #c4a000; } .ansiblue { color: darkblue; } .ansipurple { color: darkviolet; } .ansicyan { color: steelblue; } .ansigray { color: gray; } /* and light for background, for the …">
+
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+		
+
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
+</head>
+	
+<body>
+
+    <div class="container">
+	  
+	  <header role="banner">
+	    <div class="feeds">
+	      <a href="/feeds/all.atom.xml" rel="alternate"><img src="/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
+	    </div>
+		<a href="" class="title">Joris Van den Bossche</a>
+      </header>
+	
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+		
+		<h1>Vectorized shapely operations using Cython</h1>
+		
+<div class="metadata">
+  <time datetime="2017-03-18T09:00:00+01:00" pubdate>za 18 maart 2017</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
+    </address>
+  in <a href="/category/misc.html">misc</a>
+<p class="tags">tagged <a href="/tag/python.html">python</a>, <a href="/tag/geospatial.html">geospatial</a>, <a href="/tag/shapely.html">shapely</a>, <a href="/tag/cython.html">cython</a>, <a href="/tag/geopandas.html">geopandas</a></p></div>		
+		<style type="text/css">/*!
+*
+* IPython notebook
+*
+*/
+/* CSS font colors for translated ANSI colors. */
+.ansibold {
+  font-weight: bold;
+}
+/* use dark versions for foreground, to improve visibility */
+.ansiblack {
+  color: black;
+}
+.ansired {
+  color: darkred;
+}
+.ansigreen {
+  color: darkgreen;
+}
+.ansiyellow {
+  color: #c4a000;
+}
+.ansiblue {
+  color: darkblue;
+}
+.ansipurple {
+  color: darkviolet;
+}
+.ansicyan {
+  color: steelblue;
+}
+.ansigray {
+  color: gray;
+}
+/* and light for background, for the same reason */
+.ansibgblack {
+  background-color: black;
+}
+.ansibgred {
+  background-color: red;
+}
+.ansibggreen {
+  background-color: green;
+}
+.ansibgyellow {
+  background-color: yellow;
+}
+.ansibgblue {
+  background-color: blue;
+}
+.ansibgpurple {
+  background-color: magenta;
+}
+.ansibgcyan {
+  background-color: cyan;
+}
+.ansibggray {
+  background-color: gray;
+}
+div.cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  width: 100%;
+  padding: 5px;
+  /* This acts as a spacer between cells, that is outside the border */
+  margin: 0px;
+  outline: none;
+  border-left-width: 1px;
+  padding-left: 5px;
+  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+}
+div.cell.jupyter-soft-selected {
+  border-left-color: #90CAF9;
+  border-left-color: #E3F2FD;
+  border-left-width: 1px;
+  padding-left: 5px;
+  border-right-color: #E3F2FD;
+  border-right-width: 1px;
+  background: #E3F2FD;
+}
+@media print {
+  div.cell.jupyter-soft-selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected {
+  border-color: #ababab;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  div.cell.selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected.jupyter-soft-selected {
+  border-left-width: 0;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
+}
+.edit_mode div.cell.selected {
+  border-color: #66BB6A;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  .edit_mode div.cell.selected {
+    border-color: transparent;
+  }
+}
+.prompt {
+  /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+  min-width: 14ex;
+  /* This padding is tuned to match the padding on the CodeMirror editor. */
+  padding: 0.4em;
+  margin: 0px;
+  font-family: monospace;
+  text-align: right;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+  /* Don't highlight prompt number selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Use default cursor */
+  cursor: default;
+}
+@media (max-width: 540px) {
+  .prompt {
+    text-align: left;
+  }
+}
+div.inner_cell {
+  min-width: 0;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+  border: 1px solid #cfcfcf;
+  border-radius: 2px;
+  background: #f7f7f7;
+  line-height: 1.21429em;
+}
+/* This is needed so that empty prompt areas can collapse to zero height when there
+   is no content in the output_subarea and the prompt. The main purpose of this is
+   to make sure that empty JavaScript output_subareas have no height. */
+div.prompt:empty {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+div.unrecognized_cell {
+  padding: 5px 5px 5px 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.unrecognized_cell .inner_cell {
+  border-radius: 2px;
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+  border: 1px solid #cfcfcf;
+  background: #eaeaea;
+}
+div.unrecognized_cell .inner_cell a {
+  color: inherit;
+  text-decoration: none;
+}
+div.unrecognized_cell .inner_cell a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+@media (max-width: 540px) {
+  div.unrecognized_cell > div.prompt {
+    display: none;
+  }
+}
+div.code_cell {
+  /* avoid page breaking on code cells when printing */
+}
+@media print {
+  div.code_cell {
+    page-break-inside: avoid;
+  }
+}
+/* any special styling for code cells that are currently running goes here */
+div.input {
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.input {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_prompt {
+  color: #303F9F;
+  border-top: 1px solid transparent;
+}
+div.input_area > div.highlight {
+  margin: 0.4em;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+div.input_area > div.highlight > pre {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+/* The following gets added to the <head> if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font.
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+.CodeMirror {
+  line-height: 1.21429em;
+  /* Changed from 1em to our global default */
+  font-size: 14px;
+  height: auto;
+  /* Changed to auto to autogrow */
+  background: none;
+  /* Changed from white to allow our bg to show through */
+}
+.CodeMirror-scroll {
+  /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+  /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.CodeMirror-lines {
+  /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
+  /* we have set a different line-height and want this to scale with that. */
+  padding: 0.4em;
+}
+.CodeMirror-linenumber {
+  padding: 0 8px 0 4px;
+}
+.CodeMirror-gutters {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+.CodeMirror pre {
+  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
+  /* .CodeMirror-lines */
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+Adapted from GitHub theme
+
+*/
+.highlight-base {
+  color: #000;
+}
+.highlight-variable {
+  color: #000;
+}
+.highlight-variable-2 {
+  color: #1a1a1a;
+}
+.highlight-variable-3 {
+  color: #333333;
+}
+.highlight-string {
+  color: #BA2121;
+}
+.highlight-comment {
+  color: #408080;
+  font-style: italic;
+}
+.highlight-number {
+  color: #080;
+}
+.highlight-atom {
+  color: #88F;
+}
+.highlight-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.highlight-builtin {
+  color: #008000;
+}
+.highlight-error {
+  color: #f00;
+}
+.highlight-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.highlight-meta {
+  color: #AA22FF;
+}
+/* previously not defined, copying from default codemirror */
+.highlight-def {
+  color: #00f;
+}
+.highlight-string-2 {
+  color: #f50;
+}
+.highlight-qualifier {
+  color: #555;
+}
+.highlight-bracket {
+  color: #997;
+}
+.highlight-tag {
+  color: #170;
+}
+.highlight-attribute {
+  color: #00c;
+}
+.highlight-header {
+  color: blue;
+}
+.highlight-quote {
+  color: #090;
+}
+.highlight-link {
+  color: #00c;
+}
+/* apply the same style to codemirror */
+.cm-s-ipython span.cm-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-atom {
+  color: #88F;
+}
+.cm-s-ipython span.cm-number {
+  color: #080;
+}
+.cm-s-ipython span.cm-def {
+  color: #00f;
+}
+.cm-s-ipython span.cm-variable {
+  color: #000;
+}
+.cm-s-ipython span.cm-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-variable-2 {
+  color: #1a1a1a;
+}
+.cm-s-ipython span.cm-variable-3 {
+  color: #333333;
+}
+.cm-s-ipython span.cm-comment {
+  color: #408080;
+  font-style: italic;
+}
+.cm-s-ipython span.cm-string {
+  color: #BA2121;
+}
+.cm-s-ipython span.cm-string-2 {
+  color: #f50;
+}
+.cm-s-ipython span.cm-meta {
+  color: #AA22FF;
+}
+.cm-s-ipython span.cm-qualifier {
+  color: #555;
+}
+.cm-s-ipython span.cm-builtin {
+  color: #008000;
+}
+.cm-s-ipython span.cm-bracket {
+  color: #997;
+}
+.cm-s-ipython span.cm-tag {
+  color: #170;
+}
+.cm-s-ipython span.cm-attribute {
+  color: #00c;
+}
+.cm-s-ipython span.cm-header {
+  color: blue;
+}
+.cm-s-ipython span.cm-quote {
+  color: #090;
+}
+.cm-s-ipython span.cm-link {
+  color: #00c;
+}
+.cm-s-ipython span.cm-error {
+  color: #f00;
+}
+.cm-s-ipython span.cm-tab {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+  background-position: right;
+  background-repeat: no-repeat;
+}
+div.output_wrapper {
+  /* this position must be relative to enable descendents to be absolute within it */
+  position: relative;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 1;
+}
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  overflow: auto;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  display: block;
+}
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin: 0px;
+  padding: 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px 0.4em;
+  position: absolute;
+  border-radius: 2px;
+}
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  -webkit-box-shadow: inset 0 0 1px #000;
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+div.output_prompt {
+  color: #D84315;
+}
+/* This class is the outer container of all output sections. */
+div.output_area {
+  padding: 0px;
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.output_area .MathJax_Display {
+  text-align: left !important;
+}
+div.output_area 
+div.output_area 
+div.output_area img,
+div.output_area svg {
+  max-width: 100%;
+  height: auto;
+}
+div.output_area img.unconfined,
+div.output_area svg.unconfined {
+  max-width: none;
+}
+/* This is needed to protect the pre formating from global settings such
+   as that of bootstrap */
+.output {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.output_area {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+div.output_area pre {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  color: black;
+  background-color: transparent;
+  border-radius: 0;
+}
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+  overflow-x: auto;
+  padding: 0.4em;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+  max-width: calc(100% - 14ex);
+}
+div.output_scroll div.output_subarea {
+  overflow-x: visible;
+}
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+/* all text output has this class: */
+div.output_text {
+  text-align: left;
+  color: #000;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+}
+/* stdout/stderr are 'text' as well as 'stream', but execute_result/error are *not* streams */
+div.output_stderr {
+  background: #fdd;
+  /* very light red background for stderr */
+}
+div.output_latex {
+  text-align: left;
+}
+/* Empty output_javascript divs should have no height */
+div.output_javascript:empty {
+  padding: 0;
+}
+.js-error {
+  color: darkred;
+}
+/* raw_input styles */
+div.raw_input_container {
+  line-height: 1.21429em;
+  padding-top: 5px;
+}
+pre.raw_input_prompt {
+  /* nothing needed here. */
+}
+input.raw_input {
+  font-family: monospace;
+  font-size: inherit;
+  color: inherit;
+  width: auto;
+  /* make sure input baseline aligns with prompt */
+  vertical-align: baseline;
+  /* padding + margin = 0.5em between prompt and cursor */
+  padding: 0em 0.25em;
+  margin: 0em 0.25em;
+}
+input.raw_input:focus {
+  box-shadow: none;
+}
+p.p-space {
+  margin-bottom: 10px;
+}
+div.output_unrecognized {
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+}
+div.output_unrecognized a {
+  color: inherit;
+  text-decoration: none;
+}
+div.output_unrecognized a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.rendered_html {
+  color: #000;
+  /* any extras will just be numbers: */
+}
+
+
+
+.rendered_html :link {
+  text-decoration: underline;
+}
+.rendered_html :visited {
+  text-decoration: underline;
+}
+
+
+
+
+
+
+.rendered_html h1:first-child {
+  margin-top: 0.538em;
+}
+.rendered_html h2:first-child {
+  margin-top: 0.636em;
+}
+.rendered_html h3:first-child {
+  margin-top: 0.777em;
+}
+.rendered_html h4:first-child {
+  margin-top: 1em;
+}
+.rendered_html h5:first-child {
+  margin-top: 1em;
+}
+.rendered_html h6:first-child {
+  margin-top: 1em;
+}
+
+
+
+
+
+
+
+
+.rendered_html * + ul {
+  margin-top: 1em;
+}
+.rendered_html * + ol {
+  margin-top: 1em;
+}
+
+
+.rendered_html pre,
+
+
+
+.rendered_html tr,
+.rendered_html th,
+
+.rendered_html td,
+
+
+.rendered_html * + table {
+  margin-top: 1em;
+}
+
+.rendered_html * + p {
+  margin-top: 1em;
+}
+
+.rendered_html * + img {
+  margin-top: 1em;
+}
+.rendered_html img,
+
+.rendered_html img.unconfined,
+
+div.text_cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.text_cell > div.prompt {
+    display: none;
+  }
+}
+div.text_cell_render {
+  /*font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;*/
+  outline: none;
+  resize: none;
+  width: inherit;
+  border-style: none;
+  padding: 0.5em 0.5em 0.5em 0.4em;
+  color: #000;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+a.anchor-link:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .anchor-link,
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+h5:hover .anchor-link,
+h6:hover .anchor-link {
+  visibility: visible;
+}
+.text_cell.rendered .input_area {
+  display: none;
+}
+.text_cell.rendered 
+.text_cell.unrendered .text_cell_render {
+  display: none;
+}
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.cm-header-1 {
+  font-size: 185.7%;
+}
+.cm-header-2 {
+  font-size: 157.1%;
+}
+.cm-header-3 {
+  font-size: 128.6%;
+}
+.cm-header-4 {
+  font-size: 110%;
+}
+.cm-header-5 {
+  font-size: 100%;
+  font-style: italic;
+}
+.cm-header-6 {
+  font-size: 100%;
+  font-style: italic;
+}
+</style>
+<style type="text/css">.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
+<style type="text/css">
+/* Temporary definitions which will become obsolete with Notebook release 5.0 */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+</style>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For the test example, create an array of Points:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">Point</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[4]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>array([<shapely.geometry.point.Point object at 0x7f0a43447fd0>,
+       <shapely.geometry.point.Point object at 0x7f0a434560b8>,
+       <shapely.geometry.point.Point object at 0x7f0a434560f0>, ...,
+       <shapely.geometry.point.Point object at 0x7f0a4324cac8>,
+       <shapely.geometry.point.Point object at 0x7f0a4324cb00>,
+       <shapely.geometry.point.Point object at 0x7f0a4324cb38>], dtype=object)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>and one Polygon:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">Polygon</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [5]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">([(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [6]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">p</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[6]:</div>
+<div class="output_svg output_subarea output_execute_result">
+<svg height="100.0" preserveaspectratio="xMinYMin meet" viewbox="6.4 6.4 97.19999999999999 97.19999999999999" width="100.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g transform="matrix(1,0,0,-1,0,110.0)"><path d="M 10.0,10.0 L 10.0,100.0 L 100.0,100.0 L 100.0,10.0 L 10.0,10.0 z" fill="#66cc99" fill-rule="evenodd" opacity="0.6" stroke="#555555" stroke-width="1.9439999999999997"></path></g></svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [7]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">p</span><span class="o">.</span><span class="n">__geom__</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[7]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>56971096</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [8]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">p</span><span class="o">.</span><span class="n">_ctypes_data</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [9]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">p</span><span class="o">.</span><span class="n">_geom</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[9]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>56971096</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id='Python-function-for-"vectorized-/-element-wise-contains"'>Python function for "vectorized / element-wise contains"<a class="anchor-link" href='#Python-function-for-"vectorized-/-element-wise-contains"'>¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [10]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">contains_py</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span> <span class="k">for</span> <span class="n">p2</span> <span class="ow">in</span> <span class="n">array</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [11]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res1</span> <span class="o">=</span> <span class="n">contains_py</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">res1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[11]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [12]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res1</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[12]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>89</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [13]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> contains_py(a, p)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>10 loops, best of 3: 50.7 ms per loop
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id='Cython-function-for-"vectorized-/-element-wise-contains":-using-cython-to-do-the-for-loop-in-C'>Cython function for "vectorized / element-wise contains": using cython to do the for loop in C<a class="anchor-link" href='#Cython-function-for-"vectorized-/-element-wise-contains":-using-cython-to-do-the-for-loop-in-C'>¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The main performance problem with this vectorized 'contains' function is that the for loop happens in python, making this slow (and this is also how geopandas does it under the hood).<br/>
+But, the actual 'contains' operation happens in C (by calling the GEOS library, wrapped by shapely). So let's try to make use of this fact by doing the for loop in Cython and calling the C GEOS function directly from there, without the overhead of switching to Python.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [14]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>geos-config --version
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>3.6.0
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [15]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>geos-config --cflags
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-I/home/joris/miniconda3/include
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [16]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>geos-config --clibs
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>-L/home/joris/miniconda3/lib -lgeos_c
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>(just copy pasted some things together based on <a href="https://github.com/Toblerity/Shapely/blob/master/shapely/vectorized/_vectorized.pyx">https://github.com/Toblerity/Shapely/blob/master/shapely/vectorized/_vectorized.pyx</a>)</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [18]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> cython
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [19]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="n">cython</span> <span class="o">-</span><span class="n">l</span> <span class="n">geos_c</span> <span class="o">-</span><span class="n">L</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="n">lib</span> <span class="o">-</span><span class="n">I</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="k">include</span> <span class="o">-</span><span class="n">a</span>
+
+<span class="k">import</span> <span class="nn">cython</span>
+<span class="k">cimport</span> <span class="nn">cpython.array</span>
+
+<span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">import</span> <span class="nn">shapely.prepared</span>
+
+<span class="k">include</span> <span class="s">"_geos.pxi"</span>
+
+
+<span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">contains_cy</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span>
+    
+    <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span>
+    <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+    <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span>
+    <span class="k">cdef</span> <span class="kt">GEOSPreparedGeometry</span> *<span class="nf">geom1</span>
+    <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span>
+    <span class="k">cdef</span> <span class="kt">uintptr_t</span> <span class="nf">geos_geom</span>
+    
+    <span class="c"># Prepare the geometry if it hasn't already been prepared.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">PreparedGeometry</span><span class="p">):</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+        
+    <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span>
+    <span class="n">geom1</span> <span class="o">=</span> <span class="n">geos_from_prepared</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="c"># Construct a coordinate sequence with our x, y values.</span>
+        <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">_geom</span>
+        <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span>
+        
+        <span class="c"># Put the result of whether the point is "contained" by the</span>
+        <span class="c"># prepared geometry into the result array. </span>
+        <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span>
+        <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[19]:</div>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<!DOCTYPE html>
+
+<!-- Generated by Cython 0.24.1 -->
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Cython: _cython_magic_82b59155c5d602a807243f9ffdef2d25.pyx</title>
+<style type="text/css">
+    
+body.cython { font-family: courier; font-size: 12; }
+
+.cython.tag  {  }
+.cython.line { margin: 0em }
+.cython.code { font-size: 9; color: #444444; display: none; margin: 0px 0px 0px 8px; border-left: 8px none; }
+
+.cython.line .run { background-color: #B0FFB0; }
+.cython.line .mis { background-color: #FFB0B0; }
+.cython.code.run  { border-left: 8px solid #B0FFB0; }
+.cython.code.mis  { border-left: 8px solid #FFB0B0; }
+
+.cython.code .py_c_api  { color: red; }
+.cython.code .py_macro_api  { color: #FF7000; }
+.cython.code .pyx_c_api  { color: #FF3000; }
+.cython.code .pyx_macro_api  { color: #FF7000; }
+.cython.code .refnanny  { color: #FFA000; }
+.cython.code .trace  { color: #FFA000; }
+.cython.code .error_goto  { color: #FFA000; }
+
+.cython.code .coerce  { color: #008000; border: 1px dotted #008000 }
+.cython.code .py_attr { color: #FF0000; font-weight: bold; }
+.cython.code .c_attr  { color: #0000FF; }
+.cython.code .py_call { color: #FF0000; font-weight: bold; }
+.cython.code .c_call  { color: #0000FF; }
+
+.cython.score-0 {background-color: #FFFFff;}
+.cython.score-1 {background-color: #FFFFe7;}
+.cython.score-2 {background-color: #FFFFd4;}
+.cython.score-3 {background-color: #FFFFc4;}
+.cython.score-4 {background-color: #FFFFb6;}
+.cython.score-5 {background-color: #FFFFaa;}
+.cython.score-6 {background-color: #FFFF9f;}
+.cython.score-7 {background-color: #FFFF96;}
+.cython.score-8 {background-color: #FFFF8d;}
+.cython.score-9 {background-color: #FFFF86;}
+.cython.score-10 {background-color: #FFFF7f;}
+.cython.score-11 {background-color: #FFFF79;}
+.cython.score-12 {background-color: #FFFF73;}
+.cython.score-13 {background-color: #FFFF6e;}
+.cython.score-14 {background-color: #FFFF6a;}
+.cython.score-15 {background-color: #FFFF66;}
+.cython.score-16 {background-color: #FFFF62;}
+.cython.score-17 {background-color: #FFFF5e;}
+.cython.score-18 {background-color: #FFFF5b;}
+.cython.score-19 {background-color: #FFFF57;}
+.cython.score-20 {background-color: #FFFF55;}
+.cython.score-21 {background-color: #FFFF52;}
+.cython.score-22 {background-color: #FFFF4f;}
+.cython.score-23 {background-color: #FFFF4d;}
+.cython.score-24 {background-color: #FFFF4b;}
+.cython.score-25 {background-color: #FFFF48;}
+.cython.score-26 {background-color: #FFFF46;}
+.cython.score-27 {background-color: #FFFF44;}
+.cython.score-28 {background-color: #FFFF43;}
+.cython.score-29 {background-color: #FFFF41;}
+.cython.score-30 {background-color: #FFFF3f;}
+.cython.score-31 {background-color: #FFFF3e;}
+.cython.score-32 {background-color: #FFFF3c;}
+.cython.score-33 {background-color: #FFFF3b;}
+.cython.score-34 {background-color: #FFFF39;}
+.cython.score-35 {background-color: #FFFF38;}
+.cython.score-36 {background-color: #FFFF37;}
+.cython.score-37 {background-color: #FFFF36;}
+.cython.score-38 {background-color: #FFFF35;}
+.cython.score-39 {background-color: #FFFF34;}
+.cython.score-40 {background-color: #FFFF33;}
+.cython.score-41 {background-color: #FFFF32;}
+.cython.score-42 {background-color: #FFFF31;}
+.cython.score-43 {background-color: #FFFF30;}
+.cython.score-44 {background-color: #FFFF2f;}
+.cython.score-45 {background-color: #FFFF2e;}
+.cython.score-46 {background-color: #FFFF2d;}
+.cython.score-47 {background-color: #FFFF2c;}
+.cython.score-48 {background-color: #FFFF2b;}
+.cython.score-49 {background-color: #FFFF2b;}
+.cython.score-50 {background-color: #FFFF2a;}
+.cython.score-51 {background-color: #FFFF29;}
+.cython.score-52 {background-color: #FFFF29;}
+.cython.score-53 {background-color: #FFFF28;}
+.cython.score-54 {background-color: #FFFF27;}
+.cython.score-55 {background-color: #FFFF27;}
+.cython.score-56 {background-color: #FFFF26;}
+.cython.score-57 {background-color: #FFFF26;}
+.cython.score-58 {background-color: #FFFF25;}
+.cython.score-59 {background-color: #FFFF24;}
+.cython.score-60 {background-color: #FFFF24;}
+.cython.score-61 {background-color: #FFFF23;}
+.cython.score-62 {background-color: #FFFF23;}
+.cython.score-63 {background-color: #FFFF22;}
+.cython.score-64 {background-color: #FFFF22;}
+.cython.score-65 {background-color: #FFFF22;}
+.cython.score-66 {background-color: #FFFF21;}
+.cython.score-67 {background-color: #FFFF21;}
+.cython.score-68 {background-color: #FFFF20;}
+.cython.score-69 {background-color: #FFFF20;}
+.cython.score-70 {background-color: #FFFF1f;}
+.cython.score-71 {background-color: #FFFF1f;}
+.cython.score-72 {background-color: #FFFF1f;}
+.cython.score-73 {background-color: #FFFF1e;}
+.cython.score-74 {background-color: #FFFF1e;}
+.cython.score-75 {background-color: #FFFF1e;}
+.cython.score-76 {background-color: #FFFF1d;}
+.cython.score-77 {background-color: #FFFF1d;}
+.cython.score-78 {background-color: #FFFF1c;}
+.cython.score-79 {background-color: #FFFF1c;}
+.cython.score-80 {background-color: #FFFF1c;}
+.cython.score-81 {background-color: #FFFF1c;}
+.cython.score-82 {background-color: #FFFF1b;}
+.cython.score-83 {background-color: #FFFF1b;}
+.cython.score-84 {background-color: #FFFF1b;}
+.cython.score-85 {background-color: #FFFF1a;}
+.cython.score-86 {background-color: #FFFF1a;}
+.cython.score-87 {background-color: #FFFF1a;}
+.cython.score-88 {background-color: #FFFF1a;}
+.cython.score-89 {background-color: #FFFF19;}
+.cython.score-90 {background-color: #FFFF19;}
+.cython.score-91 {background-color: #FFFF19;}
+.cython.score-92 {background-color: #FFFF19;}
+.cython.score-93 {background-color: #FFFF18;}
+.cython.score-94 {background-color: #FFFF18;}
+.cython.score-95 {background-color: #FFFF18;}
+.cython.score-96 {background-color: #FFFF18;}
+.cython.score-97 {background-color: #FFFF17;}
+.cython.score-98 {background-color: #FFFF17;}
+.cython.score-99 {background-color: #FFFF17;}
+.cython.score-100 {background-color: #FFFF17;}
+.cython.score-101 {background-color: #FFFF16;}
+.cython.score-102 {background-color: #FFFF16;}
+.cython.score-103 {background-color: #FFFF16;}
+.cython.score-104 {background-color: #FFFF16;}
+.cython.score-105 {background-color: #FFFF16;}
+.cython.score-106 {background-color: #FFFF15;}
+.cython.score-107 {background-color: #FFFF15;}
+.cython.score-108 {background-color: #FFFF15;}
+.cython.score-109 {background-color: #FFFF15;}
+.cython.score-110 {background-color: #FFFF15;}
+.cython.score-111 {background-color: #FFFF15;}
+.cython.score-112 {background-color: #FFFF14;}
+.cython.score-113 {background-color: #FFFF14;}
+.cython.score-114 {background-color: #FFFF14;}
+.cython.score-115 {background-color: #FFFF14;}
+.cython.score-116 {background-color: #FFFF14;}
+.cython.score-117 {background-color: #FFFF14;}
+.cython.score-118 {background-color: #FFFF13;}
+.cython.score-119 {background-color: #FFFF13;}
+.cython.score-120 {background-color: #FFFF13;}
+.cython.score-121 {background-color: #FFFF13;}
+.cython.score-122 {background-color: #FFFF13;}
+.cython.score-123 {background-color: #FFFF13;}
+.cython.score-124 {background-color: #FFFF13;}
+.cython.score-125 {background-color: #FFFF12;}
+.cython.score-126 {background-color: #FFFF12;}
+.cython.score-127 {background-color: #FFFF12;}
+.cython.score-128 {background-color: #FFFF12;}
+.cython.score-129 {background-color: #FFFF12;}
+.cython.score-130 {background-color: #FFFF12;}
+.cython.score-131 {background-color: #FFFF12;}
+.cython.score-132 {background-color: #FFFF11;}
+.cython.score-133 {background-color: #FFFF11;}
+.cython.score-134 {background-color: #FFFF11;}
+.cython.score-135 {background-color: #FFFF11;}
+.cython.score-136 {background-color: #FFFF11;}
+.cython.score-137 {background-color: #FFFF11;}
+.cython.score-138 {background-color: #FFFF11;}
+.cython.score-139 {background-color: #FFFF11;}
+.cython.score-140 {background-color: #FFFF11;}
+.cython.score-141 {background-color: #FFFF10;}
+.cython.score-142 {background-color: #FFFF10;}
+.cython.score-143 {background-color: #FFFF10;}
+.cython.score-144 {background-color: #FFFF10;}
+.cython.score-145 {background-color: #FFFF10;}
+.cython.score-146 {background-color: #FFFF10;}
+.cython.score-147 {background-color: #FFFF10;}
+.cython.score-148 {background-color: #FFFF10;}
+.cython.score-149 {background-color: #FFFF10;}
+.cython.score-150 {background-color: #FFFF0f;}
+.cython.score-151 {background-color: #FFFF0f;}
+.cython.score-152 {background-color: #FFFF0f;}
+.cython.score-153 {background-color: #FFFF0f;}
+.cython.score-154 {background-color: #FFFF0f;}
+.cython.score-155 {background-color: #FFFF0f;}
+.cython.score-156 {background-color: #FFFF0f;}
+.cython.score-157 {background-color: #FFFF0f;}
+.cython.score-158 {background-color: #FFFF0f;}
+.cython.score-159 {background-color: #FFFF0f;}
+.cython.score-160 {background-color: #FFFF0f;}
+.cython.score-161 {background-color: #FFFF0e;}
+.cython.score-162 {background-color: #FFFF0e;}
+.cython.score-163 {background-color: #FFFF0e;}
+.cython.score-164 {background-color: #FFFF0e;}
+.cython.score-165 {background-color: #FFFF0e;}
+.cython.score-166 {background-color: #FFFF0e;}
+.cython.score-167 {background-color: #FFFF0e;}
+.cython.score-168 {background-color: #FFFF0e;}
+.cython.score-169 {background-color: #FFFF0e;}
+.cython.score-170 {background-color: #FFFF0e;}
+.cython.score-171 {background-color: #FFFF0e;}
+.cython.score-172 {background-color: #FFFF0e;}
+.cython.score-173 {background-color: #FFFF0d;}
+.cython.score-174 {background-color: #FFFF0d;}
+.cython.score-175 {background-color: #FFFF0d;}
+.cython.score-176 {background-color: #FFFF0d;}
+.cython.score-177 {background-color: #FFFF0d;}
+.cython.score-178 {background-color: #FFFF0d;}
+.cython.score-179 {background-color: #FFFF0d;}
+.cython.score-180 {background-color: #FFFF0d;}
+.cython.score-181 {background-color: #FFFF0d;}
+.cython.score-182 {background-color: #FFFF0d;}
+.cython.score-183 {background-color: #FFFF0d;}
+.cython.score-184 {background-color: #FFFF0d;}
+.cython.score-185 {background-color: #FFFF0d;}
+.cython.score-186 {background-color: #FFFF0d;}
+.cython.score-187 {background-color: #FFFF0c;}
+.cython.score-188 {background-color: #FFFF0c;}
+.cython.score-189 {background-color: #FFFF0c;}
+.cython.score-190 {background-color: #FFFF0c;}
+.cython.score-191 {background-color: #FFFF0c;}
+.cython.score-192 {background-color: #FFFF0c;}
+.cython.score-193 {background-color: #FFFF0c;}
+.cython.score-194 {background-color: #FFFF0c;}
+.cython.score-195 {background-color: #FFFF0c;}
+.cython.score-196 {background-color: #FFFF0c;}
+.cython.score-197 {background-color: #FFFF0c;}
+.cython.score-198 {background-color: #FFFF0c;}
+.cython.score-199 {background-color: #FFFF0c;}
+.cython.score-200 {background-color: #FFFF0c;}
+.cython.score-201 {background-color: #FFFF0c;}
+.cython.score-202 {background-color: #FFFF0c;}
+.cython.score-203 {background-color: #FFFF0b;}
+.cython.score-204 {background-color: #FFFF0b;}
+.cython.score-205 {background-color: #FFFF0b;}
+.cython.score-206 {background-color: #FFFF0b;}
+.cython.score-207 {background-color: #FFFF0b;}
+.cython.score-208 {background-color: #FFFF0b;}
+.cython.score-209 {background-color: #FFFF0b;}
+.cython.score-210 {background-color: #FFFF0b;}
+.cython.score-211 {background-color: #FFFF0b;}
+.cython.score-212 {background-color: #FFFF0b;}
+.cython.score-213 {background-color: #FFFF0b;}
+.cython.score-214 {background-color: #FFFF0b;}
+.cython.score-215 {background-color: #FFFF0b;}
+.cython.score-216 {background-color: #FFFF0b;}
+.cython.score-217 {background-color: #FFFF0b;}
+.cython.score-218 {background-color: #FFFF0b;}
+.cython.score-219 {background-color: #FFFF0b;}
+.cython.score-220 {background-color: #FFFF0b;}
+.cython.score-221 {background-color: #FFFF0b;}
+.cython.score-222 {background-color: #FFFF0a;}
+.cython.score-223 {background-color: #FFFF0a;}
+.cython.score-224 {background-color: #FFFF0a;}
+.cython.score-225 {background-color: #FFFF0a;}
+.cython.score-226 {background-color: #FFFF0a;}
+.cython.score-227 {background-color: #FFFF0a;}
+.cython.score-228 {background-color: #FFFF0a;}
+.cython.score-229 {background-color: #FFFF0a;}
+.cython.score-230 {background-color: #FFFF0a;}
+.cython.score-231 {background-color: #FFFF0a;}
+.cython.score-232 {background-color: #FFFF0a;}
+.cython.score-233 {background-color: #FFFF0a;}
+.cython.score-234 {background-color: #FFFF0a;}
+.cython.score-235 {background-color: #FFFF0a;}
+.cython.score-236 {background-color: #FFFF0a;}
+.cython.score-237 {background-color: #FFFF0a;}
+.cython.score-238 {background-color: #FFFF0a;}
+.cython.score-239 {background-color: #FFFF0a;}
+.cython.score-240 {background-color: #FFFF0a;}
+.cython.score-241 {background-color: #FFFF0a;}
+.cython.score-242 {background-color: #FFFF0a;}
+.cython.score-243 {background-color: #FFFF0a;}
+.cython.score-244 {background-color: #FFFF0a;}
+.cython.score-245 {background-color: #FFFF0a;}
+.cython.score-246 {background-color: #FFFF09;}
+.cython.score-247 {background-color: #FFFF09;}
+.cython.score-248 {background-color: #FFFF09;}
+.cython.score-249 {background-color: #FFFF09;}
+.cython.score-250 {background-color: #FFFF09;}
+.cython.score-251 {background-color: #FFFF09;}
+.cython.score-252 {background-color: #FFFF09;}
+.cython.score-253 {background-color: #FFFF09;}
+.cython.score-254 {background-color: #FFFF09;}
+.cython .hll { background-color: #ffffcc }
+.cython  { background: #f8f8f8; }
+.cython .c { color: #408080; font-style: italic } /* Comment */
+.cython .err { border: 1px solid #FF0000 } /* Error */
+.cython .k { color: #008000; font-weight: bold } /* Keyword */
+.cython .o { color: #666666 } /* Operator */
+.cython .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.cython .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.cython .cp { color: #BC7A00 } /* Comment.Preproc */
+.cython .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.cython .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.cython .cs { color: #408080; font-style: italic } /* Comment.Special */
+.cython .gd { color: #A00000 } /* Generic.Deleted */
+.cython .ge { font-style: italic } /* Generic.Emph */
+.cython .gr { color: #FF0000 } /* Generic.Error */
+.cython .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.cython .gi { color: #00A000 } /* Generic.Inserted */
+.cython .go { color: #888888 } /* Generic.Output */
+.cython .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.cython .gs { font-weight: bold } /* Generic.Strong */
+.cython .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.cython .gt { color: #0044DD } /* Generic.Traceback */
+.cython .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.cython .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.cython .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.cython .kp { color: #008000 } /* Keyword.Pseudo */
+.cython .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.cython .kt { color: #B00040 } /* Keyword.Type */
+.cython .m { color: #666666 } /* Literal.Number */
+.cython .s { color: #BA2121 } /* Literal.String */
+.cython .na { color: #7D9029 } /* Name.Attribute */
+.cython .nb { color: #008000 } /* Name.Builtin */
+.cython .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.cython .no { color: #880000 } /* Name.Constant */
+.cython .nd { color: #AA22FF } /* Name.Decorator */
+.cython .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.cython .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.cython .nf { color: #0000FF } /* Name.Function */
+.cython .nl { color: #A0A000 } /* Name.Label */
+.cython .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.cython .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.cython .nv { color: #19177C } /* Name.Variable */
+.cython .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.cython .w { color: #bbbbbb } /* Text.Whitespace */
+.cython .mb { color: #666666 } /* Literal.Number.Bin */
+.cython .mf { color: #666666 } /* Literal.Number.Float */
+.cython .mh { color: #666666 } /* Literal.Number.Hex */
+.cython .mi { color: #666666 } /* Literal.Number.Integer */
+.cython .mo { color: #666666 } /* Literal.Number.Oct */
+.cython .sa { color: #BA2121 } /* Literal.String.Affix */
+.cython .sb { color: #BA2121 } /* Literal.String.Backtick */
+.cython .sc { color: #BA2121 } /* Literal.String.Char */
+.cython .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.cython .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.cython .s2 { color: #BA2121 } /* Literal.String.Double */
+.cython .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.cython .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.cython .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.cython .sx { color: #008000 } /* Literal.String.Other */
+.cython .sr { color: #BB6688 } /* Literal.String.Regex */
+.cython .s1 { color: #BA2121 } /* Literal.String.Single */
+.cython .ss { color: #19177C } /* Literal.String.Symbol */
+.cython .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.cython .fm { color: #0000FF } /* Name.Function.Magic */
+.cython .vc { color: #19177C } /* Name.Variable.Class */
+.cython .vg { color: #19177C } /* Name.Variable.Global */
+.cython .vi { color: #19177C } /* Name.Variable.Instance */
+.cython .vm { color: #19177C } /* Name.Variable.Magic */
+.cython .il { color: #666666 } /* Literal.Number.Integer.Long */
+    </style>
+<script>
+    function toggleDiv(id) {
+        theDiv = id.nextElementSibling
+        if (theDiv.style.display != 'block') theDiv.style.display = 'block';
+        else theDiv.style.display = 'none';
+    }
+    </script>
+</head>
+<body class="cython">
+<p><span style="border-bottom: solid 1px grey;">Generated by Cython 0.24.1</span></p>
+<p>
+<span style="background-color: #FFFF00">Yellow lines</span> hint at Python interaction.<br>
+    Click on a line that starts with a "<code>+</code>" to see the C code that Cython generated for it.
+</br></p>
+<div class="cython"><pre class="cython line score-0"> <span class="">01</span>: </pre>
+<pre class="cython line score-11" onclick="toggleDiv(this)">+<span class="">02</span>: <span class="k">import</span> <span class="nn">cython</span></pre>
+<pre class="cython code score-11 ">  __pyx_t_1 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0"> <span class="">03</span>: <span class="k">cimport</span> <span class="nn">cpython.array</span></pre>
+<pre class="cython line score-0"> <span class="">04</span>: </pre>
+<pre class="cython line score-8" onclick="toggleDiv(this)">+<span class="">05</span>: <span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class="cython code score-8 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0"> <span class="">06</span>: <span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class="cython line score-0"> <span class="">07</span>: </pre>
+<pre class="cython line score-8" onclick="toggleDiv(this)">+<span class="">08</span>: <span class="k">import</span> <span class="nn">shapely.prepared</span></pre>
+<pre class="cython code score-8 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_shapely_prepared, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_shapely, __pyx_t_1) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0"> <span class="">09</span>: </pre>
+<pre class="cython line score-0"> <span class="">10</span>: <span class="k">include</span> <span class="s">"_geos.pxi"</span></pre>
+<pre class="cython line score-0"> <span class="">11</span>: </pre>
+<pre class="cython line score-0"> <span class="">12</span>: </pre>
+<pre class="cython line score-0"> <span class="">13</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-0"> <span class="">14</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-59" onclick="toggleDiv(this)">+<span class="">15</span>: <span class="k">def</span> <span class="nf">contains_cy</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span></pre>
+<pre class="cython code score-59 ">/* Python wrapper */
+static PyObject *__pyx_pw_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy = {"contains_cy", (PyCFunction)__pyx_pw_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_array = 0;
+  PyObject *__pyx_v_geometry = 0;
+  PyObject *__pyx_r = 0;
+  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
+  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_array,&__pyx_n_s_geometry,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
+        case  1: values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = <span class="py_c_api">PyDict_Size</span>(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_array)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        case  1:
+        if (likely((values[1] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_geometry)) != 0)) kw_args--;
+        else {
+          <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy", 1, 2, 2, 1); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(<span class="pyx_c_api">__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "contains_cy") < 0)) __PYX_ERR(0, 15, __pyx_L3_error)
+      }
+    } else if (<span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
+      values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
+    }
+    __pyx_v_array = values[0];
+    __pyx_v_geometry = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy", 1, 2, 2, <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args)); __PYX_ERR(0, 15, __pyx_L3_error)
+  __pyx_L3_error:;
+  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_82b59155c5d602a807243f9ffdef2d25.contains_cy", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_contains_cy(__pyx_self, __pyx_v_array, __pyx_v_geometry);
+
+  /* function exit code */
+  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_contains_cy(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_array, PyObject *__pyx_v_geometry) {
+  Py_ssize_t __pyx_v_idx;
+  unsigned int __pyx_v_n;
+  PyArrayObject *__pyx_v_result = 0;
+  GEOSPreparedGeometry *__pyx_v_geom1;
+  GEOSGeometry *__pyx_v_geom2;
+  uintptr_t __pyx_v_geos_geom;
+  GEOSContextHandle_t __pyx_v_geos_h;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_result;
+  __Pyx_Buffer __pyx_pybuffer_result;
+  PyObject *__pyx_r = NULL;
+  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
+  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy", 0);
+  <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_v_geometry);
+  __pyx_pybuffer_result.pybuffer.buf = NULL;
+  __pyx_pybuffer_result.refcount = 0;
+  __pyx_pybuffernd_result.data = NULL;
+  __pyx_pybuffernd_result.rcbuffer = &__pyx_pybuffer_result;
+/* … */
+  /* function exit code */
+  __pyx_L1_error:;
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_1);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_3);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_4);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_5);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_6);
+  { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    <span class="pyx_c_api">__Pyx_ErrFetch</span>(&__pyx_type, &__pyx_value, &__pyx_tb);
+    <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
+  <span class="pyx_c_api">__Pyx_ErrRestore</span>(__pyx_type, __pyx_value, __pyx_tb);}
+  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_82b59155c5d602a807243f9ffdef2d25.contains_cy", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  goto __pyx_L2;
+  __pyx_L0:;
+  <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
+  __pyx_L2:;
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>((PyObject *)__pyx_v_result);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_v_geometry);
+  <span class="refnanny">__Pyx_XGIVEREF</span>(__pyx_r);
+  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}
+/* … */
+  __pyx_tuple__7 = <span class="py_c_api">PyTuple_Pack</span>(10, __pyx_n_s_array, __pyx_n_s_geometry, __pyx_n_s_idx, __pyx_n_s_n, __pyx_n_s_result, __pyx_n_s_geos_handle, __pyx_n_s_geom1, __pyx_n_s_geom2, __pyx_n_s_geos_geom, __pyx_n_s_geos_h); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_tuple__7);
+  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_tuple__7);
+/* … */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy, NULL, __pyx_n_s_cython_magic_82b59155c5d602a807); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_contains_cy, __pyx_t_1) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0"> <span class="">16</span>: </pre>
+<pre class="cython line score-0"> <span class="">17</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span></pre>
+<pre class="cython line score-10" onclick="toggleDiv(this)">+<span class="">18</span>:     <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span></pre>
+<pre class="cython code score-10 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_v_array, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyInt_As_unsigned_int</span>(__pyx_t_1); if (unlikely((__pyx_t_2 == (unsigned int)-1) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 18, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v_n = __pyx_t_2;
+</pre><pre class="cython line score-39" onclick="toggleDiv(this)">+<span class="">19</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></pre>
+<pre class="cython code score-39 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_3 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_3);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyInt_From_unsigned_int</span>(__pyx_v_n); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_4 = <span class="py_c_api">PyTuple_New</span>(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_t_1);
+  <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_4, 0, __pyx_t_1);
+  __pyx_t_1 = 0;
+  __pyx_t_1 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_5 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_5);
+  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_uint8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_3, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  if (!(likely(((__pyx_t_6) == Py_None) || likely(<span class="pyx_c_api">__Pyx_TypeTest</span>(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_7 = ((PyArrayObject *)__pyx_t_6);
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(<span class="pyx_c_api">__Pyx_GetBufferAndValidate</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_nn___pyx_t_5numpy_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 1, __pyx_stack) == -1)) {
+      __pyx_v_result = ((PyArrayObject *)Py_None); <span class="pyx_macro_api">__Pyx_INCREF</span>(Py_None); __pyx_pybuffernd_result.rcbuffer->pybuffer.buf = NULL;
+      __PYX_ERR(0, 19, __pyx_L1_error)
+    } else {__pyx_pybuffernd_result.diminfo[0].strides = __pyx_pybuffernd_result.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_result.diminfo[0].shape = __pyx_pybuffernd_result.rcbuffer->pybuffer.shape[0];
+    }
+  }
+  __pyx_t_7 = 0;
+  __pyx_v_result = ((PyArrayObject *)__pyx_t_6);
+  __pyx_t_6 = 0;
+</pre><pre class="cython line score-0"> <span class="">20</span>: </pre>
+<pre class="cython line score-0"> <span class="">21</span>:     <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span></pre>
+<pre class="cython line score-0"> <span class="">22</span>:     <span class="k">cdef</span> <span class="kt">GEOSPreparedGeometry</span> *<span class="nf">geom1</span></pre>
+<pre class="cython line score-0"> <span class="">23</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span></pre>
+<pre class="cython line score-0"> <span class="">24</span>:     <span class="k">cdef</span> <span class="kt">uintptr_t</span> <span class="nf">geos_geom</span></pre>
+<pre class="cython line score-0"> <span class="">25</span>: </pre>
+<pre class="cython line score-0"> <span class="">26</span>:     <span class="c"># Prepare the geometry if it hasn't already been prepared.</span></pre>
+<pre class="cython line score-14" onclick="toggleDiv(this)">+<span class="">27</span>:     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">PreparedGeometry</span><span class="p">):</span></pre>
+<pre class="cython code score-14 ">  __pyx_t_6 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_6, __pyx_n_s_prepared); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_PreparedGeometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_8 = <span class="py_c_api">PyObject_IsInstance</span>(__pyx_v_geometry, __pyx_t_6); if (unlikely(__pyx_t_8 == -1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_9 = ((!(__pyx_t_8 != 0)) != 0);
+  if (__pyx_t_9) {
+/* … */
+  }
+</pre><pre class="cython line score-33" onclick="toggleDiv(this)">+<span class="">28</span>:         <span class="n">geometry</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
+<pre class="cython code score-33 ">    __pyx_t_1 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+    __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_prepared); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_4, __pyx_n_s_prep); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = NULL;
+    if (CYTHON_COMPILING_IN_CPYTHON && likely(<span class="py_c_api">PyMethod_Check</span>(__pyx_t_1))) {
+      __pyx_t_4 = <span class="py_macro_api">PyMethod_GET_SELF</span>(__pyx_t_1);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = <span class="py_macro_api">PyMethod_GET_FUNCTION</span>(__pyx_t_1);
+        <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_t_4);
+        <span class="pyx_macro_api">__Pyx_INCREF</span>(function);
+        <span class="pyx_macro_api">__Pyx_DECREF_SET</span>(__pyx_t_1, function);
+      }
+    }
+    if (!__pyx_t_4) {
+      __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_CallOneArg</span>(__pyx_t_1, __pyx_v_geometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+    } else {
+      __pyx_t_3 = <span class="py_c_api">PyTuple_New</span>(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_3);
+      <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_t_4); <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
+      <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_v_geometry);
+      <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_v_geometry);
+      <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_3, 0+1, __pyx_v_geometry);
+      __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_t_3, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+      <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
+    }
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+    <span class="pyx_macro_api">__Pyx_DECREF_SET</span>(__pyx_v_geometry, __pyx_t_6);
+    __pyx_t_6 = 0;
+</pre><pre class="cython line score-0"> <span class="">29</span>: </pre>
+<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">30</span>:     <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span></pre>
+<pre class="cython code score-0 ">  __pyx_v_geos_h = __pyx_f_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_get_geos_context_handle();
+</pre><pre class="cython line score-5" onclick="toggleDiv(this)">+<span class="">31</span>:     <span class="n">geom1</span> <span class="o">=</span> <span class="n">geos_from_prepared</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
+<pre class="cython code score-5 ">  __pyx_t_10 = __pyx_f_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_geos_from_prepared(__pyx_v_geometry); if (unlikely(<span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 31, __pyx_L1_error)
+  __pyx_v_geom1 = __pyx_t_10;
+</pre><pre class="cython line score-0"> <span class="">32</span>: </pre>
+<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">33</span>:     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span></pre>
+<pre class="cython code score-0 ">  __pyx_t_2 = __pyx_v_n;
+  for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_2; __pyx_t_11+=1) {
+    __pyx_v_idx = __pyx_t_11;
+</pre><pre class="cython line score-0"> <span class="">34</span>:         <span class="c"># Construct a coordinate sequence with our x, y values.</span></pre>
+<pre class="cython line score-13" onclick="toggleDiv(this)">+<span class="">35</span>:         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">_geom</span></pre>
+<pre class="cython code score-13 ">    __pyx_t_6 = <span class="pyx_c_api">__Pyx_GetItemInt</span>(__pyx_v_array, __pyx_v_idx, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 35, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+    __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_6, __pyx_n_s_geom); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_12 = <span class="pyx_c_api">__Pyx_PyInt_As_size_t</span>(__pyx_t_1); if (unlikely((__pyx_t_12 == (uintptr_t)-1) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 35, __pyx_L1_error)
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_v_geos_geom = __pyx_t_12;
+</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">36</span>:         <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span></pre>
+<pre class="cython code score-0 ">    __pyx_v_geom2 = ((GEOSGeometry *)__pyx_v_geos_geom);
+</pre><pre class="cython line score-0"> <span class="">37</span>: </pre>
+<pre class="cython line score-0"> <span class="">38</span>:         <span class="c"># Put the result of whether the point is "contained" by the</span></pre>
+<pre class="cython line score-0"> <span class="">39</span>:         <span class="c"># prepared geometry into the result array. </span></pre>
+<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">40</span>:         <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span></pre>
+<pre class="cython code score-0 ">    __pyx_t_13 = __pyx_v_idx;
+    *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_uint8_t *, __pyx_pybuffernd_result.rcbuffer->pybuffer.buf, __pyx_t_13, __pyx_pybuffernd_result.diminfo[0].strides) = ((__pyx_t_5numpy_uint8_t)GEOSPreparedContains_r(__pyx_v_geos_h, __pyx_v_geom1, __pyx_v_geom2));
+  }
+</pre><pre class="cython line score-0"> <span class="">41</span>:         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span></pre>
+<pre class="cython line score-0"> <span class="">42</span>: </pre>
+<pre class="cython line score-23" onclick="toggleDiv(this)">+<span class="">43</span>:     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></pre>
+<pre class="cython code score-23 ">  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_r);
+  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(((PyObject *)__pyx_v_result), __pyx_n_s_view); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_6 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_3 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_3);
+  __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_3, __pyx_n_s_bool); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_empty_tuple, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_r = __pyx_t_4;
+  __pyx_t_4 = 0;
+  goto __pyx_L0;
+</pre></div></body></html>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [20]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res2</span> <span class="o">=</span> <span class="n">contains_cy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">res2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[20]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [21]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res2</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[21]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>89</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [22]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [23]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> contains_cy(a, p)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>100 loops, best of 3: 2.1 ms per loop
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Already much faster !!</p>
+<p>From about 50 ms to 2 ms -> 25x speed-up</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Passing-_geom-pointers-instead-of-Geometry-objects">Passing <code>_geom</code> pointers instead of Geometry objects<a class="anchor-link" href="#Passing-_geom-pointers-instead-of-Geometry-objects">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As can be seen in the annotated cython code above, one of the bottlenecks in the for loop part is <code>geos_geom = array[idx]._geom</code> (yellow colored line), where I access the geometry python <code>object</code> (<code>a</code> is an object dtyped array) and get the <code>_geom</code> attribute. This has to switch to python to get the attribute, and therefore gives a slowdown.</p>
+<p>Let's try to make an array of those integer <code>_geom</code> pointers in advance, and pass this to an adapted version of the cython function:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [25]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="n">cython</span> <span class="o">-</span><span class="n">l</span> <span class="n">geos_c</span> <span class="o">-</span><span class="n">L</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="n">lib</span> <span class="o">-</span><span class="n">I</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="k">include</span> <span class="o">-</span><span class="n">a</span>
+
+<span class="k">import</span> <span class="nn">cython</span>
+<span class="k">cimport</span> <span class="nn">cpython.array</span>
+
+<span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">import</span> <span class="nn">shapely.prepared</span>
+
+<span class="k">include</span> <span class="s">"_geos.pxi"</span>
+
+
+<span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">contains_cy2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64_t</span><span class="p">[:]</span> <span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span>
+    
+    <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span>
+    <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+    <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span>
+    <span class="k">cdef</span> <span class="kt">GEOSPreparedGeometry</span> *<span class="nf">geom1</span>
+    <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span>
+    <span class="k">cdef</span> <span class="kt">uintptr_t</span> <span class="nf">geos_geom</span>
+    
+    <span class="c"># Prepare the geometry if it hasn't already been prepared.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">PreparedGeometry</span><span class="p">):</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+        
+    <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span>
+    <span class="n">geom1</span> <span class="o">=</span> <span class="n">geos_from_prepared</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span>
+
+        <span class="c"># Put the result of whether the point is "contained" by the</span>
+        <span class="c"># prepared geometry into the result array. </span>
+        <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span>
+        <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[25]:</div>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<!DOCTYPE html>
+
+<!-- Generated by Cython 0.24.1 -->
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<title>Cython: _cython_magic_d349877524f4aa438d2abd5176dcf532.pyx</title>
+<style type="text/css">
+    
+body.cython { font-family: courier; font-size: 12; }
+
+.cython.tag  {  }
+.cython.line { margin: 0em }
+.cython.code { font-size: 9; color: #444444; display: none; margin: 0px 0px 0px 8px; border-left: 8px none; }
+
+.cython.line .run { background-color: #B0FFB0; }
+.cython.line .mis { background-color: #FFB0B0; }
+.cython.code.run  { border-left: 8px solid #B0FFB0; }
+.cython.code.mis  { border-left: 8px solid #FFB0B0; }
+
+.cython.code .py_c_api  { color: red; }
+.cython.code .py_macro_api  { color: #FF7000; }
+.cython.code .pyx_c_api  { color: #FF3000; }
+.cython.code .pyx_macro_api  { color: #FF7000; }
+.cython.code .refnanny  { color: #FFA000; }
+.cython.code .trace  { color: #FFA000; }
+.cython.code .error_goto  { color: #FFA000; }
+
+.cython.code .coerce  { color: #008000; border: 1px dotted #008000 }
+.cython.code .py_attr { color: #FF0000; font-weight: bold; }
+.cython.code .c_attr  { color: #0000FF; }
+.cython.code .py_call { color: #FF0000; font-weight: bold; }
+.cython.code .c_call  { color: #0000FF; }
+
+.cython.score-0 {background-color: #FFFFff;}
+.cython.score-1 {background-color: #FFFFe7;}
+.cython.score-2 {background-color: #FFFFd4;}
+.cython.score-3 {background-color: #FFFFc4;}
+.cython.score-4 {background-color: #FFFFb6;}
+.cython.score-5 {background-color: #FFFFaa;}
+.cython.score-6 {background-color: #FFFF9f;}
+.cython.score-7 {background-color: #FFFF96;}
+.cython.score-8 {background-color: #FFFF8d;}
+.cython.score-9 {background-color: #FFFF86;}
+.cython.score-10 {background-color: #FFFF7f;}
+.cython.score-11 {background-color: #FFFF79;}
+.cython.score-12 {background-color: #FFFF73;}
+.cython.score-13 {background-color: #FFFF6e;}
+.cython.score-14 {background-color: #FFFF6a;}
+.cython.score-15 {background-color: #FFFF66;}
+.cython.score-16 {background-color: #FFFF62;}
+.cython.score-17 {background-color: #FFFF5e;}
+.cython.score-18 {background-color: #FFFF5b;}
+.cython.score-19 {background-color: #FFFF57;}
+.cython.score-20 {background-color: #FFFF55;}
+.cython.score-21 {background-color: #FFFF52;}
+.cython.score-22 {background-color: #FFFF4f;}
+.cython.score-23 {background-color: #FFFF4d;}
+.cython.score-24 {background-color: #FFFF4b;}
+.cython.score-25 {background-color: #FFFF48;}
+.cython.score-26 {background-color: #FFFF46;}
+.cython.score-27 {background-color: #FFFF44;}
+.cython.score-28 {background-color: #FFFF43;}
+.cython.score-29 {background-color: #FFFF41;}
+.cython.score-30 {background-color: #FFFF3f;}
+.cython.score-31 {background-color: #FFFF3e;}
+.cython.score-32 {background-color: #FFFF3c;}
+.cython.score-33 {background-color: #FFFF3b;}
+.cython.score-34 {background-color: #FFFF39;}
+.cython.score-35 {background-color: #FFFF38;}
+.cython.score-36 {background-color: #FFFF37;}
+.cython.score-37 {background-color: #FFFF36;}
+.cython.score-38 {background-color: #FFFF35;}
+.cython.score-39 {background-color: #FFFF34;}
+.cython.score-40 {background-color: #FFFF33;}
+.cython.score-41 {background-color: #FFFF32;}
+.cython.score-42 {background-color: #FFFF31;}
+.cython.score-43 {background-color: #FFFF30;}
+.cython.score-44 {background-color: #FFFF2f;}
+.cython.score-45 {background-color: #FFFF2e;}
+.cython.score-46 {background-color: #FFFF2d;}
+.cython.score-47 {background-color: #FFFF2c;}
+.cython.score-48 {background-color: #FFFF2b;}
+.cython.score-49 {background-color: #FFFF2b;}
+.cython.score-50 {background-color: #FFFF2a;}
+.cython.score-51 {background-color: #FFFF29;}
+.cython.score-52 {background-color: #FFFF29;}
+.cython.score-53 {background-color: #FFFF28;}
+.cython.score-54 {background-color: #FFFF27;}
+.cython.score-55 {background-color: #FFFF27;}
+.cython.score-56 {background-color: #FFFF26;}
+.cython.score-57 {background-color: #FFFF26;}
+.cython.score-58 {background-color: #FFFF25;}
+.cython.score-59 {background-color: #FFFF24;}
+.cython.score-60 {background-color: #FFFF24;}
+.cython.score-61 {background-color: #FFFF23;}
+.cython.score-62 {background-color: #FFFF23;}
+.cython.score-63 {background-color: #FFFF22;}
+.cython.score-64 {background-color: #FFFF22;}
+.cython.score-65 {background-color: #FFFF22;}
+.cython.score-66 {background-color: #FFFF21;}
+.cython.score-67 {background-color: #FFFF21;}
+.cython.score-68 {background-color: #FFFF20;}
+.cython.score-69 {background-color: #FFFF20;}
+.cython.score-70 {background-color: #FFFF1f;}
+.cython.score-71 {background-color: #FFFF1f;}
+.cython.score-72 {background-color: #FFFF1f;}
+.cython.score-73 {background-color: #FFFF1e;}
+.cython.score-74 {background-color: #FFFF1e;}
+.cython.score-75 {background-color: #FFFF1e;}
+.cython.score-76 {background-color: #FFFF1d;}
+.cython.score-77 {background-color: #FFFF1d;}
+.cython.score-78 {background-color: #FFFF1c;}
+.cython.score-79 {background-color: #FFFF1c;}
+.cython.score-80 {background-color: #FFFF1c;}
+.cython.score-81 {background-color: #FFFF1c;}
+.cython.score-82 {background-color: #FFFF1b;}
+.cython.score-83 {background-color: #FFFF1b;}
+.cython.score-84 {background-color: #FFFF1b;}
+.cython.score-85 {background-color: #FFFF1a;}
+.cython.score-86 {background-color: #FFFF1a;}
+.cython.score-87 {background-color: #FFFF1a;}
+.cython.score-88 {background-color: #FFFF1a;}
+.cython.score-89 {background-color: #FFFF19;}
+.cython.score-90 {background-color: #FFFF19;}
+.cython.score-91 {background-color: #FFFF19;}
+.cython.score-92 {background-color: #FFFF19;}
+.cython.score-93 {background-color: #FFFF18;}
+.cython.score-94 {background-color: #FFFF18;}
+.cython.score-95 {background-color: #FFFF18;}
+.cython.score-96 {background-color: #FFFF18;}
+.cython.score-97 {background-color: #FFFF17;}
+.cython.score-98 {background-color: #FFFF17;}
+.cython.score-99 {background-color: #FFFF17;}
+.cython.score-100 {background-color: #FFFF17;}
+.cython.score-101 {background-color: #FFFF16;}
+.cython.score-102 {background-color: #FFFF16;}
+.cython.score-103 {background-color: #FFFF16;}
+.cython.score-104 {background-color: #FFFF16;}
+.cython.score-105 {background-color: #FFFF16;}
+.cython.score-106 {background-color: #FFFF15;}
+.cython.score-107 {background-color: #FFFF15;}
+.cython.score-108 {background-color: #FFFF15;}
+.cython.score-109 {background-color: #FFFF15;}
+.cython.score-110 {background-color: #FFFF15;}
+.cython.score-111 {background-color: #FFFF15;}
+.cython.score-112 {background-color: #FFFF14;}
+.cython.score-113 {background-color: #FFFF14;}
+.cython.score-114 {background-color: #FFFF14;}
+.cython.score-115 {background-color: #FFFF14;}
+.cython.score-116 {background-color: #FFFF14;}
+.cython.score-117 {background-color: #FFFF14;}
+.cython.score-118 {background-color: #FFFF13;}
+.cython.score-119 {background-color: #FFFF13;}
+.cython.score-120 {background-color: #FFFF13;}
+.cython.score-121 {background-color: #FFFF13;}
+.cython.score-122 {background-color: #FFFF13;}
+.cython.score-123 {background-color: #FFFF13;}
+.cython.score-124 {background-color: #FFFF13;}
+.cython.score-125 {background-color: #FFFF12;}
+.cython.score-126 {background-color: #FFFF12;}
+.cython.score-127 {background-color: #FFFF12;}
+.cython.score-128 {background-color: #FFFF12;}
+.cython.score-129 {background-color: #FFFF12;}
+.cython.score-130 {background-color: #FFFF12;}
+.cython.score-131 {background-color: #FFFF12;}
+.cython.score-132 {background-color: #FFFF11;}
+.cython.score-133 {background-color: #FFFF11;}
+.cython.score-134 {background-color: #FFFF11;}
+.cython.score-135 {background-color: #FFFF11;}
+.cython.score-136 {background-color: #FFFF11;}
+.cython.score-137 {background-color: #FFFF11;}
+.cython.score-138 {background-color: #FFFF11;}
+.cython.score-139 {background-color: #FFFF11;}
+.cython.score-140 {background-color: #FFFF11;}
+.cython.score-141 {background-color: #FFFF10;}
+.cython.score-142 {background-color: #FFFF10;}
+.cython.score-143 {background-color: #FFFF10;}
+.cython.score-144 {background-color: #FFFF10;}
+.cython.score-145 {background-color: #FFFF10;}
+.cython.score-146 {background-color: #FFFF10;}
+.cython.score-147 {background-color: #FFFF10;}
+.cython.score-148 {background-color: #FFFF10;}
+.cython.score-149 {background-color: #FFFF10;}
+.cython.score-150 {background-color: #FFFF0f;}
+.cython.score-151 {background-color: #FFFF0f;}
+.cython.score-152 {background-color: #FFFF0f;}
+.cython.score-153 {background-color: #FFFF0f;}
+.cython.score-154 {background-color: #FFFF0f;}
+.cython.score-155 {background-color: #FFFF0f;}
+.cython.score-156 {background-color: #FFFF0f;}
+.cython.score-157 {background-color: #FFFF0f;}
+.cython.score-158 {background-color: #FFFF0f;}
+.cython.score-159 {background-color: #FFFF0f;}
+.cython.score-160 {background-color: #FFFF0f;}
+.cython.score-161 {background-color: #FFFF0e;}
+.cython.score-162 {background-color: #FFFF0e;}
+.cython.score-163 {background-color: #FFFF0e;}
+.cython.score-164 {background-color: #FFFF0e;}
+.cython.score-165 {background-color: #FFFF0e;}
+.cython.score-166 {background-color: #FFFF0e;}
+.cython.score-167 {background-color: #FFFF0e;}
+.cython.score-168 {background-color: #FFFF0e;}
+.cython.score-169 {background-color: #FFFF0e;}
+.cython.score-170 {background-color: #FFFF0e;}
+.cython.score-171 {background-color: #FFFF0e;}
+.cython.score-172 {background-color: #FFFF0e;}
+.cython.score-173 {background-color: #FFFF0d;}
+.cython.score-174 {background-color: #FFFF0d;}
+.cython.score-175 {background-color: #FFFF0d;}
+.cython.score-176 {background-color: #FFFF0d;}
+.cython.score-177 {background-color: #FFFF0d;}
+.cython.score-178 {background-color: #FFFF0d;}
+.cython.score-179 {background-color: #FFFF0d;}
+.cython.score-180 {background-color: #FFFF0d;}
+.cython.score-181 {background-color: #FFFF0d;}
+.cython.score-182 {background-color: #FFFF0d;}
+.cython.score-183 {background-color: #FFFF0d;}
+.cython.score-184 {background-color: #FFFF0d;}
+.cython.score-185 {background-color: #FFFF0d;}
+.cython.score-186 {background-color: #FFFF0d;}
+.cython.score-187 {background-color: #FFFF0c;}
+.cython.score-188 {background-color: #FFFF0c;}
+.cython.score-189 {background-color: #FFFF0c;}
+.cython.score-190 {background-color: #FFFF0c;}
+.cython.score-191 {background-color: #FFFF0c;}
+.cython.score-192 {background-color: #FFFF0c;}
+.cython.score-193 {background-color: #FFFF0c;}
+.cython.score-194 {background-color: #FFFF0c;}
+.cython.score-195 {background-color: #FFFF0c;}
+.cython.score-196 {background-color: #FFFF0c;}
+.cython.score-197 {background-color: #FFFF0c;}
+.cython.score-198 {background-color: #FFFF0c;}
+.cython.score-199 {background-color: #FFFF0c;}
+.cython.score-200 {background-color: #FFFF0c;}
+.cython.score-201 {background-color: #FFFF0c;}
+.cython.score-202 {background-color: #FFFF0c;}
+.cython.score-203 {background-color: #FFFF0b;}
+.cython.score-204 {background-color: #FFFF0b;}
+.cython.score-205 {background-color: #FFFF0b;}
+.cython.score-206 {background-color: #FFFF0b;}
+.cython.score-207 {background-color: #FFFF0b;}
+.cython.score-208 {background-color: #FFFF0b;}
+.cython.score-209 {background-color: #FFFF0b;}
+.cython.score-210 {background-color: #FFFF0b;}
+.cython.score-211 {background-color: #FFFF0b;}
+.cython.score-212 {background-color: #FFFF0b;}
+.cython.score-213 {background-color: #FFFF0b;}
+.cython.score-214 {background-color: #FFFF0b;}
+.cython.score-215 {background-color: #FFFF0b;}
+.cython.score-216 {background-color: #FFFF0b;}
+.cython.score-217 {background-color: #FFFF0b;}
+.cython.score-218 {background-color: #FFFF0b;}
+.cython.score-219 {background-color: #FFFF0b;}
+.cython.score-220 {background-color: #FFFF0b;}
+.cython.score-221 {background-color: #FFFF0b;}
+.cython.score-222 {background-color: #FFFF0a;}
+.cython.score-223 {background-color: #FFFF0a;}
+.cython.score-224 {background-color: #FFFF0a;}
+.cython.score-225 {background-color: #FFFF0a;}
+.cython.score-226 {background-color: #FFFF0a;}
+.cython.score-227 {background-color: #FFFF0a;}
+.cython.score-228 {background-color: #FFFF0a;}
+.cython.score-229 {background-color: #FFFF0a;}
+.cython.score-230 {background-color: #FFFF0a;}
+.cython.score-231 {background-color: #FFFF0a;}
+.cython.score-232 {background-color: #FFFF0a;}
+.cython.score-233 {background-color: #FFFF0a;}
+.cython.score-234 {background-color: #FFFF0a;}
+.cython.score-235 {background-color: #FFFF0a;}
+.cython.score-236 {background-color: #FFFF0a;}
+.cython.score-237 {background-color: #FFFF0a;}
+.cython.score-238 {background-color: #FFFF0a;}
+.cython.score-239 {background-color: #FFFF0a;}
+.cython.score-240 {background-color: #FFFF0a;}
+.cython.score-241 {background-color: #FFFF0a;}
+.cython.score-242 {background-color: #FFFF0a;}
+.cython.score-243 {background-color: #FFFF0a;}
+.cython.score-244 {background-color: #FFFF0a;}
+.cython.score-245 {background-color: #FFFF0a;}
+.cython.score-246 {background-color: #FFFF09;}
+.cython.score-247 {background-color: #FFFF09;}
+.cython.score-248 {background-color: #FFFF09;}
+.cython.score-249 {background-color: #FFFF09;}
+.cython.score-250 {background-color: #FFFF09;}
+.cython.score-251 {background-color: #FFFF09;}
+.cython.score-252 {background-color: #FFFF09;}
+.cython.score-253 {background-color: #FFFF09;}
+.cython.score-254 {background-color: #FFFF09;}
+.cython .hll { background-color: #ffffcc }
+.cython  { background: #f8f8f8; }
+.cython .c { color: #408080; font-style: italic } /* Comment */
+.cython .err { border: 1px solid #FF0000 } /* Error */
+.cython .k { color: #008000; font-weight: bold } /* Keyword */
+.cython .o { color: #666666 } /* Operator */
+.cython .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.cython .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.cython .cp { color: #BC7A00 } /* Comment.Preproc */
+.cython .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.cython .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.cython .cs { color: #408080; font-style: italic } /* Comment.Special */
+.cython .gd { color: #A00000 } /* Generic.Deleted */
+.cython .ge { font-style: italic } /* Generic.Emph */
+.cython .gr { color: #FF0000 } /* Generic.Error */
+.cython .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.cython .gi { color: #00A000 } /* Generic.Inserted */
+.cython .go { color: #888888 } /* Generic.Output */
+.cython .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.cython .gs { font-weight: bold } /* Generic.Strong */
+.cython .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.cython .gt { color: #0044DD } /* Generic.Traceback */
+.cython .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.cython .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.cython .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.cython .kp { color: #008000 } /* Keyword.Pseudo */
+.cython .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.cython .kt { color: #B00040 } /* Keyword.Type */
+.cython .m { color: #666666 } /* Literal.Number */
+.cython .s { color: #BA2121 } /* Literal.String */
+.cython .na { color: #7D9029 } /* Name.Attribute */
+.cython .nb { color: #008000 } /* Name.Builtin */
+.cython .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.cython .no { color: #880000 } /* Name.Constant */
+.cython .nd { color: #AA22FF } /* Name.Decorator */
+.cython .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.cython .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.cython .nf { color: #0000FF } /* Name.Function */
+.cython .nl { color: #A0A000 } /* Name.Label */
+.cython .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.cython .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.cython .nv { color: #19177C } /* Name.Variable */
+.cython .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.cython .w { color: #bbbbbb } /* Text.Whitespace */
+.cython .mb { color: #666666 } /* Literal.Number.Bin */
+.cython .mf { color: #666666 } /* Literal.Number.Float */
+.cython .mh { color: #666666 } /* Literal.Number.Hex */
+.cython .mi { color: #666666 } /* Literal.Number.Integer */
+.cython .mo { color: #666666 } /* Literal.Number.Oct */
+.cython .sa { color: #BA2121 } /* Literal.String.Affix */
+.cython .sb { color: #BA2121 } /* Literal.String.Backtick */
+.cython .sc { color: #BA2121 } /* Literal.String.Char */
+.cython .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.cython .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.cython .s2 { color: #BA2121 } /* Literal.String.Double */
+.cython .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.cython .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.cython .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.cython .sx { color: #008000 } /* Literal.String.Other */
+.cython .sr { color: #BB6688 } /* Literal.String.Regex */
+.cython .s1 { color: #BA2121 } /* Literal.String.Single */
+.cython .ss { color: #19177C } /* Literal.String.Symbol */
+.cython .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.cython .fm { color: #0000FF } /* Name.Function.Magic */
+.cython .vc { color: #19177C } /* Name.Variable.Class */
+.cython .vg { color: #19177C } /* Name.Variable.Global */
+.cython .vi { color: #19177C } /* Name.Variable.Instance */
+.cython .vm { color: #19177C } /* Name.Variable.Magic */
+.cython .il { color: #666666 } /* Literal.Number.Integer.Long */
+    </style>
+<script>
+    function toggleDiv(id) {
+        theDiv = id.nextElementSibling
+        if (theDiv.style.display != 'block') theDiv.style.display = 'block';
+        else theDiv.style.display = 'none';
+    }
+    </script>
+</head>
+<body class="cython">
+<p><span style="border-bottom: solid 1px grey;">Generated by Cython 0.24.1</span></p>
+<p>
+<span style="background-color: #FFFF00">Yellow lines</span> hint at Python interaction.<br/>
+    Click on a line that starts with a "<code>+</code>" to see the C code that Cython generated for it.
+</p>
+<div class="cython"><pre class="cython line score-0"> <span class="">01</span>: </pre>
+<pre class="cython line score-11" onclick="toggleDiv(this)">+<span class="">02</span>: <span class="k">import</span> <span class="nn">cython</span></pre>
+<pre class="cython code score-11 ">  __pyx_t_1 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0"> <span class="">03</span>: <span class="k">cimport</span> <span class="nn">cpython.array</span></pre>
+<pre class="cython line score-0"> <span class="">04</span>: </pre>
+<pre class="cython line score-8" onclick="toggleDiv(this)">+<span class="">05</span>: <span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class="cython code score-8 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0"> <span class="">06</span>: <span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class="cython line score-0"> <span class="">07</span>: </pre>
+<pre class="cython line score-8" onclick="toggleDiv(this)">+<span class="">08</span>: <span class="k">import</span> <span class="nn">shapely.prepared</span></pre>
+<pre class="cython code score-8 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_shapely_prepared, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_shapely, __pyx_t_1) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0"> <span class="">09</span>: </pre>
+<pre class="cython line score-0"> <span class="">10</span>: <span class="k">include</span> <span class="s">"_geos.pxi"</span></pre>
+<pre class="cython line score-0"> <span class="">11</span>: </pre>
+<pre class="cython line score-0"> <span class="">12</span>: </pre>
+<pre class="cython line score-0"> <span class="">13</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-0"> <span class="">14</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-61" onclick="toggleDiv(this)">+<span class="">15</span>: <span class="k">def</span> <span class="nf">contains_cy2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64_t</span><span class="p">[:]</span> <span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span></pre>
+<pre class="cython code score-61 ">/* Python wrapper */
+static PyObject *__pyx_pw_46_cython_magic_d349877524f4aa438d2abd5176dcf532_1contains_cy2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_46_cython_magic_d349877524f4aa438d2abd5176dcf532_1contains_cy2 = {"contains_cy2", (PyCFunction)__pyx_pw_46_cython_magic_d349877524f4aa438d2abd5176dcf532_1contains_cy2, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_46_cython_magic_d349877524f4aa438d2abd5176dcf532_1contains_cy2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  __Pyx_memviewslice __pyx_v_array = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyObject *__pyx_v_geometry = 0;
+  PyObject *__pyx_r = 0;
+  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
+  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy2 (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_array,&__pyx_n_s_geometry,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
+        case  1: values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = <span class="py_c_api">PyDict_Size</span>(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_array)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        case  1:
+        if (likely((values[1] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_geometry)) != 0)) kw_args--;
+        else {
+          <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy2", 1, 2, 2, 1); __PYX_ERR(0, 15, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(<span class="pyx_c_api">__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "contains_cy2") < 0)) __PYX_ERR(0, 15, __pyx_L3_error)
+      }
+    } else if (<span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
+      values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
+    }
+    __pyx_v_array = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int64_t(values[0]); if (unlikely(!__pyx_v_array.memview)) __PYX_ERR(0, 15, __pyx_L3_error)
+    __pyx_v_geometry = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy2", 1, 2, 2, <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args)); __PYX_ERR(0, 15, __pyx_L3_error)
+  __pyx_L3_error:;
+  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_d349877524f4aa438d2abd5176dcf532.contains_cy2", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_46_cython_magic_d349877524f4aa438d2abd5176dcf532_contains_cy2(__pyx_self, __pyx_v_array, __pyx_v_geometry);
+
+  /* function exit code */
+  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_46_cython_magic_d349877524f4aa438d2abd5176dcf532_contains_cy2(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_array, PyObject *__pyx_v_geometry) {
+  Py_ssize_t __pyx_v_idx;
+  unsigned int __pyx_v_n;
+  PyArrayObject *__pyx_v_result = 0;
+  GEOSPreparedGeometry *__pyx_v_geom1;
+  GEOSGeometry *__pyx_v_geom2;
+  uintptr_t __pyx_v_geos_geom;
+  GEOSContextHandle_t __pyx_v_geos_h;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_result;
+  __Pyx_Buffer __pyx_pybuffer_result;
+  PyObject *__pyx_r = NULL;
+  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
+  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy2", 0);
+  <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_v_geometry);
+  __pyx_pybuffer_result.pybuffer.buf = NULL;
+  __pyx_pybuffer_result.refcount = 0;
+  __pyx_pybuffernd_result.data = NULL;
+  __pyx_pybuffernd_result.rcbuffer = &__pyx_pybuffer_result;
+/* … */
+  /* function exit code */
+  __pyx_L1_error:;
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_1);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_2);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_4);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_5);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_6);
+  { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    <span class="pyx_c_api">__Pyx_ErrFetch</span>(&__pyx_type, &__pyx_value, &__pyx_tb);
+    <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
+  <span class="pyx_c_api">__Pyx_ErrRestore</span>(__pyx_type, __pyx_value, __pyx_tb);}
+  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_d349877524f4aa438d2abd5176dcf532.contains_cy2", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  goto __pyx_L2;
+  __pyx_L0:;
+  <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
+  __pyx_L2:;
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>((PyObject *)__pyx_v_result);
+  __PYX_XDEC_MEMVIEW(&__pyx_v_array, 1);
+  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_v_geometry);
+  <span class="refnanny">__Pyx_XGIVEREF</span>(__pyx_r);
+  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}
+/* … */
+  __pyx_tuple__20 = <span class="py_c_api">PyTuple_Pack</span>(10, __pyx_n_s_array, __pyx_n_s_geometry, __pyx_n_s_idx, __pyx_n_s_n, __pyx_n_s_result, __pyx_n_s_geos_handle, __pyx_n_s_geom1, __pyx_n_s_geom2, __pyx_n_s_geos_geom, __pyx_n_s_geos_h); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_tuple__20);
+  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_tuple__20);
+/* … */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_46_cython_magic_d349877524f4aa438d2abd5176dcf532_1contains_cy2, NULL, __pyx_n_s_cython_magic_d349877524f4aa438d); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_contains_cy2, __pyx_t_1) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_codeobj__21 = (PyObject*)<span class="pyx_c_api">__Pyx_PyCode_New</span>(2, 0, 10, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_joris_cache_ipython_cython, __pyx_n_s_contains_cy2, 15, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__21)) __PYX_ERR(0, 15, __pyx_L1_error)
+</pre><pre class="cython line score-0"> <span class="">16</span>: </pre>
+<pre class="cython line score-0"> <span class="">17</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span></pre>
+<pre class="cython line score-11" onclick="toggleDiv(this)">+<span class="">18</span>:     <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span></pre>
+<pre class="cython code score-11 ">  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_array, 1, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_5numpy_int64_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_5numpy_int64_t, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 18, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_3 = <span class="pyx_c_api">__Pyx_PyInt_As_unsigned_int</span>(__pyx_t_2); if (unlikely((__pyx_t_3 == (unsigned int)-1) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 18, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_n = __pyx_t_3;
+</pre><pre class="cython line score-39" onclick="toggleDiv(this)">+<span class="">19</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></pre>
+<pre class="cython code score-39 ">  __pyx_t_2 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_2, __pyx_n_s_empty); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyInt_From_unsigned_int</span>(__pyx_v_n); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_4 = <span class="py_c_api">PyTuple_New</span>(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_t_2);
+  <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_4, 0, __pyx_t_2);
+  __pyx_t_2 = 0;
+  __pyx_t_2 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_5 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_5);
+  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_uint8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  if (!(likely(((__pyx_t_6) == Py_None) || likely(<span class="pyx_c_api">__Pyx_TypeTest</span>(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_7 = ((PyArrayObject *)__pyx_t_6);
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(<span class="pyx_c_api">__Pyx_GetBufferAndValidate</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_nn___pyx_t_5numpy_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 1, __pyx_stack) == -1)) {
+      __pyx_v_result = ((PyArrayObject *)Py_None); <span class="pyx_macro_api">__Pyx_INCREF</span>(Py_None); __pyx_pybuffernd_result.rcbuffer->pybuffer.buf = NULL;
+      __PYX_ERR(0, 19, __pyx_L1_error)
+    } else {__pyx_pybuffernd_result.diminfo[0].strides = __pyx_pybuffernd_result.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_result.diminfo[0].shape = __pyx_pybuffernd_result.rcbuffer->pybuffer.shape[0];
+    }
+  }
+  __pyx_t_7 = 0;
+  __pyx_v_result = ((PyArrayObject *)__pyx_t_6);
+  __pyx_t_6 = 0;
+</pre><pre class="cython line score-0"> <span class="">20</span>: </pre>
+<pre class="cython line score-0"> <span class="">21</span>:     <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span></pre>
+<pre class="cython line score-0"> <span class="">22</span>:     <span class="k">cdef</span> <span class="kt">GEOSPreparedGeometry</span> *<span class="nf">geom1</span></pre>
+<pre class="cython line score-0"> <span class="">23</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span></pre>
+<pre class="cython line score-0"> <span class="">24</span>:     <span class="k">cdef</span> <span class="kt">uintptr_t</span> <span class="nf">geos_geom</span></pre>
+<pre class="cython line score-0"> <span class="">25</span>: </pre>
+<pre class="cython line score-0"> <span class="">26</span>:     <span class="c"># Prepare the geometry if it hasn't already been prepared.</span></pre>
+<pre class="cython line score-14" onclick="toggleDiv(this)">+<span class="">27</span>:     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">PreparedGeometry</span><span class="p">):</span></pre>
+<pre class="cython code score-14 ">  __pyx_t_6 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_6, __pyx_n_s_prepared); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_2, __pyx_n_s_PreparedGeometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_8 = <span class="py_c_api">PyObject_IsInstance</span>(__pyx_v_geometry, __pyx_t_6); if (unlikely(__pyx_t_8 == -1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_9 = ((!(__pyx_t_8 != 0)) != 0);
+  if (__pyx_t_9) {
+/* … */
+  }
+</pre><pre class="cython line score-33" onclick="toggleDiv(this)">+<span class="">28</span>:         <span class="n">geometry</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
+<pre class="cython code score-33 ">    __pyx_t_2 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+    __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_2, __pyx_n_s_prepared); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_4, __pyx_n_s_prep); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = NULL;
+    if (CYTHON_COMPILING_IN_CPYTHON && likely(<span class="py_c_api">PyMethod_Check</span>(__pyx_t_2))) {
+      __pyx_t_4 = <span class="py_macro_api">PyMethod_GET_SELF</span>(__pyx_t_2);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = <span class="py_macro_api">PyMethod_GET_FUNCTION</span>(__pyx_t_2);
+        <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_t_4);
+        <span class="pyx_macro_api">__Pyx_INCREF</span>(function);
+        <span class="pyx_macro_api">__Pyx_DECREF_SET</span>(__pyx_t_2, function);
+      }
+    }
+    if (!__pyx_t_4) {
+      __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_CallOneArg</span>(__pyx_t_2, __pyx_v_geometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+    } else {
+      __pyx_t_1 = <span class="py_c_api">PyTuple_New</span>(1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+      <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_t_4); <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_1, 0, __pyx_t_4); __pyx_t_4 = NULL;
+      <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_v_geometry);
+      <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_v_geometry);
+      <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_1, 0+1, __pyx_v_geometry);
+      __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_2, __pyx_t_1, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+      <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+    }
+    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+    <span class="pyx_macro_api">__Pyx_DECREF_SET</span>(__pyx_v_geometry, __pyx_t_6);
+    __pyx_t_6 = 0;
+</pre><pre class="cython line score-0"> <span class="">29</span>: </pre>
+<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">30</span>:     <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span></pre>
+<pre class="cython code score-0 ">  __pyx_v_geos_h = __pyx_f_46_cython_magic_d349877524f4aa438d2abd5176dcf532_get_geos_context_handle();
+</pre><pre class="cython line score-5" onclick="toggleDiv(this)">+<span class="">31</span>:     <span class="n">geom1</span> <span class="o">=</span> <span class="n">geos_from_prepared</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
+<pre class="cython code score-5 ">  __pyx_t_10 = __pyx_f_46_cython_magic_d349877524f4aa438d2abd5176dcf532_geos_from_prepared(__pyx_v_geometry); if (unlikely(<span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 31, __pyx_L1_error)
+  __pyx_v_geom1 = __pyx_t_10;
+</pre><pre class="cython line score-0"> <span class="">32</span>: </pre>
+<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">33</span>:     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span></pre>
+<pre class="cython code score-0 ">  __pyx_t_3 = __pyx_v_n;
+  for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_3; __pyx_t_11+=1) {
+    __pyx_v_idx = __pyx_t_11;
+</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">34</span>:         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span></pre>
+<pre class="cython code score-0 ">    __pyx_t_12 = __pyx_v_idx;
+    __pyx_v_geos_geom = (*((__pyx_t_5numpy_int64_t *) ( /* dim=0 */ (__pyx_v_array.data + __pyx_t_12 * __pyx_v_array.strides[0]) )));
+</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">35</span>:         <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span></pre>
+<pre class="cython code score-0 ">    __pyx_v_geom2 = ((GEOSGeometry *)__pyx_v_geos_geom);
+</pre><pre class="cython line score-0"> <span class="">36</span>: </pre>
+<pre class="cython line score-0"> <span class="">37</span>:         <span class="c"># Put the result of whether the point is "contained" by the</span></pre>
+<pre class="cython line score-0"> <span class="">38</span>:         <span class="c"># prepared geometry into the result array. </span></pre>
+<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">39</span>:         <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span></pre>
+<pre class="cython code score-0 ">    __pyx_t_13 = __pyx_v_idx;
+    *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_uint8_t *, __pyx_pybuffernd_result.rcbuffer->pybuffer.buf, __pyx_t_13, __pyx_pybuffernd_result.diminfo[0].strides) = ((__pyx_t_5numpy_uint8_t)GEOSPreparedContains_r(__pyx_v_geos_h, __pyx_v_geom1, __pyx_v_geom2));
+  }
+</pre><pre class="cython line score-0"> <span class="">40</span>:         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span></pre>
+<pre class="cython line score-0"> <span class="">41</span>: </pre>
+<pre class="cython line score-23" onclick="toggleDiv(this)">+<span class="">42</span>:     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></pre>
+<pre class="cython code score-23 ">  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_r);
+  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(((PyObject *)__pyx_v_result), __pyx_n_s_view); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 42, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_2 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 42, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_1 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_bool); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 42, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_6, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 42, __pyx_L1_error)
+  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_r = __pyx_t_4;
+  __pyx_t_4 = 0;
+  goto __pyx_L0;
+</pre></div></body></html>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [26]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">_geom</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [27]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[27]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>array([58420512, 57038960, 58072096, ..., 60390032, 60390240, 60390448])</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [28]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a2</span><span class="o">.</span><span class="n">dtype</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[28]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>dtype('int64')</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [29]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res3</span> <span class="o">=</span> <span class="n">contains_cy2</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">res3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[29]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [30]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res3</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[30]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>89</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [31]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">res3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [32]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> contains_cy2(a2, p)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The slowest run took 23.45 times longer than the fastest. This could mean that an intermediate result is being cached.
+1000 loops, best of 3: 209 µs per loop
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Further massive speed-up !!</p>
+<p>From 50 ms to 2 ms and now to 0.2 ms -> 250x speed-up !!</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We have to note that the creation of the array of <code>geom</code>pointers also is costly, but this could be cached (if multiple operations are done), and can probably be optimized as well using cython/</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [34]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> np.array([x._geom for x in a])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>100 loops, best of 3: 3.76 ms per loop
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Comparison-with-the-shapely.vectorized.contains-function">Comparison with the <code>shapely.vectorized.contains</code> function<a class="anchor-link" href="#Comparison-with-the-shapely.vectorized.contains-function">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>shapely</code> already has an optimized vectorized contains function in cython, but this accepts arrays of x and y coordinates instead of an array of Point geometries:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [75]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">a_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
+<span class="n">a_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [76]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">p2</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [77]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">shapely.vectorized</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [79]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res4</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">vectorized</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">a_x</span><span class="p">,</span> <span class="n">a_y</span><span class="p">)</span>
+<span class="n">res4</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[79]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [80]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">res4</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[80]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>89</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [81]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">res4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [82]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> shapely.vectorized.contains(p, a_x, a_y)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>100 loops, best of 3: 3.96 ms per loop
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [85]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">p2</span><span class="o">.</span><span class="n">context</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[85]:</div>
+<div class="output_svg output_subarea output_execute_result">
+<svg height="100.0" preserveaspectratio="xMinYMin meet" viewbox="6.4 6.4 97.19999999999999 97.19999999999999" width="100.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g transform="matrix(1,0,0,-1,0,110.0)"><path d="M 10.0,10.0 L 10.0,100.0 L 100.0,100.0 L 100.0,10.0 L 10.0,10.0 z" fill="#66cc99" fill-rule="evenodd" opacity="0.6" stroke="#555555" stroke-width="1.9439999999999997"></path></g></svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So it seems that the creation of the Geometry object from the x, y coordinates gives some overhead, as this is a bit slower than our <code>contains_cy</code> function.</p>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        " linebreaks: { automatic: true, width: '95% container' }, " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>	
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+
+		  </div>	
+		  
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+	            <aside>
+	              <h2>About</h2>
+			      <p>
+                    Pandas core developer. Working at the Paris-Saclay Center for Data Science
+			      </p>
+			    </aside>
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li class="active"><a href="/category/misc.html">misc</a></li>
+	                <li ><a href="/category/review.html">Review</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="https://github.com/jorisvandenbossche/">github</a><i></i></li>
+				    <li><a href="https://twitter.com/jorisvdbossche">twitter</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Joris Van den Bossche - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>	
+
+	</div>
+	
+
+</body>
+</html>

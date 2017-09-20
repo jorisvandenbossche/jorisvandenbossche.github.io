@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="">	
+<head>
+	<meta charset="utf-8"/>
+	<title>Fast GeoSpatial Analysis in Python - Joris Van den Bossche</title>	
+	<meta name="author" content="Joris Van den Bossche">
+	
+
+  <meta name="description" content="{% include JB/setup %} This work is supported by Anaconda Inc. and the NASA TODO program This work is a collaboration with Joris Van den Bossche. This blogpost builds on Joris's EuroSciPy talk (slides) on the same topic Summary We briefly describe Python's GeoSpatial stack and the role of the GeoPandas …">
+
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+		
+
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
+</head>
+	
+<body>
+
+    <div class="container">
+	  
+	  <header role="banner">
+	    <div class="feeds">
+	      <a href="/feeds/all.atom.xml" rel="alternate"><img src="/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
+	    </div>
+		<a href="" class="title">Joris Van den Bossche</a>
+      </header>
+	
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+		
+		<h1>Fast GeoSpatial Analysis in Python</h1>
+		
+<div class="metadata">
+  <time datetime="2017-09-09T00:00:00+02:00" pubdate>za 09 september 2017</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
+    </address>
+  in <a href="/category/work.html">work</a>
+<p class="tags">tagged <a href="/tag/programming.html">[Programming</a>, <a href="/tag/python.html">Python</a>, <a href="/tag/scipy.html">scipy</a>, <a href="/tag/dask.html">dask</a>, <a href="/tag/pangeo.html">pangeo]</a></p></div>		
+		<p>{% include JB/setup %}</p>
+<p><em>This work is supported by <a href="http://anaconda.com">Anaconda Inc.</a>
+and the NASA TODO program</em></p>
+<p><em>This work is a collaboration with <a href="https://github.com/jorisvandenbossche/">Joris Van den Bossche</a>.  This blogpost builds on <a href="https://www.youtube.com/watch?v=bWsA2R707BM">Joris's EuroSciPy talk</a> (<a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">slides</a>) on the same topic</em></p>
+<h2>Summary</h2>
+<p>We briefly describe Python's GeoSpatial stack and the role of the GeoPandas
+library within that stack.  We then discuss two efforts to accelerate
+GeoPandas:</p>
+<ol>
+<li>Accelerating GeoPandas with C/Cython</li>
+<li>Parallelizing GeoPandas with Dask for multi-core and distributed computing</li>
+</ol>
+<p>We give performance comparisons and end with work that still has to be done.</p>
+<p>This work is not yet appropriate for general use, but may be appropriate for
+early adopters and developers.</p>
+<h2>Background</h2>
+<p>The <a href="https://toblerity.org/shapely/manual.html">Shapely User Manual</a> begins
+with the following passage on the utility of geospatial analysis to our society.</p>
+<blockquote>
+<p>Deterministic spatial analysis is an important component of computational
+approaches to problems in agriculture, ecology, epidemiology, sociology, and
+many other fields. What is the surveyed perimeter/area ratio of these patches
+of animal habitat? Which properties in this town intersect with the 50-year
+flood contour from this new flooding model? What are the extents of findspots
+for ancient ceramic wares with maker’s marks “A” and “B”, and where do the
+extents overlap? What’s the path from home to office that best skirts
+identified zones of location based spam? These are just a few of the possible
+questions addressable using non-statistical spatial analysis, and more
+specifically, computational geometry.</p>
+</blockquote>
+<p>Shapely is one library within Python's GeoSpatial stack, which is currently
+composed of the following tools:</p>
+<ol>
+<li><a href="https://toblerity.org/shapely/manual.html">Shapely</a>:
+    Manages shapes like points, linestrings, and polygons.
+    Wraps the GEOS C++ library</li>
+<li><a href="https://toblerity.org/fiona/manual.html">Fiona</a>:
+    Handles data ingestion.  Wraps the GDAL library</li>
+<li><a href="https://mapbox.github.io/rasterio/">Rasterio</a>:
+    Handles raster data like satelite imagery</li>
+<li><a href="http://geopandas.org/">GeoPandas</a>:
+    Extends Pandas with a column of shapely geometries to
+    intuitively query tables of geospatially annotated data.</li>
+</ol>
+<p>In this post we focus on GeoPandas, a geospatial extension of Pandas which
+helps to manages tabular data that is annotated with geometry information like
+points, paths, and polygons.</p>
+<h3>GeoPandas Example</h3>
+<p>For example GeoPandas makes it easy to load and plot the <a href="https://data.cityofchicago.org/Public-Safety/Boundaries-Police-Districts/4dt9-88ua">Police Districts of
+Chicago</a>.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;PoliceDistrict.shp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">({</span><span class="s1">&#39;init&#39;</span> <span class="p">:</span><span class="s1">&#39;epsg:4326&#39;</span><span class="p">})</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>DIST_LABEL</th>
+      <th>DIST_NUM</th>
+      <th>geometry</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>18TH</td>
+      <td>18</td>
+      <td>POLYGON ((-87.63068325424541 41.92622745706693...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>13TH</td>
+      <td>13</td>
+      <td>POLYGON ((-87.65742450915607 41.90350864672136...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>11TH</td>
+      <td>11</td>
+      <td>POLYGON ((-87.70678940136517 41.90283191610752...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>15TH</td>
+      <td>15</td>
+      <td>POLYGON ((-87.74597835675543 41.90235233186277...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>12TH</td>
+      <td>12</td>
+      <td>POLYGON ((-87.64110578953293 41.88906960010015...</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img src="{{BASE_PATH}}/images/chicago-police-districts.png"></p>
+<p>Municipal data like this for cities around the world is becoming increasingly
+more common.  Cities are now doing a wonderful job of publishing data in the
+open, which provides transparency and an opportunity for citizens to help
+analyze, understand, and improve their communities..  Here are a few fun
+geospatially-aware datasets that you might find interesting:</p>
+<ol>
+<li><a href="https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-present/ijzp-q8t2">Chicago Crimes from 2001 to present (one week ago)</a></li>
+<li><a href="https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/export/">Paris Velib (bikeshare) in real time</a></li>
+<li><a href="http://portal-nolagis.opendata.arcgis.com/datasets/bike-lanes">Bike lanes in New Orleans</a></li>
+<li><a href="https://data.nola.gov/Public-Safety-and-Preparedness/NOPD-Use-of-Force-Incidents/9mnw-mbde">New Orleans Police Department incidents involving the use of force</a></li>
+</ol>
+<h2>Performance</h2>
+<p>Unfortunately GeoPandas can be slow, which limits interactive exploration on
+larger datasets.  The first dataset mentioned above, crimes in Chicago, has
+roughly seven million entries and is several gigabytes in memory.  Analyzing
+this sort of dataset interactively with GeoPandas today is not feasible.</p>
+<p><img src="{{BASE_PATH}}/images/geopandas-shapely-1.svg"
+     width="50%"
+     align="right"></p>
+<p>This slow performance is because of how GeoPandas is designed today.  Today
+GeoPandas is a Pandas dataframe with a special <code>object</code>-dtype column that
+stores Shapely geometries.  Shapely geometries are Python objects that provide
+a Python interface and reference to GEOS Geometry objects in C.  GeoPandas
+operations are really just Python for loops over shapely calls so the following
+calls are roughly equivalent:</p>
+<div class="highlight"><pre><span></span>df.geometry.distance(some_point)  # this line is the same as the line below
+[geom.distance(p) for geom in df.geometry]
+</pre></div>
+
+
+<p>Where each <code>geom</code> object in this iteration is an individual Shapely object.
+This is inefficient for two reasons:</p>
+<ol>
+<li>Iterating through these Python objects can be quite slow relative to iterating through those same objects in C.</li>
+<li>Shapely Python objects can take up a significant amount of RAM relative to
+    the GEOS Geometry objects that they wrap.</li>
+</ol>
+<p>In Joris's recent <a href="https://www.youtube.com/watch?v=bWsA2R707BM">EuroSciPy talk</a>
+he compares performance to <a href="http://postgis.net/">PostGIS</a>, the standard
+geospatial plugin for the popular PostgreSQL database (<a href="https://github.com/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_postgis_comparison.ipynb">original notebook</a> with the comparison).  He finds that while
+GeoPandas can often be as expressive as PostGIS it is also much slower.  Here
+is his benchmark query against the NYC census data.</p>
+<h4>PostGIS Query</h4>
+<div class="highlight"><pre><span></span><span class="c1">-- What is the population and racial make-up of the neighborhoods of Manhattan?</span>
+<span class="k">SELECT</span>
+  <span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">neighborhood_name</span><span class="p">,</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">)</span> <span class="k">AS</span> <span class="n">population</span><span class="p">,</span>
+  <span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_white</span><span class="p">)</span> <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span> <span class="k">AS</span> <span class="n">white_pct</span><span class="p">,</span>
+  <span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_black</span><span class="p">)</span> <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span> <span class="k">AS</span> <span class="n">black_pct</span>
+<span class="k">FROM</span> <span class="n">nyc_neighborhoods</span> <span class="k">AS</span> <span class="n">neighborhoods</span>
+<span class="k">JOIN</span> <span class="n">nyc_census_blocks</span> <span class="k">AS</span> <span class="n">census</span>
+<span class="k">ON</span> <span class="n">ST_Intersects</span><span class="p">(</span><span class="n">neighborhoods</span><span class="p">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">census</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">white_pct</span> <span class="k">DESC</span><span class="p">;</span>
+</pre></div>
+
+
+<h4>GeoPandas Code</h4>
+<div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">nyc_neighborhoods</span><span class="p">,</span> <span class="n">nyc_census_blocks</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;intersects&#39;</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;NAME&#39;</span><span class="p">)[[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">res</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Example from <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless tutorial</a> (CC BY SA)</p>
+<p>He observes the following performance comparison.</p>
+<p><img src="{{BASE_PATH}}/images/timings_sjoin.png"></p>
+<p>Fortunately, we can improve upon this both by accelerating GeoPandas with
+Cython, and then by parallelizing it with Dask.</p>
+<h2>Cythonizing GeoPandas</h2>
+<p>Currently the slowdown in GeoPandas is because we iterate over every Shapely
+object in Python, rather than calling the underlying C library GEOS directly.</p>
+<p>So instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>
+like the following image:</p>
+<p><img src="{{BASE_PATH}}/images/geopandas-shapely-1.svg"
+     width="49%"></p>
+<p>We instead store a NumPy array of <em>direct pointers to the GEOS objects</em>.</p>
+<p><img src="{{BASE_PATH}}/images/geopandas-shapely-2.svg"
+     width="49%"></p>
+<p>This allows us to store data more efficiently, and also requires us to now
+write our loops over these geometries in C or Cython.  When we perform bulk
+vectorized operations on many GEOS pointers at once like in the
+<code>df.geometry.distance(some_point)</code> example above we can now drop down to Cython
+or C to write these loops directly, which provides a significant speedup.</p>
+<p>As an example, we include Cython code to compute distance between a GeoSeries
+and an individual shapely object below:</p>
+<div class="highlight"><pre><span></span><span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">left_geom</span>
+<span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">right_geom</span> <span class="o">=</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom__</span>  <span class="c1"># a geometry pointer</span>
+
+<span class="k">with</span> <span class="n">nogil</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">left_geom</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">left_geom</span> <span class="o">!=</span> <span class="n">NULL</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">GEOSDistance_r</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">left_geom</span><span class="p">,</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">NaN</span>
+</pre></div>
+
+
+<p>For more complex operations, like spatial joins, we tend to use C rather than
+Cython just for future development ease.  In both cases we use Cython to
+connect the C code back to Python.</p>
+<h4>Results</h4>
+<p>These operations now run at full C speed, and so we get back to exactly the
+performance of PostGIS.</p>
+<p><img src="{{BASE_PATH}}/images/timings_sjoin_all.png"></p>
+<p>This is not surprising because PostGIS is using the same GEOS library
+internally.  In fact, nearly <em>all</em> open source GIS libraries all depend on
+GEOS.  These algorithms are not particularly complex, so it is not surprising
+that everyone has implemented them more or less exactly the same.</p>
+<p>This is great.  The Python GIS stack now has a full-speed library that operates
+as fast as any other open GIS system is likely to manage.</p>
+<h2>Problems</h2>
+<p>However, this is still a work in progress, and there is still plenty of work
+to do.</p>
+<p>First, we need for Pandas to track our arrays of GEOS pointers differently from
+how it tracks a normal integer array.  This is both for usability reasons, like
+we want to render them differently and don't want users to be able to perform
+numeric operations like sum and mean on these arrays, and also for stability
+reasons, because we need to track these pointers and release their allocated
+GEOSGeometry objects from memory at the appropriate times. Currently, this
+goal is pursued by creating a new block type, the GeometryBlock ('blocks' are
+the internal building blocks of pandas that hold the data of the different columns).
+This will require some changes to Pandas itself to enable custom block types
+(see <a href="https://github.com/pandas-dev/pandas/issues/17144">this issue</a> on the pandas
+issue tracker).</p>
+<p>Second, data ingestion is still quite slow.  This relies not on GEOS, but on
+GDAL/OGR, which is handled in Python today by Fiona.  Fiona is more optimized
+for consistency and usability rather than raw speed.  Previously when GeoPandas
+was slow this made sense because no one was operating on particularly large
+datasets.  However now we observe that data loading is often several times more
+expensive than all of our manipulations so this will probably need some effort
+in the future.</p>
+<p>Third, there are some algorithms within GeoPandas that we haven't yet
+Cythonized.  This includes both particular features like overlay and dissolve
+operations as well as small components like GeoJSON output.</p>
+<p>Finally as with any rewrite on a codebase that is not exhaustively tested
+(we're trying to improve testing as we do this) there are probably several bugs
+that we won't detect until some patient and forgiving user runs into them
+first.</p>
+<p>Still though, all linear geospatial operations work well and are thoroughly
+tested.  Also spatial joins (a backbone of many geospatial operations) are up
+and running at full speed.  If you work in a non-production environment then
+Cythonized GeoPandas may be worth your time to investigate.</p>
+<p>You can track future progress on this effort at
+<a href="https://github.com/geopandas/geopandas/issues/473">geopandas/geopandas #473</a>
+which includes installation instructions.</p>
+<h2>Parallelism with Dask</h2>
+<p>Cythonizing can give us speedups in the 10x-100x range.  We can probably get
+another 2-3x by parallelizing with Dask on single multi-core machines, or use
+Dask to scale out onto clusters.  In order to do this we need to figure out how
+to split apart geospatial data in a way that most geospatial algorithms can be
+efficiently parallelized.  We will do this by partitioning our data spatially
+into different regions.  There is a rudimentary
+<a href="https://github.com/mrocklin/dask-geopandas">dask-geopandas</a> library available
+on GitHub which implements this approach.</p>
+<p>Just as dask.array organizes many NumPy arrays along a grid</p>
+<p><img src="{{BASE_PATH}}/images/dask-array-black-text.svg" width="60%"></p>
+<p>and dask.dataframe organizes many Pandas dataframes along a linear index</p>
+<p><img src="{{BASE_PATH}}/images/dask-dataframe.svg" width="30%"></p>
+<p>Dask-geopandas organizes many GeoPandas dataframes along spatial regions.  In
+the example below we might partition data in the city of New York along its
+different boroughs.  Data for each borough would be handled separately by a
+different thread or, in a distributed situation, might live on a different
+machine.</p>
+<p><img src="{{BASE_PATH}}/images/nyc-boroughs.svg" width="50%"></p>
+<p>This gives us two advantages:</p>
+<ol>
+<li>Even without geospatial partitioning, we can use many cores (or many
+    machines) to accelerate simple operations.</li>
+<li>For spatially aware operations, like spatial joins or subselections we can
+    engage only those parts of the parallel dataframe that we know are relevant
+    for various parts of the computation.</li>
+</ol>
+<h3>Design</h3>
+<p>As mentioned above a Dask GeoDataFrame is a collection of GeoPandas
+GeoDataFrame objects, each associated to a polygon.  Ideally those polygons are
+disjoint, so for any particular query we only need to touch a small number of
+regions.  However in practice they may come to overlap for a few reasons:</p>
+<ol>
+<li>Collections of lines or polygons will necessarily overlap somewhat.  There
+    may not be clean divisions that don't at least partially intersect their
+    constituent elements.</li>
+<li>In common practice we may choose not to partition our data spatially (this
+    can take some time).  In these cases the regions used for spatial
+    partitioning are given infinite extent.</li>
+</ol>
+<h3>Example</h3>
+<p>Given a GeoPandas dataframe</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;...&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>We can repartition it into a Dask-GeoPandas dataframe either naively by rows.
+This does not provide a spatial partitioning and so won't gain the efficiencies
+of spatial reasoning, but will still provide basic multi-core parallelism.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dask_geopandas</span> <span class="kn">as</span> <span class="nn">dg</span>
+<span class="n">ddf</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+
+<p>We can also repartition by a set of known regions.  This suffers an an upfront
+cost of a spatial join, but enables spatial-aware computations in the future to
+be faster.</p>
+<div class="highlight"><pre><span></span><span class="n">regions</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;boundaries.shp&#39;</span><span class="p">)</span>
+
+<span class="n">ddf</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">repartition</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">regions</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Additionally, if you have a distributed dask.dataframe you can pass columns of
+x-y points to the <code>set_geometry</code> method.  Currently this only supports point
+data.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dask.dataframe</span> <span class="kn">as</span> <span class="nn">dd</span>
+<span class="kn">import</span> <span class="nn">dask_geopandas</span> <span class="kn">as</span> <span class="nn">dg</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;...&#39;</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">]])</span>
+</pre></div>
+
+
+<p>TODO: actual experiment</p>
+<h2>Problems</h2>
+<p>The dask-geopandas project is just a prototype at the moment.  It will easily
+break for non-trivial applications (and indeed many trivial ones).  It was
+designed to see how hard it would be to implement some of the trickier
+operations like spatial joins, repartitioning, and overlays.  This is why, for
+example, it supports a fully distributed spatial join, but lacks simple
+operations like series addition.  There are other longer-term issues as well.</p>
+<p>Serialization costs are managable, but decently high.  We currently use the
+standard "well known binary" WKB format common in other geospatial applications
+but have found it to be fairly slow, which bogs down inter-process parallelism.</p>
+<p>Similarly distributed and spatially partitioned data stores don't seem to be
+common (or at least I haven't run across them yet).</p>
+<p>It's not clear how dask-geopandas dataframes and normal dask dataframes should
+interact.  It would be very convenient to reuse all of the algorithms in
+dask.dataframe, but the index structures of the two libraries is very
+different.  This may require some clever software engineering on the part of
+the Dask developers.</p>
+<p>Still though, these seem surmountable and generally this process has been easy
+so far.  I suspect that we can build an intuitive and performant parallel GIS
+analytics system with modest effort.</p>
+<h2>Conclusion</h2>
+<p>With established technologies in the PyData space like Cython and Dask we've
+been able to accelerate and scale GeoPandas operations above and beyond
+industry standards.  However this work is still experimental and not ready for
+production use.  This work is a bit of a side project for both Joris and
+Matthew and they would welcome effort from other experienced open source
+developers.  We believe that this project can have a large social impact and
+are enthusiastic about pursuing it in the future.  We hope that you share our
+enthusiasm.</p>	
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+
+		  </div>	
+		  
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+	            <aside>
+	              <h2>About</h2>
+			      <p>
+                    Pandas core developer. Working at the Paris-Saclay Center for Data Science
+			      </p>
+			    </aside>
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/category/misc.html">misc</a></li>
+	                <li ><a href="/category/review.html">Review</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="https://github.com/jorisvandenbossche/">github</a><i></i></li>
+				    <li><a href="https://twitter.com/jorisvdbossche">twitter</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Joris Van den Bossche - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>	
+
+	</div>
+	
+
+</body>
+</html>
