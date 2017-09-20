@@ -2,19 +2,19 @@
 <html lang="">	
 <head>
 	<meta charset="utf-8"/>
-	<title>GeoPandas developments: improved performance - Joris Van den Bossche</title>	
+	<title>GeoPandas developments: redesign and improved performance using Cython - Joris Van den Bossche</title>	
 	<meta name="author" content="Joris Van den Bossche">
 	
 
-  <meta name="description" content="Short version for index and feeds">
+  <meta name="description" content="In this blogpost I explain the latest developments in the GeoPandas package. Work is ungoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.">
 
 
 
-	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+	<link rel="stylesheet" href="https://jorisvandenbossche.github.io/theme/css/main.css" type="text/css" />
 		
 
 
-    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
+    <link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
 </head>
 	
 <body>
@@ -23,9 +23,9 @@
 	  
 	  <header role="banner">
 	    <div class="feeds">
-	      <a href="/feeds/all.atom.xml" rel="alternate"><img src="/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
+	      <a href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="alternate"><img src="https://jorisvandenbossche.github.io/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
 	    </div>
-		<a href="" class="title">Joris Van den Bossche</a>
+		<a href="https://jorisvandenbossche.github.io" class="title">Joris Van den Bossche</a>
       </header>
 	
 	  <div class="wrapper">
@@ -33,29 +33,30 @@
 		  <div role="main" class="content">
 	<article class="full">
 		
-		<h1>GeoPandas developments: improved performance</h1>
+		<h1>GeoPandas developments: redesign and improved performance using Cython</h1>
 		
 <div class="metadata">
   <time datetime="2017-09-19T20:00:00+02:00" pubdate>di 19 september 2017</time>
     <address class="vcard author">
-      by <a class="url fn" href="/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
+      by <a class="url fn" href="https://jorisvandenbossche.github.io/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
     </address>
-  in <a href="/category/articles.html">articles</a>
-<p class="tags">tagged <a href="/tag/python.html">python</a>, <a href="/tag/geospatial.html">geospatial</a>, <a href="/tag/geopandas.html">geopandas</a>, <a href="/tag/shapely.html">shapely</a></p></div>		
+  in <a href="https://jorisvandenbossche.github.io/category/articles.html">articles</a>
+<p class="tags">tagged <a href="https://jorisvandenbossche.github.io/tag/python.html">python</a>, <a href="https://jorisvandenbossche.github.io/tag/geospatial.html">geospatial</a>, <a href="https://jorisvandenbossche.github.io/tag/geopandas.html">geopandas</a>, <a href="https://jorisvandenbossche.github.io/tag/shapely.html">shapely</a></p></div>		
 		<p><em>This work is a collaboration with <a href="http://matthewrocklin.com/">Matthew Rocklin</a>. This blogpost shows our recent work on the GeoPandas library and is partly based on the <a href="https://www.youtube.com/watch?v=bWsA2R707BM">EuroSciPy talk</a> (<a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">slides</a>) I recently gave on the same topic.</em></p>
-<h2 id="background"><a class="toclink" href="#background">Background</a></h2>
-<p>[intro]</p>
-<p>Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). Python stack.</p>
-<p>The goal of GeoPandas is to make working with geospatial data in python easier. GeoPandas extends the pandas data analysis library to work with geographic objects and spatial operations.</p>
-<!-- PELICAN_END_SUMMARY -->
 
-<p>It combines the capabilities of pandas and shapely, providing geospatial operations in pandas and a high-level interface to multiple geometries to shapely. It further builds upon the capabilities of many other libraries including fiona (reading/writing data), pyproj (projections), rtree (spatial index), ... GeoPandas enables you to easily do operations in python that would otherwise require a spatial database such as PostGIS.</p>
-<p>In this post we focus on GeoPandas, a geospatial extension of Pandas which
-helps to manages tabular data that is annotated with geometry information like
-points, paths, and polygons.</p>
-<h3 id="small-geopandas-demo"><a class="toclink" href="#small-geopandas-demo">Small GeoPandas demo</a></h3>
-<p>For example GeoPandas makes it easy to load and plot the <a href="https://data.cityofchicago.org/Public-Safety/Boundaries-Police-Districts/4dt9-88ua">Police Districts of
-Chicago</a>.</p>
+
+<p>In this blogpost I explain the latest developments in the <a href="http://geopandas.readthedocs.io/en/latest/">GeoPandas</a> package. Work is ungoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.</p>
+
+
+<p>Note: what I show here is <em>not yet</em> available in the released version of GeoPandas.</p>
+<h2 id="what-is-geopandas-used-for"><a class="toclink" href="#what-is-geopandas-used-for">What is GeoPandas used for?</a></h2>
+<!-- [intro]
+Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). Python stack. -->
+
+<p>The goal of <a href="http://geopandas.readthedocs.io/en/latest/">GeoPandas</a> is to make working with geospatial data in python easier. GeoPandas extends the pandas data analysis library to work with tables of geospatially annotated data. GeoPandas enables you to easily do operations in python that would otherwise require a spatial database such as PostGIS.</p>
+<p>GeoPandas combines the capabilities of pandas with Python's 'geospatial stack' (<a href="https://shapely.readthedocs.io/en/stable/">Shapely</a> to manage geometries like points, linestrings, and polygons; <a href="http://toblerity.org/fiona/">Fiona</a> to handle data import and export, ...). This stack consists of packages that provide intuitive Python wrappers around the OSGeo C/C++ libraries (GDAL/OGR, GEOS, ...) which power virtually every open source geospatial library or application, like PostGIS, QGIS, etc.</p>
+<h3 id="small-demo"><a class="toclink" href="#small-demo">Small demo</a></h3>
+<p>For example, we can use GeoPandas to load and plot the <a href="https://opendata.paris.fr/explore/dataset/quartier_paris/">Paris districts</a>:</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;quartier_paris.geojson&quot;</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -132,51 +133,58 @@ Chicago</a>.</p>
 </table>
 </div>
 
-<div class="highlight"><pre><span></span><span class="c1"># determine in which district each stations is located</span>
-<span class="n">stations</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">stations</span><span class="p">,</span> <span class="n">quartiers</span><span class="p">[[</span><span class="s1">&#39;l_qu&#39;</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]],</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;within&#39;</span><span class="p">)</span>
+<p>Now, let's assume we want to know how many stations of the public bicycle sharing system Vélib (<a href="https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/information/">open data</a>) are located in each of the districts. For this, we also load the open data on the bicycle stations, and perform a <em>spatial join</em> with the districts dataframe:</p>
+<div class="highlight"><pre><span></span><span class="c1"># load the bicycle stations information</span>
+<span class="n">stations</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;stations-velib-disponibilites-en-temps-reel.geojson&quot;</span><span class="p">)</span>
+<span class="c1"># spatial join: determine in which district each stations is located</span>
+<span class="n">stations</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">stations</span><span class="p">,</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;l_qu&#39;</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]],</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;within&#39;</span><span class="p">)</span>
 <span class="c1"># count the number of stations per district, and add this information to the</span>
 <span class="c1"># districts dataframe</span>
 <span class="n">counts</span> <span class="o">=</span> <span class="n">stations</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;l_qu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-<span class="n">quartiers</span> <span class="o">=</span> <span class="n">quartiers</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;n_stations&#39;</span><span class="p">))</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;n_stations&#39;</span><span class="p">))</span>
 <span class="c1"># calculate the relative number of bike stations divided by the area</span>
-<span class="n">quartiers</span><span class="p">[</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quartiers</span><span class="p">[</span><span class="s1">&#39;n_stations&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">quartiers</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span>
-<span class="c1">#</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_stations&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span>
+</pre></div>
+
+
+<p>And now we can make a choropleth plot of the districts of Paris based on the number of bicycle stations:</p>
+<div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
 </pre></div>
 
 
-<p><img src="/figures/quartiers-paris-bike-stations.png"></p>
-<p>Full demo notebook see ... from EuroScipy presentation.</p>
-<h2 id="performance-bottlenecks"><a class="toclink" href="#performance-bottlenecks">Performance bottlenecks</a></h2>
-<p>Unfortunately GeoPandas can be slow, which limits interactive exploration on
-larger datasets.  The first dataset mentioned above, crimes in Chicago, has
-roughly seven million entries and is several gigabytes in memory.  Analyzing
-this sort of dataset interactively with GeoPandas today is not feasible.</p>
-<p>This slow performance is because of the current design of GeoPandas. Today
-a GeoDataFrame basically is a pandas dataframe with a special <code>object</code>-dtype column that
+<p><img src="https://jorisvandenbossche.github.io/figures/quartiers-paris-bike-stations.png"></p>
+<p>A larger demo on the basic functionality of GeoPandas, expanding the example above, can be found in this <a href="http://nbviewer.jupyter.org/github/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_demo.ipynb">demo notebook</a> from my recent <a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">EuroScipy presentation</a>.</p>
+<h2 id="current-design-of-geopandas"><a class="toclink" href="#current-design-of-geopandas">Current design of GeoPandas</a></h2>
+<p>Today a GeoDataFrame basically is a pandas dataframe with a special <code>object</code>-dtype column that
 stores Shapely geometries (the 'geometry' column). Shapely geometries are Python objects that provide
-a Python interface and reference to GEOS Geometry objects in C:</p>
-<p><img src="/images/geopandas-shapely-1.svg"
+a Python interface and reference to GEOS Geometry objects in C and provide all the spatial operations:</p>
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
      width="50%"></p>
 <p>The easy-to-use vectorized operations that GeoPandas provides, such as calculating the distance from every geometry in my dataframe to a certain point:</p>
 <div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span>
 </pre></div>
 
 
-<p>is actually simply a small wrapper around Python for loops over shapely calls. So the above method call is roughly equivalent to the following:</p>
-<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">geom</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span> <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
+<p>are actually simply small wrappers around Python for loops over shapely calls. So the above method call is roughly implemented as the following:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">geom</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 
 
-<p>Where each <code>geom</code> object in this iteration is an individual Shapely object.
-This simple design has made GeoPandas a very lightweight and easy-to-develop library, and is possible because GeoPandas can build upon the existing geospatial libraries. But, this simple design has also become a performance bottleneck.</p>
+<p>Where each <code>geom</code> object in this iteration is an individual Shapely object, and the distance method of this Shapely objects calls into the GEOS library.</p>
+<p>This simple design has made GeoPandas a very lightweight and easy-to-develop library, and is possible because GeoPandas can build upon the existing geospatial libraries. But, this simple design has also become a performance bottleneck.</p>
+<h2 id="performance-bottleneck"><a class="toclink" href="#performance-bottleneck">Performance bottleneck</a></h2>
+<p>GeoPandas is slow, which limits its usability for working with larger datasets. This slow performance is because of the current design of GeoPandas shown above: wrapping each geometry (like a point, line, or polygon) with a Shapely object, storing all of those objects in an object-dtype column, and iterating through those objects when performing spatial operations.</p>
 <p>The iteration over the individual Shapely geometries is inefficient for two reasons:</p>
 <ol>
-<li>Iterating in Python can be quite slow relative to iterating through those same objects in C.</li>
-<li>Calling the geospatial operation on the Shapely Python object gives some overhead compared to calling the underlying GEOS C operation directly (additionally, the Shapely python objects can take up a significant amount of RAM relative to the GEOS Geometry objects that they wrap).</li>
+<li>Iterating in Python is slow relative to iterating through those same objects in C.</li>
+<li>Calling the geospatial operation on the Shapely Python object gives overhead compared to calling the underlying GEOS C operation directly.</li>
 </ol>
+<p>Additionally, the Shapely python objects can take up a significant amount of RAM relative to the GEOS Geometry objects that they wrap.</p>
 <h4 id="some-timings"><a class="toclink" href="#some-timings">Some timings</a></h4>
+<p>Let's explore this bad performance with a small benchmark:</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
 <span class="kn">import</span> <span class="nn">random</span>
@@ -186,54 +194,70 @@ This simple design has made GeoPandas a very lightweight and easy-to-develop lib
 </pre></div>
 
 
+<p>We have a GeoSeries of 100,000 points and a single polygon. For those objects we calculate the distance from all the points to the polygon, and whether each point lies within the polygon:</p>
 <div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
 <span class="n">s</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
 </pre></div>
 
 
-<p>Both take roughly 1 second to compute.
-This may not seem that much, but you have to be aware that geospatial datasets quickly become larger than 100,000 points, and that in more complex analyses those basic operations as distances and set operations often are done many times.</p>
+<p>Both of these operations take roughly 1 second to compute.</p>
+<p>This may not seem that much, but you have to be aware that geospatial datasets quickly become larger than 100,000 points, and that in more complex analyses those basic operations such as distance computations and set operations often are done many times.</p>
 <p>Below, I also compare the performance of GeoPandas to <a href="http://postgis.net/">PostGIS</a>, the standard
-geospatial plugin for the popular PostgreSQL database (<a href="https://github.com/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_postgis_comparison.ipynb">original notebook</a> with the comparison). While GeoPandas can often be as expressive as PostGIS, we can see that the current version is also much slower.</p>
+geospatial plugin for the popular PostgreSQL database. While GeoPandas can often be as expressive as PostGIS, we will see that the current version of GeoPandas is also much slower than PostGIS.</p>
 <h2 id="cythonizing-geopandas"><a class="toclink" href="#cythonizing-geopandas">Cythonizing GeoPandas</a></h2>
-<p>Currently the slowdown in GeoPandas is because we iterate over every Shapely
-object in Python, rather than calling the underlying C library GEOS directly.</p>
-<p>Fortunately, we can improve upon this both by accelerating GeoPandas with
-Cython, and then by parallelizing it with Dask.</p>
-<p>So instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>
-like the following image:</p>
-<p><img src="/images/geopandas-shapely-1.svg"
-     width="49%"></p>
-<p>We instead store a NumPy array of <em>direct pointers to the GEOS objects</em>.</p>
-<p><img src="/images/geopandas-shapely-2.svg"
-     width="49%"></p>
-<p>This allows us to store data more efficiently, and also requires us to now
-write our loops over these geometries in C or Cython.  When we perform bulk
-vectorized operations on many GEOS pointers at once like in the
-<code>df.geometry.distance(some_point)</code> example above we can now drop down to Cython
-or C to write these loops directly, which provides a significant speedup.</p>
-<p>As an example, we include Cython code to compute distance between a GeoSeries
-and an individual shapely object below:</p>
-<div class="highlight"><pre><span></span><span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">left_geom</span>
-<span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">right_geom</span> <span class="o">=</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom__</span>  <span class="c1"># a geometry pointer</span>
+<p>Fortunately, we can improve upon this by accelerating GeoPandas using
+Cython to perform the for loops in C and to call the underlying C library GEOS directly.</p>
+<p>As an example, the distance function now looks like the following Cython implementation (some liberties taken for brevity):</p>
+<div class="highlight"><pre><span></span><span class="n">cpdef</span> <span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">cdef</span> <span class="n">double</span><span class="p">[:]</span> <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">left_geom</span>
+    <span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">right_geom</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__geom__</span>  <span class="c1"># a geometry pointer</span>
+    <span class="n">geometries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geometry_array</span>
 
-<span class="k">with</span> <span class="n">nogil</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-        <span class="n">left_geom</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">left_geom</span> <span class="o">!=</span> <span class="n">NULL</span><span class="p">:</span>
-            <span class="n">distance</span> <span class="o">=</span> <span class="n">GEOSDistance_r</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">left_geom</span><span class="p">,</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">distance</span> <span class="o">=</span> <span class="n">NaN</span>
+    <span class="k">with</span> <span class="n">nogil</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">left_geom</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span> <span class="n">geometries</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">left_geom</span> <span class="o">!=</span> <span class="n">NULL</span><span class="p">:</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GEOSDistance_r</span><span class="p">(</span><span class="n">left_geom</span><span class="p">,</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
+    <span class="k">return</span> <span class="n">out</span>
 </pre></div>
 
 
-<p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a>.</p>
-<h2 id="some-benchmarks"><a class="toclink" href="#some-benchmarks">Some benchmarks</a></h2>
-<p>results simple timings above</p>
-<p><img alt="Alt Text" src="/figures/timings_distance_all.png">
-<img alt="Alt Text" src="/figures/timings_within_all.png"></p>
-<p>big improvement. Depending on the exact operation.</p>
+<p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a> on this topic.</p>
+<h2 id="new-geopandas-design"><a class="toclink" href="#new-geopandas-design">New GeoPandas design</a></h2>
+<p>To use such cython implementations of the spatial operations, we redesigned the internals of GeoPandas.
+Instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>,
+we instead store a NumPy array of <em>direct pointers to the GEOS objects</em> (images by Matthew Rocklin).</p>
+<p><strong>Before</strong></p>
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
+     width="49%"></p>
+<p><strong>After</strong></p>
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-2.svg"
+     width="49%"></p>
+<p>This allows us to store data more efficiently, and also allows us to now
+write our loops over these geometries in C or Cython.  When we perform bulk
+vectorized operations on many GEOS pointers at once, dropping down to Cython
+or C to write these loops directly provides a significant speedup.</p>
+<p>To summarize, we created a numpy array-like object, which we call the <code>GeometryArray</code>, to hold geometry objects:</p>
+<ul>
+<li>It only stores integer pointers to the C GEOS geometry objects, without wrapping every geometry in Python shapely objects.</li>
+<li>Operations on the array iterate through those pointers in C / Cython.</li>
+<li>The geometries are wrapped into Python shapely objects on access.</li>
+</ul>
+<h2 id="new-benchmarks"><a class="toclink" href="#new-benchmarks">New benchmarks</a></h2>
+<p>When we run the same simple benchmarks from <a href="#some-timings">above</a>, we get the following speed-up with the new implementation:</p>
+<p><img src="https://jorisvandenbossche.github.io/figures/timings_distance_all.png" width="49%">
+<img src="https://jorisvandenbossche.github.io/figures/timings_within_all.png" width="49%"></p>
+<p>This shows a big improvement, depending on the exact operation. For the within operation, we get a 70x speed-up for this example.</p>
+<!-- TODO exact numbers -->
+
 <h4 id="comparison-to-postgis"><a class="toclink" href="#comparison-to-postgis">Comparison to PostGIS</a></h4>
+<p>The above benchmark are timings for basic operations, but let's see what speed-up we see for more complex operations.
+To this end, I have taken an example of a spatial join from the <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless PostGIS tutorial</a> (CC BY SA). <a href="http://postgis.net/">PostGIS</a> is the standard
+geospatial plugin for the popular PostgreSQL database, and also uses the GEOS library under the hood.</p>
 <p><strong>PostGIS Query</strong></p>
 <div class="highlight"><pre><span></span><span class="c1">-- What is the population and racial make-up of the neighborhoods of Manhattan?</span>
 <span class="k">SELECT</span>
@@ -257,45 +281,49 @@ and an individual shapely object below:</p>
 </pre></div>
 
 
-<p>Example from <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless tutorial</a> (CC BY SA)</p>
-<p>These operations now run at full C speed, and so we get back to exactly the
-performance of PostGIS.</p>
-<p><img src="/figures/timings_sjoin_all.png"></p>
-<p>This is not surprising because PostGIS is using the same GEOS library
-internally.  In fact, nearly <em>all</em> open source GIS libraries all depend on
-GEOS.  These algorithms are not particularly complex, so it is not surprising
-that everyone has implemented them more or less exactly the same.</p>
-<p>This is great.  The Python GIS stack now has a full-speed library that operates
-as fast as any other open GIS system is likely to manage.</p>
+<p>The full code example can be found in <a href="https://github.com/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_postgis_comparison.ipynb">this notebook</a>. <strong>DISCLAIMER</strong>: this is just a dummy comparison and no real performance benchmark, and I am not a PostGIS expert.</p>
+<p>Timing this spatial join with both PostGIS and the current and cythonized GeoPandas, we get the following result:</p>
+<p><center>
+<img src="https://jorisvandenbossche.github.io/figures/timings_sjoin_all.png">
+</center></p>
+<p>We can see that the new implementation gives a nice speed-up compared to the current GeoPandas, ánd is now also comparable to the performance of PostGIS.
+This is not surprising because PostGIS is using the same GEOS library
+internally.</p>
 <h2 id="outlook"><a class="toclink" href="#outlook">Outlook</a></h2>
-<p>Some promising results, but this is still a work in progress, and there is still plenty of work
-to do.</p>
-<p>Challenges / problems to tackle:</p>
+<p>In this blog post I have shown some promising results, but we have to emphasize this is still a work in progress and there is plenty of work to do. Some of the issues we have to tackle:</p>
 <ul>
 <li>Robust integration with pandas</li>
 <li>Slow data ingestion (currently based on Fiona, wrapper around GDAL/OGR)</li>
 <li>Re-implementing algorithms such as spatial overlays (spatial joins already done in C, directly interfacing GEOS and wrapped in cython to use in GeoPandas)</li>
 <li>Battle testing!</li>
 </ul>
-<p>To elaborate on the first item:</p>
-<p>First, we need for Pandas to track our arrays of GEOS pointers differently from
+<p>To elaborate on the first item about <em>integration with Pandas</em>: we need for Pandas to track our arrays of GEOS pointers differently from
 how it tracks a normal integer array.  This is both for usability reasons, like
 we want to render them differently and don't want users to be able to perform
 numeric operations like sum and mean on these arrays, and also for stability
 reasons, because we need to track these pointers and release their allocated
-GEOSGeometry objects from memory at the appropriate times. Currently, this
-goal is pursued by creating a new block type, the GeometryBlock ('blocks' are
+GEOSGeometry objects from memory at the appropriate times.</p>
+<p>Currently, this
+goal is pursued by creating a new block type, the <code>GeometryBlock</code> ('blocks' are
 the internal building blocks of pandas that hold the data of the different columns).
 This will require some changes to Pandas itself to enable custom block types
 (see <a href="https://github.com/pandas-dev/pandas/issues/17144">this issue</a> on the pandas
 issue tracker).</p>
-<p>But also promises: apart from improved speed-up, also memory improvement + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -&gt; exploration of this)</p>
-<p><code>GeometryArray</code> concept might be more broadly useful that just for pandas. If you have such use cases, we would love to hear about that!</p>
-<h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out</a></h3>
-<p>You can track future progress on this effort at
-<a href="https://github.com/geopandas/geopandas/issues/473">geopandas/geopandas #473</a>
-which includes installation instructions.</p>
-<p>Feedback -&gt; github</p>	
+<p>But next to the challenges, the cythonized GeoPandas version also promises: a speed-up, a memory improvement, and it makes it more feasible to experiment with using GeoPandas with Dask to <strong>parallelize or distribute geospatial analyses</strong>. See companion blogpost of Matthew Rocklin.</p>
+<!-- + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -> exploration of this) -->
+
+<p>Last, the <code>GeometryArray</code> concept might be more broadly useful that just for GeoPandas. If you have such use cases, we would love to hear about that!</p>
+<h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out!</a></h3>
+<p>We would love you to try out the new cythonized GeoPandas version, test it on some real use cases and provide feedback.</p>
+<p>Installing the new version currently requires building it from source with Cython. However, if you already have the released version of GeoPandas installed, Cython should be the only additional dependency (the GEOS library to build against should then already be installed). And in that case, the following steps should suffice:</p>
+<div class="highlight"><pre><span></span>git clone https://github.com/geopandas/geopandas
+git checkout geopandas-cython
+make install
+</pre></div>
+
+
+<p>You can find more information and track future progress on this effort at
+<a href="https://github.com/geopandas/geopandas/issues/473">geopandas/geopandas #473</a>. Also feedback can be posted there, and if you have troubles while trying it out, don't hesitate to ask questions at the <a href="https://gitter.im/geopandas/geopandas">geopandas gitter channel</a>.</p>	
 
 	</article>
 
@@ -320,7 +348,7 @@ which includes installation instructions.</p>
   	          <nav>
 	            <h2>Categories</h2>
 	            <ul>
-	                <li class="active"><a href="/category/articles.html">articles</a></li>
+	                <li class="active"><a href="https://jorisvandenbossche.github.io/category/articles.html">articles</a></li>
 	            </ul>
 	          </nav>
 
