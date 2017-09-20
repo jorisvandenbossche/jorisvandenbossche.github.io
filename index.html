@@ -1,157 +1,351 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!doctype html>
+<html lang="">	
 <head>
-  <!-- ## for client-side less
-  <link rel="stylesheet/less" type="text/css" href="https://jorisvandenbossche.github.io/theme/css/style.less">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.3/less.min.js" type="text/javascript"></script>
-  -->
-  <link rel="icon" type="image/vnd.microsoft.icon" href="https://jorisvandenbossche.github.io/">
-  <link rel="stylesheet" type="text/css" href="https://jorisvandenbossche.github.io/theme/css/style.min.css">
-  <link rel="stylesheet" type="text/css" href="https://jorisvandenbossche.github.io/theme/css/pygments.css">
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto+Mono">
-  <link rel="stylesheet" type="text/css" href="https://jorisvandenbossche.github.io/theme/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="https://jorisvandenbossche.github.io/theme/css/hatena-bookmark-icon.css">
+	<meta charset="utf-8"/>
+	<title>Joris Van den Bossche</title>	
+	<meta name="author" content="Joris Van den Bossche">
+	
+
+	<link rel="stylesheet" href="https://jorisvandenbossche.github.io/theme/css/main.css" type="text/css" />
+		
 
 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="author" content="Joris Van den Bossche">
-  <meta name="description" content="Posts and writings by Joris Van den Bossche">
-
-  <link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom" />
-
-
-  <title>
-    Joris Van den Bossche
-  </title>
-
+    <link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
 </head>
-
+	
 <body>
-  <main>
-    <header>
-      <div class="site-name">
-        <a href="https://jorisvandenbossche.github.io">Joris Van den Bossche</a>
-      </div>
-      <p>
-        <a href="https://jorisvandenbossche.github.io/archives.html"><i class="fa fa-archive"></i> Archive</a>
-      </p>
-    </header>
 
-<article>
-  <div class="article__title">
-    <h1><a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/">GeoPandas developments: improved performance</a></h1>
-  </div>
-  <div class="article__meta">
-    <p class="article__meta__post-date">Posted on: di 19 september 2017</p>
- Tags:
-      <a href="https://jorisvandenbossche.github.io/tag/python.html">#python</a>,      <a href="https://jorisvandenbossche.github.io/tag/geospatial.html">#geospatial</a>,      <a href="https://jorisvandenbossche.github.io/tag/geopandas.html">#geopandas</a>,      <a href="https://jorisvandenbossche.github.io/tag/shapely.html">#shapely</a>    </p>
-  </div>
-  <div class="article__text">
-    <p>Short version for index and feeds</p>
-  </div>
-</article>
-<hr />
-<article>
-  <div class="article__title">
-    <h1><a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">Vectorized shapely operations using Cython</a></h1>
-  </div>
-  <div class="article__meta">
-    <p class="article__meta__post-date">Posted on: za 18 maart 2017</p>
- Tags:
-      <a href="https://jorisvandenbossche.github.io/tag/python.html">#python</a>,      <a href="https://jorisvandenbossche.github.io/tag/geospatial.html">#geospatial</a>,      <a href="https://jorisvandenbossche.github.io/tag/shapely.html">#shapely</a>,      <a href="https://jorisvandenbossche.github.io/tag/cython.html">#cython</a>,      <a href="https://jorisvandenbossche.github.io/tag/geopandas.html">#geopandas</a>    </p>
-  </div>
-  <div class="article__text">
-    <style type="text/css">/*!
-*
-* IPython notebook
-*
-*/
-/* CSS font colors for translated ANSI colors. */
-.ansibold {
-  font-weight: bold;
-}
-/* use dark versions for foreground, to improve visibility */
-.ansiblack {
-  color: black;
-}
-.ansired {
-  color: darkred;
-}
-.ansigreen {
-  color: darkgreen;
-}
-.ansiyellow {
-  color: #c4a000;
-}
-.ansiblue {
-  color: darkblue;
-}
-.ansipurple {
-  color: darkviolet;
-}
-.ansicyan {
-  color: steelblue;
-}
-.ansigray {
-  color: gray;
-}
-/* and light for background, for the …</style>
-  </div>
-</article>
+    <div class="container">
+	  
+	  <header role="banner">
+	    <div class="feeds">
+	      <a href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="alternate"><img src="https://jorisvandenbossche.github.io/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
+	    </div>
+		<a href="https://jorisvandenbossche.github.io" class="title">Joris Van den Bossche</a>
+      </header>
+	
+	  <div class="wrapper">
 
-<div class="pagination">
-    <ul>
-        <li class="pagination__prev">
-            <div class="pagination__prev--none">&laquo;</div>
-        </li>
+		  <div role="main" class="content">
 
 
 
-          <li>
-            <a class="pagination__page--current" href="https://jorisvandenbossche.github.io/index.html">1</a>
-          </li>
+      <article>
+        <h1><a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/">GeoPandas developments: improved performance</a></h1>
+        <p><em>This work is a collaboration with <a href="http://matthewrocklin.com/">Matthew Rocklin</a>. This blogpost shows our recent work on the GeoPandas library and is partly based on the <a href="https://www.youtube.com/watch?v=bWsA2R707BM">EuroSciPy talk</a> (<a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">slides</a>) I recently gave on the same topic.</em></p>
+<h2 id="background"><a class="toclink" href="#background">Background</a></h2>
+<p>[intro]</p>
+<p>Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). Python stack.</p>
+<p>The goal of GeoPandas is to make working with geospatial data in python easier. GeoPandas extends the pandas data analysis library to work with geographic objects and spatial operations.</p>
+<!-- PELICAN_END_SUMMARY -->
 
-        <li class="pagination__next">
-            <div class="pagination__next--none">&raquo;</div>
-        </li>
-    </ul>
+<p>It combines the capabilities of pandas and shapely, providing geospatial operations in pandas and a high-level interface to multiple geometries to shapely. It further builds upon the capabilities of many other libraries including fiona (reading/writing data), pyproj (projections), rtree (spatial index), ... GeoPandas enables you to easily do operations in python that would otherwise require a spatial database such as PostGIS.</p>
+<p>In this post we focus on GeoPandas, a geospatial extension of Pandas which
+helps to manages tabular data that is annotated with geometry information like
+points, paths, and polygons.</p>
+<h3 id="small-geopandas-demo"><a class="toclink" href="#small-geopandas-demo">Small GeoPandas demo</a></h3>
+<p>For example GeoPandas makes it easy to load and plot the <a href="https://data.cityofchicago.org/Public-Safety/Boundaries-Police-Districts/4dt9-88ua">Police Districts of
+Chicago</a>.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;quartier_paris.geojson&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>objectid</th>
+      <th>c_qu</th>
+      <th>l_qu</th>
+      <th>c_ar</th>
+      <th>geometry</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>29</td>
+      <td>47</td>
+      <td>Bercy</td>
+      <td>12</td>
+      <td>POLYGON ((2.391141037839471 48.82611264577471,...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>41</td>
+      <td>1</td>
+      <td>St-Germain-l'Auxerrois</td>
+      <td>1</td>
+      <td>POLYGON ((2.344593389828428 48.85404991486192,...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>79</td>
+      <td>76</td>
+      <td>Combat</td>
+      <td>19</td>
+      <td>POLYGON ((2.388343313526396 48.88056667377272,...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>68</td>
+      <td>65</td>
+      <td>Ternes</td>
+      <td>17</td>
+      <td>POLYGON ((2.295039618663717 48.87377869547587,...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>50</td>
+      <td>10</td>
+      <td>Enfants-Rouges</td>
+      <td>3</td>
+      <td>POLYGON ((2.367101341254551 48.86162755885409,...</td>
+    </tr>
+  </tbody>
+</table>
 </div>
 
-  </main>
-    <footer>
-      <div class="author__logo">
-          <img src="https://jorisvandenbossche.github.io/theme/images/logo.png" alt="logo">
-      </div>
-      <section class="author">
-        <div class="author__name">
-          <a href="https://jorisvandenbossche.github.io/pages/about.html">Joris Van den Bossche</a>
-          <p></p>
+<div class="highlight"><pre><span></span><span class="c1"># determine in which district each stations is located</span>
+<span class="n">stations</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">stations</span><span class="p">,</span> <span class="n">quartiers</span><span class="p">[[</span><span class="s1">&#39;l_qu&#39;</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]],</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;within&#39;</span><span class="p">)</span>
+<span class="c1"># count the number of stations per district, and add this information to the</span>
+<span class="c1"># districts dataframe</span>
+<span class="n">counts</span> <span class="o">=</span> <span class="n">stations</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;l_qu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">quartiers</span> <span class="o">=</span> <span class="n">quartiers</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;n_stations&#39;</span><span class="p">))</span>
+<span class="c1"># calculate the relative number of bike stations divided by the area</span>
+<span class="n">quartiers</span><span class="p">[</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">quartiers</span><span class="p">[</span><span class="s1">&#39;n_stations&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">quartiers</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span>
+<span class="c1">#</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+</pre></div>
+
+
+<p><img src="https://jorisvandenbossche.github.io/figures/quartiers-paris-bike-stations.png"></p>
+<p>Full demo notebook see ... from EuroScipy presentation.</p>
+<h2 id="performance-bottlenecks"><a class="toclink" href="#performance-bottlenecks">Performance bottlenecks</a></h2>
+<p>Unfortunately GeoPandas can be slow, which limits interactive exploration on
+larger datasets.  The first dataset mentioned above, crimes in Chicago, has
+roughly seven million entries and is several gigabytes in memory.  Analyzing
+this sort of dataset interactively with GeoPandas today is not feasible.</p>
+<p>This slow performance is because of the current design of GeoPandas. Today
+a GeoDataFrame basically is a pandas dataframe with a special <code>object</code>-dtype column that
+stores Shapely geometries (the 'geometry' column). Shapely geometries are Python objects that provide
+a Python interface and reference to GEOS Geometry objects in C:</p>
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
+     width="50%"></p>
+<p>The easy-to-use vectorized operations that GeoPandas provides, such as calculating the distance from every geometry in my dataframe to a certain point:</p>
+<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span>
+</pre></div>
+
+
+<p>is actually simply a small wrapper around Python for loops over shapely calls. So the above method call is roughly equivalent to the following:</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">geom</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span> <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Where each <code>geom</code> object in this iteration is an individual Shapely object.
+This simple design has made GeoPandas a very lightweight and easy-to-develop library, and is possible because GeoPandas can build upon the existing geospatial libraries. But, this simple design has also become a performance bottleneck.</p>
+<p>The iteration over the individual Shapely geometries is inefficient for two reasons:</p>
+<ol>
+<li>Iterating in Python can be quite slow relative to iterating through those same objects in C.</li>
+<li>Calling the geospatial operation on the Shapely Python object gives some overhead compared to calling the underlying GEOS C operation directly (additionally, the Shapely python objects can take up a significant amount of RAM relative to the GEOS Geometry objects that they wrap).</li>
+</ol>
+<h4 id="some-timings"><a class="toclink" href="#some-timings">Some timings</a></h4>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100000</span><span class="p">)])</span>
+<span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">([(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Both take roughly 1 second to compute.
+This may not seem that much, but you have to be aware that geospatial datasets quickly become larger than 100,000 points, and that in more complex analyses those basic operations as distances and set operations often are done many times.</p>
+<p>Below, I also compare the performance of GeoPandas to <a href="http://postgis.net/">PostGIS</a>, the standard
+geospatial plugin for the popular PostgreSQL database (<a href="https://github.com/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_postgis_comparison.ipynb">original notebook</a> with the comparison). While GeoPandas can often be as expressive as PostGIS, we can see that the current version is also much slower.</p>
+<h2 id="cythonizing-geopandas"><a class="toclink" href="#cythonizing-geopandas">Cythonizing GeoPandas</a></h2>
+<p>Currently the slowdown in GeoPandas is because we iterate over every Shapely
+object in Python, rather than calling the underlying C library GEOS directly.</p>
+<p>Fortunately, we can improve upon this both by accelerating GeoPandas with
+Cython, and then by parallelizing it with Dask.</p>
+<p>So instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>
+like the following image:</p>
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
+     width="49%"></p>
+<p>We instead store a NumPy array of <em>direct pointers to the GEOS objects</em>.</p>
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-2.svg"
+     width="49%"></p>
+<p>This allows us to store data more efficiently, and also requires us to now
+write our loops over these geometries in C or Cython.  When we perform bulk
+vectorized operations on many GEOS pointers at once like in the
+<code>df.geometry.distance(some_point)</code> example above we can now drop down to Cython
+or C to write these loops directly, which provides a significant speedup.</p>
+<p>As an example, we include Cython code to compute distance between a GeoSeries
+and an individual shapely object below:</p>
+<div class="highlight"><pre><span></span><span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">left_geom</span>
+<span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">right_geom</span> <span class="o">=</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom__</span>  <span class="c1"># a geometry pointer</span>
+
+<span class="k">with</span> <span class="n">nogil</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">left_geom</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">left_geom</span> <span class="o">!=</span> <span class="n">NULL</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">GEOSDistance_r</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">left_geom</span><span class="p">,</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">NaN</span>
+</pre></div>
+
+
+<p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a>.</p>
+<h2 id="some-benchmarks"><a class="toclink" href="#some-benchmarks">Some benchmarks</a></h2>
+<p>results simple timings above</p>
+<p><img alt="Alt Text" src="https://jorisvandenbossche.github.io/figures/timings_distance_all.png">
+<img alt="Alt Text" src="https://jorisvandenbossche.github.io/figures/timings_within_all.png"></p>
+<p>big improvement. Depending on the exact operation.</p>
+<h4 id="comparison-to-postgis"><a class="toclink" href="#comparison-to-postgis">Comparison to PostGIS</a></h4>
+<p><strong>PostGIS Query</strong></p>
+<div class="highlight"><pre><span></span><span class="c1">-- What is the population and racial make-up of the neighborhoods of Manhattan?</span>
+<span class="k">SELECT</span>
+  <span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">neighborhood_name</span><span class="p">,</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">)</span> <span class="k">AS</span> <span class="n">population</span><span class="p">,</span>
+  <span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_white</span><span class="p">)</span> <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span> <span class="k">AS</span> <span class="n">white_pct</span><span class="p">,</span>
+  <span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_black</span><span class="p">)</span> <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span> <span class="k">AS</span> <span class="n">black_pct</span>
+<span class="k">FROM</span> <span class="n">nyc_neighborhoods</span> <span class="k">AS</span> <span class="n">neighborhoods</span>
+<span class="k">JOIN</span> <span class="n">nyc_census_blocks</span> <span class="k">AS</span> <span class="n">census</span>
+<span class="k">ON</span> <span class="n">ST_Intersects</span><span class="p">(</span><span class="n">neighborhoods</span><span class="p">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">census</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">white_pct</span> <span class="k">DESC</span><span class="p">;</span>
+</pre></div>
+
+
+<p><strong>GeoPandas Code</strong></p>
+<div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">nyc_neighborhoods</span><span class="p">,</span> <span class="n">nyc_census_blocks</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;intersects&#39;</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;NAME&#39;</span><span class="p">)[[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">res</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Example from <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless tutorial</a> (CC BY SA)</p>
+<p>These operations now run at full C speed, and so we get back to exactly the
+performance of PostGIS.</p>
+<p><img src="https://jorisvandenbossche.github.io/figures/timings_sjoin_all.png"></p>
+<p>This is not surprising because PostGIS is using the same GEOS library
+internally.  In fact, nearly <em>all</em> open source GIS libraries all depend on
+GEOS.  These algorithms are not particularly complex, so it is not surprising
+that everyone has implemented them more or less exactly the same.</p>
+<p>This is great.  The Python GIS stack now has a full-speed library that operates
+as fast as any other open GIS system is likely to manage.</p>
+<h2 id="outlook"><a class="toclink" href="#outlook">Outlook</a></h2>
+<p>Some promising results, but this is still a work in progress, and there is still plenty of work
+to do.</p>
+<p>Challenges / problems to tackle:</p>
+<ul>
+<li>Robust integration with pandas</li>
+<li>Slow data ingestion (currently based on Fiona, wrapper around GDAL/OGR)</li>
+<li>Re-implementing algorithms such as spatial overlays (spatial joins already done in C, directly interfacing GEOS and wrapped in cython to use in GeoPandas)</li>
+<li>Battle testing!</li>
+</ul>
+<p>To elaborate on the first item:</p>
+<p>First, we need for Pandas to track our arrays of GEOS pointers differently from
+how it tracks a normal integer array.  This is both for usability reasons, like
+we want to render them differently and don't want users to be able to perform
+numeric operations like sum and mean on these arrays, and also for stability
+reasons, because we need to track these pointers and release their allocated
+GEOSGeometry objects from memory at the appropriate times. Currently, this
+goal is pursued by creating a new block type, the GeometryBlock ('blocks' are
+the internal building blocks of pandas that hold the data of the different columns).
+This will require some changes to Pandas itself to enable custom block types
+(see <a href="https://github.com/pandas-dev/pandas/issues/17144">this issue</a> on the pandas
+issue tracker).</p>
+<p>But also promises: apart from improved speed-up, also memory improvement + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -&gt; exploration of this)</p>
+<p><code>GeometryArray</code> concept might be more broadly useful that just for pandas. If you have such use cases, we would love to hear about that!</p>
+<h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out</a></h3>
+<p>You can track future progress on this effort at
+<a href="https://github.com/geopandas/geopandas/issues/473">geopandas/geopandas #473</a>
+which includes installation instructions.</p>
+<p>Feedback -&gt; github</p>
+      </article>
+
+      <hr />
+
+        <div>
+          <h3>Last posts</h3>
+          <ol class="archive">
+    
+
+
+      <li>
+<a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/" rel="bookmark" title="Permalink to Vectorized shapely operations using Cython">Vectorized shapely operations using Cython</a>
+  <time datetime="2017-03-18T09:00:00+01:00" pubdate>za 18 maart 2017</time>
+<p class="tags">tags: <a href="https://jorisvandenbossche.github.io/tag/python.html">python</a><a href="https://jorisvandenbossche.github.io/tag/geospatial.html">geospatial</a><a href="https://jorisvandenbossche.github.io/tag/shapely.html">shapely</a><a href="https://jorisvandenbossche.github.io/tag/cython.html">cython</a><a href="https://jorisvandenbossche.github.io/tag/geopandas.html">geopandas</a></p></a>      </li>
+
+
+          </ol>
         </div>
-        <div class="author__link">
-          <ul>
-            <li>
-              <a href="https://github.com/jorisvandenbossche/" target="_blank" title="github">
-                <i class="fa fa-github-square"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://twitter.com/jorisvdbossche" target="_blank" title="twitter">
-                <i class="fa fa-twitter-square"></i>
-              </a>
-            </li>
-            <li>
-              <a href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" target="_blank" title="Feed">
-                <i class="fa fa-rss"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-      <div class="ending-message">
-        <p>&copy; Joris Van den Bossche. Powered by <a href="http://getpelican.com" target="_blank">Pelican</a>, Theme is using <a href="https://github.com/laughk/pelican-hss" target="_blank">HSS</a>. </p>
-      </div>
-    </footer>
+
+		  </div>	
+		  
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+	            <aside>
+	              <h2>About</h2>
+			      <p>
+                    Pandas core developer. Working at the Paris-Saclay Center for Data Science
+			      </p>
+			    </aside>
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="https://jorisvandenbossche.github.io/category/articles.html">articles</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="https://github.com/jorisvandenbossche/">github</a><i></i></li>
+				    <li><a href="https://twitter.com/jorisvdbossche">twitter</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Joris Van den Bossche - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>	
+
+	</div>
+	
+
 </body>
 </html>
