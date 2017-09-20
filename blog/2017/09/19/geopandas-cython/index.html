@@ -10,11 +10,11 @@
 
 
 
-	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+	<link rel="stylesheet" href="https://jorisvandenbossche.github.io/theme/css/main.css" type="text/css" />
 		
 
 
-    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
+    <link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
 </head>
 	
 <body>
@@ -23,9 +23,9 @@
 	  
 	  <header role="banner">
 	    <div class="feeds">
-	      <a href="/feeds/all.atom.xml" rel="alternate"><img src="/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
+	      <a href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="alternate"><img src="https://jorisvandenbossche.github.io/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
 	    </div>
-		<a href="" class="title">Joris Van den Bossche</a>
+		<a href="https://jorisvandenbossche.github.io" class="title">Joris Van den Bossche</a>
       </header>
 	
 	  <div class="wrapper">
@@ -38,12 +38,12 @@
 <div class="metadata">
   <time datetime="2017-09-19T20:00:00+02:00" pubdate>di 19 september 2017</time>
     <address class="vcard author">
-      by <a class="url fn" href="/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
+      by <a class="url fn" href="https://jorisvandenbossche.github.io/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
     </address>
-  in <a href="/category/misc.html">misc</a>
-<p class="tags">tagged <a href="/tag/python.html">python</a>, <a href="/tag/geospatial.html">geospatial</a>, <a href="/tag/geopandas.html">geopandas</a>, <a href="/tag/shapely.html">shapely</a></p></div>		
+  in <a href="https://jorisvandenbossche.github.io/category/misc.html">misc</a>
+<p class="tags">tagged <a href="https://jorisvandenbossche.github.io/tag/python.html">python</a>, <a href="https://jorisvandenbossche.github.io/tag/geospatial.html">geospatial</a>, <a href="https://jorisvandenbossche.github.io/tag/geopandas.html">geopandas</a>, <a href="https://jorisvandenbossche.github.io/tag/shapely.html">shapely</a></p></div>		
 		<p><em>This work is a collaboration with <a href="http://matthewrocklin.com/">Matthew Rocklin</a>. This blogpost shows our recent work on the GeoPandas library and is partly based on the <a href="https://www.youtube.com/watch?v=bWsA2R707BM">EuroSciPy talk</a> (<a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">slides</a>) I recently gave on the same topic.</em></p>
-<h2>Background</h2>
+<h2 id="background"><a class="toclink" href="#background">Background</a></h2>
 <p>[intro]</p>
 <p>Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). Python stack.</p>
 <p>The goal of GeoPandas is to make working with geospatial data in python easier. GeoPandas extends the pandas data analysis library to work with geographic objects and spatial operations.</p>
@@ -53,7 +53,7 @@
 <p>In this post we focus on GeoPandas, a geospatial extension of Pandas which
 helps to manages tabular data that is annotated with geometry information like
 points, paths, and polygons.</p>
-<h3>Small GeoPandas demo</h3>
+<h3 id="small-geopandas-demo"><a class="toclink" href="#small-geopandas-demo">Small GeoPandas demo</a></h3>
 <p>For example GeoPandas makes it easy to load and plot the <a href="https://data.cityofchicago.org/Public-Safety/Boundaries-Police-Districts/4dt9-88ua">Police Districts of
 Chicago</a>.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
@@ -146,9 +146,9 @@ Chicago</a>.</p>
 </pre></div>
 
 
-<p><img src="/figures/quartiers-paris-bike-stations.png"></p>
+<p><img src="https://jorisvandenbossche.github.io/figures/quartiers-paris-bike-stations.png"></p>
 <p>Full demo notebook see ... from EuroScipy presentation.</p>
-<h2>Performance bottlenecks</h2>
+<h2 id="performance-bottlenecks"><a class="toclink" href="#performance-bottlenecks">Performance bottlenecks</a></h2>
 <p>Unfortunately GeoPandas can be slow, which limits interactive exploration on
 larger datasets.  The first dataset mentioned above, crimes in Chicago, has
 roughly seven million entries and is several gigabytes in memory.  Analyzing
@@ -157,7 +157,7 @@ this sort of dataset interactively with GeoPandas today is not feasible.</p>
 a GeoDataFrame basically is a pandas dataframe with a special <code>object</code>-dtype column that
 stores Shapely geometries (the 'geometry' column). Shapely geometries are Python objects that provide
 a Python interface and reference to GEOS Geometry objects in C:</p>
-<p><img src="/images/geopandas-shapely-1.svg"
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
      width="50%"></p>
 <p>The easy-to-use vectorized operations that GeoPandas provides, such as calculating the distance from every geometry in my dataframe to a certain point:</p>
 <div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span>
@@ -176,7 +176,7 @@ This simple design has made GeoPandas a very lightweight and easy-to-develop lib
 <li>Iterating in Python can be quite slow relative to iterating through those same objects in C.</li>
 <li>Calling the geospatial operation on the Shapely Python object gives some overhead compared to calling the underlying GEOS C operation directly (additionally, the Shapely python objects can take up a significant amount of RAM relative to the GEOS Geometry objects that they wrap).</li>
 </ol>
-<h4>Some timings</h4>
+<h4 id="some-timings"><a class="toclink" href="#some-timings">Some timings</a></h4>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
 <span class="kn">import</span> <span class="nn">random</span>
@@ -195,17 +195,17 @@ This simple design has made GeoPandas a very lightweight and easy-to-develop lib
 This may not seem that much, but you have to be aware that geospatial datasets quickly become larger than 100,000 points, and that in more complex analyses those basic operations as distances and set operations often are done many times.</p>
 <p>Below, I also compare the performance of GeoPandas to <a href="http://postgis.net/">PostGIS</a>, the standard
 geospatial plugin for the popular PostgreSQL database (<a href="https://github.com/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_postgis_comparison.ipynb">original notebook</a> with the comparison). While GeoPandas can often be as expressive as PostGIS, we can see that the current version is also much slower.</p>
-<h2>Cythonizing GeoPandas</h2>
+<h2 id="cythonizing-geopandas"><a class="toclink" href="#cythonizing-geopandas">Cythonizing GeoPandas</a></h2>
 <p>Currently the slowdown in GeoPandas is because we iterate over every Shapely
 object in Python, rather than calling the underlying C library GEOS directly.</p>
 <p>Fortunately, we can improve upon this both by accelerating GeoPandas with
 Cython, and then by parallelizing it with Dask.</p>
 <p>So instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>
 like the following image:</p>
-<p><img src="/images/geopandas-shapely-1.svg"
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
      width="49%"></p>
 <p>We instead store a NumPy array of <em>direct pointers to the GEOS objects</em>.</p>
-<p><img src="/images/geopandas-shapely-2.svg"
+<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-2.svg"
      width="49%"></p>
 <p>This allows us to store data more efficiently, and also requires us to now
 write our loops over these geometries in C or Cython.  When we perform bulk
@@ -227,13 +227,13 @@ and an individual shapely object below:</p>
 </pre></div>
 
 
-<p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a>.</p>
-<h2>Some benchmarks</h2>
+<p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a>.</p>
+<h2 id="some-benchmarks"><a class="toclink" href="#some-benchmarks">Some benchmarks</a></h2>
 <p>results simple timings above</p>
-<p><img alt="Alt Text" src="/figures/timings_distance_all.png">
-<img alt="Alt Text" src="/figures/timings_within_all.png"></p>
+<p><img alt="Alt Text" src="https://jorisvandenbossche.github.io/figures/timings_distance_all.png">
+<img alt="Alt Text" src="https://jorisvandenbossche.github.io/figures/timings_within_all.png"></p>
 <p>big improvement. Depending on the exact operation.</p>
-<h4>Comparison to PostGIS</h4>
+<h4 id="comparison-to-postgis"><a class="toclink" href="#comparison-to-postgis">Comparison to PostGIS</a></h4>
 <p><strong>PostGIS Query</strong></p>
 <div class="highlight"><pre><span></span><span class="c1">-- What is the population and racial make-up of the neighborhoods of Manhattan?</span>
 <span class="k">SELECT</span>
@@ -260,14 +260,14 @@ and an individual shapely object below:</p>
 <p>Example from <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless tutorial</a> (CC BY SA)</p>
 <p>These operations now run at full C speed, and so we get back to exactly the
 performance of PostGIS.</p>
-<p><img src="/figures/timings_sjoin_all.png"></p>
+<p><img src="https://jorisvandenbossche.github.io/figures/timings_sjoin_all.png"></p>
 <p>This is not surprising because PostGIS is using the same GEOS library
 internally.  In fact, nearly <em>all</em> open source GIS libraries all depend on
 GEOS.  These algorithms are not particularly complex, so it is not surprising
 that everyone has implemented them more or less exactly the same.</p>
 <p>This is great.  The Python GIS stack now has a full-speed library that operates
 as fast as any other open GIS system is likely to manage.</p>
-<h2>Outlook</h2>
+<h2 id="outlook"><a class="toclink" href="#outlook">Outlook</a></h2>
 <p>Some promising results, but this is still a work in progress, and there is still plenty of work
 to do.</p>
 <p>Challenges / problems to tackle:</p>
@@ -291,12 +291,12 @@ This will require some changes to Pandas itself to enable custom block types
 issue tracker).</p>
 <p>But also promises: apart from improved speed-up, also memory improvement + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -&gt; exploration of this)</p>
 <p><code>GeometryArray</code> concept might be more broadly useful that just for pandas. If you have such use cases, we would love to hear about that!</p>
-<h3>Trying this out</h3>
+<h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out</a></h3>
 <p>You can track future progress on this effort at
 <a href="https://github.com/geopandas/geopandas/issues/473">geopandas/geopandas #473</a>
 which includes installation instructions.</p>
 <p>Feedback -&gt; github</p>
-<h2>Conclusion</h2>
+<h2 id="conclusion"><a class="toclink" href="#conclusion">Conclusion</a></h2>
 <p>With established technologies in the PyData space like Cython and Dask we've
 been able to accelerate and scale GeoPandas operations above and beyond
 industry standards.  However this work is still experimental and not ready for
@@ -329,8 +329,8 @@ enthusiasm.</p>
   	          <nav>
 	            <h2>Categories</h2>
 	            <ul>
-	                <li class="active"><a href="/category/misc.html">misc</a></li>
-	                <li ><a href="/category/review.html">Review</a></li>
+	                <li class="active"><a href="https://jorisvandenbossche.github.io/category/misc.html">misc</a></li>
+	                <li ><a href="https://jorisvandenbossche.github.io/category/review.html">Review</a></li>
 	            </ul>
 	          </nav>
 

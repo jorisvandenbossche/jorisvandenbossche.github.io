@@ -10,11 +10,11 @@
 
 
 
-	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+	<link rel="stylesheet" href="https://jorisvandenbossche.github.io/theme/css/main.css" type="text/css" />
 		
 
 
-    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
+    <link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
 </head>
 	
 <body>
@@ -23,9 +23,9 @@
 	  
 	  <header role="banner">
 	    <div class="feeds">
-	      <a href="/feeds/all.atom.xml" rel="alternate"><img src="/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
+	      <a href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="alternate"><img src="https://jorisvandenbossche.github.io/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
 	    </div>
-		<a href="" class="title">Joris Van den Bossche</a>
+		<a href="https://jorisvandenbossche.github.io" class="title">Joris Van den Bossche</a>
       </header>
 	
 	  <div class="wrapper">
@@ -38,15 +38,15 @@
 <div class="metadata">
   <time datetime="2017-09-09T00:00:00+02:00" pubdate>za 09 september 2017</time>
     <address class="vcard author">
-      by <a class="url fn" href="/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
+      by <a class="url fn" href="https://jorisvandenbossche.github.io/author/joris-van-den-bossche.html">Joris Van den Bossche</a>
     </address>
-  in <a href="/category/work.html">work</a>
-<p class="tags">tagged <a href="/tag/programming.html">[Programming</a>, <a href="/tag/python.html">Python</a>, <a href="/tag/scipy.html">scipy</a>, <a href="/tag/dask.html">dask</a>, <a href="/tag/pangeo.html">pangeo]</a></p></div>		
+  in <a href="https://jorisvandenbossche.github.io/category/work.html">work</a>
+<p class="tags">tagged <a href="https://jorisvandenbossche.github.io/tag/programming.html">[Programming</a>, <a href="https://jorisvandenbossche.github.io/tag/python.html">Python</a>, <a href="https://jorisvandenbossche.github.io/tag/scipy.html">scipy</a>, <a href="https://jorisvandenbossche.github.io/tag/dask.html">dask</a>, <a href="https://jorisvandenbossche.github.io/tag/pangeo.html">pangeo]</a></p></div>		
 		<p>{% include JB/setup %}</p>
 <p><em>This work is supported by <a href="http://anaconda.com">Anaconda Inc.</a>
 and the NASA TODO program</em></p>
 <p><em>This work is a collaboration with <a href="https://github.com/jorisvandenbossche/">Joris Van den Bossche</a>.  This blogpost builds on <a href="https://www.youtube.com/watch?v=bWsA2R707BM">Joris's EuroSciPy talk</a> (<a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">slides</a>) on the same topic</em></p>
-<h2>Summary</h2>
+<h2 id="summary"><a class="toclink" href="#summary">Summary</a></h2>
 <p>We briefly describe Python's GeoSpatial stack and the role of the GeoPandas
 library within that stack.  We then discuss two efforts to accelerate
 GeoPandas:</p>
@@ -57,7 +57,7 @@ GeoPandas:</p>
 <p>We give performance comparisons and end with work that still has to be done.</p>
 <p>This work is not yet appropriate for general use, but may be appropriate for
 early adopters and developers.</p>
-<h2>Background</h2>
+<h2 id="background"><a class="toclink" href="#background">Background</a></h2>
 <p>The <a href="https://toblerity.org/shapely/manual.html">Shapely User Manual</a> begins
 with the following passage on the utility of geospatial analysis to our society.</p>
 <blockquote>
@@ -89,7 +89,7 @@ composed of the following tools:</p>
 <p>In this post we focus on GeoPandas, a geospatial extension of Pandas which
 helps to manages tabular data that is annotated with geometry information like
 points, paths, and polygons.</p>
-<h3>GeoPandas Example</h3>
+<h3 id="geopandas-example"><a class="toclink" href="#geopandas-example">GeoPandas Example</a></h3>
 <p>For example GeoPandas makes it easy to load and plot the <a href="https://data.cityofchicago.org/Public-Safety/Boundaries-Police-Districts/4dt9-88ua">Police Districts of
 Chicago</a>.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
@@ -157,7 +157,7 @@ geospatially-aware datasets that you might find interesting:</p>
 <li><a href="http://portal-nolagis.opendata.arcgis.com/datasets/bike-lanes">Bike lanes in New Orleans</a></li>
 <li><a href="https://data.nola.gov/Public-Safety-and-Preparedness/NOPD-Use-of-Force-Incidents/9mnw-mbde">New Orleans Police Department incidents involving the use of force</a></li>
 </ol>
-<h2>Performance</h2>
+<h2 id="performance"><a class="toclink" href="#performance">Performance</a></h2>
 <p>Unfortunately GeoPandas can be slow, which limits interactive exploration on
 larger datasets.  The first dataset mentioned above, crimes in Chicago, has
 roughly seven million entries and is several gigabytes in memory.  Analyzing
@@ -188,7 +188,7 @@ he compares performance to <a href="http://postgis.net/">PostGIS</a>, the standa
 geospatial plugin for the popular PostgreSQL database (<a href="https://github.com/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_postgis_comparison.ipynb">original notebook</a> with the comparison).  He finds that while
 GeoPandas can often be as expressive as PostGIS it is also much slower.  Here
 is his benchmark query against the NYC census data.</p>
-<h4>PostGIS Query</h4>
+<h4 id="postgis-query"><a class="toclink" href="#postgis-query">PostGIS Query</a></h4>
 <div class="highlight"><pre><span></span><span class="c1">-- What is the population and racial make-up of the neighborhoods of Manhattan?</span>
 <span class="k">SELECT</span>
   <span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">neighborhood_name</span><span class="p">,</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">)</span> <span class="k">AS</span> <span class="n">population</span><span class="p">,</span>
@@ -202,7 +202,7 @@ is his benchmark query against the NYC census data.</p>
 </pre></div>
 
 
-<h4>GeoPandas Code</h4>
+<h4 id="geopandas-code"><a class="toclink" href="#geopandas-code">GeoPandas Code</a></h4>
 <div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">nyc_neighborhoods</span><span class="p">,</span> <span class="n">nyc_census_blocks</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;intersects&#39;</span><span class="p">)</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;NAME&#39;</span><span class="p">)[[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
@@ -216,7 +216,7 @@ is his benchmark query against the NYC census data.</p>
 <p><img src="{{BASE_PATH}}/images/timings_sjoin.png"></p>
 <p>Fortunately, we can improve upon this both by accelerating GeoPandas with
 Cython, and then by parallelizing it with Dask.</p>
-<h2>Cythonizing GeoPandas</h2>
+<h2 id="cythonizing-geopandas"><a class="toclink" href="#cythonizing-geopandas">Cythonizing GeoPandas</a></h2>
 <p>Currently the slowdown in GeoPandas is because we iterate over every Shapely
 object in Python, rather than calling the underlying C library GEOS directly.</p>
 <p>So instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>
@@ -249,7 +249,7 @@ and an individual shapely object below:</p>
 <p>For more complex operations, like spatial joins, we tend to use C rather than
 Cython just for future development ease.  In both cases we use Cython to
 connect the C code back to Python.</p>
-<h4>Results</h4>
+<h4 id="results"><a class="toclink" href="#results">Results</a></h4>
 <p>These operations now run at full C speed, and so we get back to exactly the
 performance of PostGIS.</p>
 <p><img src="{{BASE_PATH}}/images/timings_sjoin_all.png"></p>
@@ -259,7 +259,7 @@ GEOS.  These algorithms are not particularly complex, so it is not surprising
 that everyone has implemented them more or less exactly the same.</p>
 <p>This is great.  The Python GIS stack now has a full-speed library that operates
 as fast as any other open GIS system is likely to manage.</p>
-<h2>Problems</h2>
+<h2 id="problems"><a class="toclink" href="#problems">Problems</a></h2>
 <p>However, this is still a work in progress, and there is still plenty of work
 to do.</p>
 <p>First, we need for Pandas to track our arrays of GEOS pointers differently from
@@ -294,7 +294,7 @@ Cythonized GeoPandas may be worth your time to investigate.</p>
 <p>You can track future progress on this effort at
 <a href="https://github.com/geopandas/geopandas/issues/473">geopandas/geopandas #473</a>
 which includes installation instructions.</p>
-<h2>Parallelism with Dask</h2>
+<h2 id="parallelism-with-dask"><a class="toclink" href="#parallelism-with-dask">Parallelism with Dask</a></h2>
 <p>Cythonizing can give us speedups in the 10x-100x range.  We can probably get
 another 2-3x by parallelizing with Dask on single multi-core machines, or use
 Dask to scale out onto clusters.  In order to do this we need to figure out how
@@ -321,7 +321,7 @@ machine.</p>
     engage only those parts of the parallel dataframe that we know are relevant
     for various parts of the computation.</li>
 </ol>
-<h3>Design</h3>
+<h3 id="design"><a class="toclink" href="#design">Design</a></h3>
 <p>As mentioned above a Dask GeoDataFrame is a collection of GeoPandas
 GeoDataFrame objects, each associated to a polygon.  Ideally those polygons are
 disjoint, so for any particular query we only need to touch a small number of
@@ -334,7 +334,7 @@ regions.  However in practice they may come to overlap for a few reasons:</p>
     can take some time).  In these cases the regions used for spatial
     partitioning are given infinite extent.</li>
 </ol>
-<h3>Example</h3>
+<h3 id="example"><a class="toclink" href="#example">Example</a></h3>
 <p>Given a GeoPandas dataframe</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;...&#39;</span><span class="p">)</span>
@@ -371,7 +371,7 @@ data.</p>
 
 
 <p>TODO: actual experiment</p>
-<h2>Problems</h2>
+<h2 id="problems_1"><a class="toclink" href="#problems_1">Problems</a></h2>
 <p>The dask-geopandas project is just a prototype at the moment.  It will easily
 break for non-trivial applications (and indeed many trivial ones).  It was
 designed to see how hard it would be to implement some of the trickier
@@ -391,7 +391,7 @@ the Dask developers.</p>
 <p>Still though, these seem surmountable and generally this process has been easy
 so far.  I suspect that we can build an intuitive and performant parallel GIS
 analytics system with modest effort.</p>
-<h2>Conclusion</h2>
+<h2 id="conclusion"><a class="toclink" href="#conclusion">Conclusion</a></h2>
 <p>With established technologies in the PyData space like Cython and Dask we've
 been able to accelerate and scale GeoPandas operations above and beyond
 industry standards.  However this work is still experimental and not ready for
@@ -424,8 +424,8 @@ enthusiasm.</p>
   	          <nav>
 	            <h2>Categories</h2>
 	            <ul>
-	                <li ><a href="/category/misc.html">misc</a></li>
-	                <li ><a href="/category/review.html">Review</a></li>
+	                <li ><a href="https://jorisvandenbossche.github.io/category/misc.html">misc</a></li>
+	                <li ><a href="https://jorisvandenbossche.github.io/category/review.html">Review</a></li>
 	            </ul>
 	          </nav>
 
