@@ -4,4 +4,4 @@ comments: true
 slug: vectorized-shapely-cython
 tags: python, geospatial, shapely, cython, geopandas
 
-{% notebook downloads/notebooks/geopandas_cython_experiment.ipynb cells[2:] %}
+{% notebook downloads/notebooks/shapely_cython_experiment.ipynb cells[2:] %}
