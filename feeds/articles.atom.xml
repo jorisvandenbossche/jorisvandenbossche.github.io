@@ -252,16 +252,7 @@ issue tracker).&lt;/p&gt;
 &lt;p&gt;You can track future progress on this effort at
 &lt;a href="https://github.com/geopandas/geopandas/issues/473"&gt;geopandas/geopandas #473&lt;/a&gt;
 which includes installation instructions.&lt;/p&gt;
-&lt;p&gt;Feedback -&amp;gt; github&lt;/p&gt;
-&lt;h2 id="conclusion"&gt;&lt;a class="toclink" href="#conclusion"&gt;Conclusion&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;With established technologies in the PyData space like Cython and Dask we've
-been able to accelerate and scale GeoPandas operations above and beyond
-industry standards.  However this work is still experimental and not ready for
-production use.  This work is a bit of a side project for both Joris and
-Matthew and they would welcome effort from other experienced open source
-developers.  We believe that this project can have a large social impact and
-are enthusiastic about pursuing it in the future.  We hope that you share our
-enthusiasm.&lt;/p&gt;</content><category term="python"></category><category term="geospatial"></category><category term="geopandas"></category><category term="shapely"></category></entry><entry><title>Vectorized shapely operations using Cython</title><link href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/" rel="alternate"></link><published>2017-03-18T09:00:00+01:00</published><updated>2017-03-18T09:00:00+01:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2017-03-18:/blog/2017/03/18/vectorized-shapely-cython/</id><summary type="html">&lt;style type="text/css"&gt;/*!
+&lt;p&gt;Feedback -&amp;gt; github&lt;/p&gt;</content><category term="python"></category><category term="geospatial"></category><category term="geopandas"></category><category term="shapely"></category></entry><entry><title>Vectorized shapely operations using Cython</title><link href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/" rel="alternate"></link><published>2017-03-18T09:00:00+01:00</published><updated>2017-03-18T09:00:00+01:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2017-03-18:/blog/2017/03/18/vectorized-shapely-cython/</id><summary type="html">&lt;style type="text/css"&gt;/*!
 *
 * IPython notebook
 *
