@@ -6,11 +6,11 @@
 	<meta name="author" content="Joris Van den Bossche">
 	
 
-	<link rel="stylesheet" href="https://jorisvandenbossche.github.io/theme/css/main.css" type="text/css" />
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
 		
 
 
-    <link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Joris Van den Bossche Atom Feed" />
 </head>
 	
 <body>
@@ -19,9 +19,9 @@
 	  
 	  <header role="banner">
 	    <div class="feeds">
-	      <a href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="alternate"><img src="https://jorisvandenbossche.github.io/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
+	      <a href="/feeds/all.atom.xml" rel="alternate"><img src="/theme/images/icons/feed-32px.png" alt="atom feed"/></a>
 	    </div>
-		<a href="https://jorisvandenbossche.github.io" class="title">Joris Van den Bossche</a>
+		<a href="" class="title">Joris Van den Bossche</a>
       </header>
 	
 	  <div class="wrapper">
@@ -31,7 +31,7 @@
 
 
       <article>
-        <h1><a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/">GeoPandas developments: improved performance</a></h1>
+        <h1><a href="/blog/2017/09/19/geopandas-cython/">GeoPandas developments: improved performance</a></h1>
         <p><em>This work is a collaboration with <a href="http://matthewrocklin.com/">Matthew Rocklin</a>. This blogpost shows our recent work on the GeoPandas library and is partly based on the <a href="https://www.youtube.com/watch?v=bWsA2R707BM">EuroSciPy talk</a> (<a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">slides</a>) I recently gave on the same topic.</em></p>
 <h2 id="background"><a class="toclink" href="#background">Background</a></h2>
 <p>[intro]</p>
@@ -136,7 +136,7 @@ Chicago</a>.</p>
 </pre></div>
 
 
-<p><img src="https://jorisvandenbossche.github.io/figures/quartiers-paris-bike-stations.png"></p>
+<p><img src="/figures/quartiers-paris-bike-stations.png"></p>
 <p>Full demo notebook see ... from EuroScipy presentation.</p>
 <h2 id="performance-bottlenecks"><a class="toclink" href="#performance-bottlenecks">Performance bottlenecks</a></h2>
 <p>Unfortunately GeoPandas can be slow, which limits interactive exploration on
@@ -147,7 +147,7 @@ this sort of dataset interactively with GeoPandas today is not feasible.</p>
 a GeoDataFrame basically is a pandas dataframe with a special <code>object</code>-dtype column that
 stores Shapely geometries (the 'geometry' column). Shapely geometries are Python objects that provide
 a Python interface and reference to GEOS Geometry objects in C:</p>
-<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
+<p><img src="/images/geopandas-shapely-1.svg"
      width="50%"></p>
 <p>The easy-to-use vectorized operations that GeoPandas provides, such as calculating the distance from every geometry in my dataframe to a certain point:</p>
 <div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span>
@@ -192,10 +192,10 @@ object in Python, rather than calling the underlying C library GEOS directly.</p
 Cython, and then by parallelizing it with Dask.</p>
 <p>So instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>
 like the following image:</p>
-<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
+<p><img src="/images/geopandas-shapely-1.svg"
      width="49%"></p>
 <p>We instead store a NumPy array of <em>direct pointers to the GEOS objects</em>.</p>
-<p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-2.svg"
+<p><img src="/images/geopandas-shapely-2.svg"
      width="49%"></p>
 <p>This allows us to store data more efficiently, and also requires us to now
 write our loops over these geometries in C or Cython.  When we perform bulk
@@ -217,11 +217,11 @@ and an individual shapely object below:</p>
 </pre></div>
 
 
-<p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a>.</p>
+<p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a>.</p>
 <h2 id="some-benchmarks"><a class="toclink" href="#some-benchmarks">Some benchmarks</a></h2>
 <p>results simple timings above</p>
-<p><img alt="Alt Text" src="https://jorisvandenbossche.github.io/figures/timings_distance_all.png">
-<img alt="Alt Text" src="https://jorisvandenbossche.github.io/figures/timings_within_all.png"></p>
+<p><img alt="Alt Text" src="/figures/timings_distance_all.png">
+<img alt="Alt Text" src="/figures/timings_within_all.png"></p>
 <p>big improvement. Depending on the exact operation.</p>
 <h4 id="comparison-to-postgis"><a class="toclink" href="#comparison-to-postgis">Comparison to PostGIS</a></h4>
 <p><strong>PostGIS Query</strong></p>
@@ -250,7 +250,7 @@ and an individual shapely object below:</p>
 <p>Example from <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless tutorial</a> (CC BY SA)</p>
 <p>These operations now run at full C speed, and so we get back to exactly the
 performance of PostGIS.</p>
-<p><img src="https://jorisvandenbossche.github.io/figures/timings_sjoin_all.png"></p>
+<p><img src="/figures/timings_sjoin_all.png"></p>
 <p>This is not surprising because PostGIS is using the same GEOS library
 internally.  In fact, nearly <em>all</em> open source GIS libraries all depend on
 GEOS.  These algorithms are not particularly complex, so it is not surprising
@@ -297,9 +297,9 @@ which includes installation instructions.</p>
 
 
       <li>
-<a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/" rel="bookmark" title="Permalink to Vectorized shapely operations using Cython">Vectorized shapely operations using Cython</a>
+<a href="/blog/2017/03/18/vectorized-shapely-cython/" rel="bookmark" title="Permalink to Vectorized shapely operations using Cython">Vectorized shapely operations using Cython</a>
   <time datetime="2017-03-18T09:00:00+01:00" pubdate>za 18 maart 2017</time>
-<p class="tags">tags: <a href="https://jorisvandenbossche.github.io/tag/python.html">python</a><a href="https://jorisvandenbossche.github.io/tag/geospatial.html">geospatial</a><a href="https://jorisvandenbossche.github.io/tag/shapely.html">shapely</a><a href="https://jorisvandenbossche.github.io/tag/cython.html">cython</a><a href="https://jorisvandenbossche.github.io/tag/geopandas.html">geopandas</a></p></a>      </li>
+<p class="tags">tags: <a href="/tag/python.html">python</a><a href="/tag/geospatial.html">geospatial</a><a href="/tag/shapely.html">shapely</a><a href="/tag/cython.html">cython</a><a href="/tag/geopandas.html">geopandas</a></p></a>      </li>
 
 
           </ol>
@@ -320,7 +320,7 @@ which includes installation instructions.</p>
   	          <nav>
 	            <h2>Categories</h2>
 	            <ul>
-	                <li ><a href="https://jorisvandenbossche.github.io/category/articles.html">articles</a></li>
+	                <li ><a href="/category/articles.html">articles</a></li>
 	            </ul>
 	          </nav>
 
