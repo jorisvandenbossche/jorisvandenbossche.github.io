@@ -6,11 +6,17 @@ AUTHOR = 'Joris Van den Bossche'
 SITENAME = 'Joris Van den Bossche'
 SITEURL = 'https://jorisvandenbossche.github.io'
 
+TIMEZONE = 'Europe/Brussels'
+DEFAULT_LANG = 'en'
+
 PATH = 'content'
 
-TIMEZONE = 'Europe/Brussels'
+STATIC_PATHS = [
+    "images/",
+    "figures/",
+    "downloads/",
+]
 
-DEFAULT_LANG = 'en'
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
@@ -18,6 +24,18 @@ CATEGORY_FEED_ATOM = None
 TRANSLATION_FEED_ATOM = None
 AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
+
+# Set the article URL
+ARTICLE_URL = 'blog/{date:%Y}/{date:%m}/{date:%d}/{slug}/'
+ARTICLE_SAVE_AS = 'blog/{date:%Y}/{date:%m}/{date:%d}/{slug}/index.html'
+
+# PLugins
+PLUGIN_PATHS = ['./plugins', './plugins/pelican-plugins']
+PLUGINS = [
+    'summary', # auto-summarizing articles
+    'ipynb.liquid',  # for embedding notebooks
+]
+
 
 # Theme
 THEME = "pelican-themes/pelican-sober"
