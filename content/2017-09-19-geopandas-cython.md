@@ -335,7 +335,7 @@ This will require some changes to Pandas itself to enable custom block types
 (see [this issue](https://github.com/pandas-dev/pandas/issues/17144) on the pandas
 issue tracker).
 
-But next to the challenges, the cythonized GeoPandas version also promises: a speed-up, a memory improvement, and it makes it more feasible to experiment with using GeoPandas with Dask to **parallelize or distribute geospatial analyses**. See [companion blogpost](http://matthewrocklin.com/blog/work/2017/09/21/accelerating-geopandas-1) of Matthew Rocklin.
+But next to the challenges, the cythonized GeoPandas version also promises: a speed-up, a memory improvement, and it makes it more feasible to experiment with using GeoPandas with Dask to **parallelize or distribute geospatial analyses**. See [companion blogpost](http://matthewrocklin.com/blog/work/2017/09/21/accelerating-geopandas-1) of Matthew Rocklin for such an experiment.
 
  <!-- + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -> exploration of this) -->
 
