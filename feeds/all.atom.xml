@@ -1720,7 +1720,6 @@ But, the actual 'contains' operation happens in C (by calling the GEOS library, 
 &lt;title&gt;Cython: _cython_magic_82b59155c5d602a807243f9ffdef2d25.pyx&lt;/title&gt;
 &lt;style type="text/css"&gt;
     
-body.cython { font-family: courier; font-size: 12; }
 
 .cython.tag  {  }
 .cython.line { margin: 0em }
@@ -2560,7 +2559,6 @@ static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_conta
 &lt;title&gt;Cython: _cython_magic_69b3f517e97837cffcede7e1a60806aa.pyx&lt;/title&gt;
 &lt;style type="text/css"&gt;
     
-body.cython { font-family: courier; font-size: 12; }
 
 .cython.tag  {  }
 .cython.line { margin: 0em }
