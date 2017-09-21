@@ -46,7 +46,8 @@ MARKDOWN = {
 }
 
 # Theme
-THEME = "pelican-themes/pelican-hss"
+#THEME = "pelican-themes/pelican-hss"
+THEME = './theme'
 
 PELICAN_SOBER_ABOUT = "Pandas core developer. Working at the Paris-Saclay Center for Data Science"
 
