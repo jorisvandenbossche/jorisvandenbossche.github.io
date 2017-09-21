@@ -60,6 +60,8 @@ PELICAN_SOBER_ABOUT = "Pandas core developer. Working at the Paris-Saclay Center
 SOCIAL = (('github', 'https://github.com/jorisvandenbossche/'),
           ('twitter', 'https://twitter.com/jorisvdbossche'),)
 
+DISQUS_SITENAME = "jorisvandenbossche-blog"
+
 DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
