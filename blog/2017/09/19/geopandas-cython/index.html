@@ -53,7 +53,7 @@
     <p><em>This work is a collaboration with <a href="http://matthewrocklin.com/">Matthew Rocklin</a>. This blogpost shows our recent work on the GeoPandas library and is partly based on the <a href="https://www.youtube.com/watch?v=bWsA2R707BM">EuroSciPy talk</a> (<a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">slides</a>) I recently gave on the same topic.</em></p>
 
 
-<p>In this blogpost I explain the latest developments in the <a href="http://geopandas.readthedocs.io/en/latest/">GeoPandas</a> package. Work is ungoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.</p>
+<p>In this blogpost I explain the latest developments in the <a href="http://geopandas.readthedocs.io/en/latest/">GeoPandas</a> package. Work is ongoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.</p>
 
 
 <p>Note: what I show here is <em>not yet</em> available in the released version of GeoPandas.</p>
@@ -263,7 +263,7 @@ or C to write these loops directly provides a significant speedup.</p>
 <!-- TODO exact numbers -->
 
 <h4 id="comparison-to-postgis"><a class="toclink" href="#comparison-to-postgis">Comparison to PostGIS</a></h4>
-<p>The above benchmark are timings for basic operations, but let's see what speed-up we see for more complex operations.
+<p>The above benchmarks are timings for basic operations, but let's see what speed-up we see for more complex operations.
 To this end, I have taken an example of a spatial join from the <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless PostGIS tutorial</a> (CC BY SA). <a href="http://postgis.net/">PostGIS</a> is the standard
 geospatial plugin for the popular PostgreSQL database, and also uses the GEOS library under the hood.</p>
 <p><strong>PostGIS Query</strong></p>
@@ -317,10 +317,10 @@ the internal building blocks of pandas that hold the data of the different colum
 This will require some changes to Pandas itself to enable custom block types
 (see <a href="https://github.com/pandas-dev/pandas/issues/17144">this issue</a> on the pandas
 issue tracker).</p>
-<p>But next to the challenges, the cythonized GeoPandas version also promises: a speed-up, a memory improvement, and it makes it more feasible to experiment with using GeoPandas with Dask to <strong>parallelize or distribute geospatial analyses</strong>. See companion blogpost of Matthew Rocklin.</p>
+<p>But next to the challenges, the cythonized GeoPandas version also promises: a speed-up, a memory improvement, and it makes it more feasible to experiment with using GeoPandas with Dask to <strong>parallelize or distribute geospatial analyses</strong>. See <a href="http://matthewrocklin.com/blog/work/2017/09/21/accelerating-geopandas-1">companion blogpost</a> of Matthew Rocklin.</p>
 <!-- + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -> exploration of this) -->
 
-<p>Last, the <code>GeometryArray</code> concept might be more broadly useful that just for GeoPandas. If you have such use cases, we would love to hear about that!</p>
+<p>Last, the <code>GeometryArray</code> concept might be more broadly useful than just for GeoPandas. If you have such use cases, we would love to hear about that!</p>
 <h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out!</a></h3>
 <p>We would love you to try out the new cythonized GeoPandas version, test it on some real use cases and provide feedback.</p>
 <p>Installing the new version currently requires building it from source with Cython. However, if you already have the released version of GeoPandas installed, Cython should be the only additional dependency (the GEOS library to build against should then already be installed). And in that case, the following steps should suffice:</p>

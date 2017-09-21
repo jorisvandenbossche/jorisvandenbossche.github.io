@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>Joris Van den Bossche - misc</title><link href="https://jorisvandenbossche.github.io/" rel="alternate"></link><link href="https://jorisvandenbossche.github.io/feeds/misc.atom.xml" rel="self"></link><id>https://jorisvandenbossche.github.io/</id><updated>2017-09-19T20:00:00+02:00</updated><entry><title>GeoPandas developments: redesign and improved performance using Cython</title><link href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/" rel="alternate"></link><published>2017-09-19T20:00:00+02:00</published><updated>2017-09-19T20:00:00+02:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2017-09-19:/blog/2017/09/19/geopandas-cython/</id><summary type="html">
 
-&lt;p&gt;In this blogpost I explain the latest developments in the &lt;a href="http://geopandas.readthedocs.io/en/latest/"&gt;GeoPandas&lt;/a&gt; package. Work is ungoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.&lt;/p&gt;
+&lt;p&gt;In this blogpost I explain the latest developments in the &lt;a href="http://geopandas.readthedocs.io/en/latest/"&gt;GeoPandas&lt;/a&gt; package. Work is ongoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.&lt;/p&gt;
 </summary><content type="html">&lt;p&gt;&lt;em&gt;This work is a collaboration with &lt;a href="http://matthewrocklin.com/"&gt;Matthew Rocklin&lt;/a&gt;. This blogpost shows our recent work on the GeoPandas library and is partly based on the &lt;a href="https://www.youtube.com/watch?v=bWsA2R707BM"&gt;EuroSciPy talk&lt;/a&gt; (&lt;a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1"&gt;slides&lt;/a&gt;) I recently gave on the same topic.&lt;/em&gt;&lt;/p&gt;
 
 
-&lt;p&gt;In this blogpost I explain the latest developments in the &lt;a href="http://geopandas.readthedocs.io/en/latest/"&gt;GeoPandas&lt;/a&gt; package. Work is ungoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.&lt;/p&gt;
+&lt;p&gt;In this blogpost I explain the latest developments in the &lt;a href="http://geopandas.readthedocs.io/en/latest/"&gt;GeoPandas&lt;/a&gt; package. Work is ongoing to vastly improve the performance of the package, by leveraging cython to directly interact with the GEOS library.&lt;/p&gt;
 
 
 &lt;p&gt;Note: what I show here is &lt;em&gt;not yet&lt;/em&gt; available in the released version of GeoPandas.&lt;/p&gt;
@@ -215,7 +215,7 @@ or C to write these loops directly provides a significant speedup.&lt;/p&gt;
 &lt;!-- TODO exact numbers --&gt;
 
 &lt;h4 id="comparison-to-postgis"&gt;&lt;a class="toclink" href="#comparison-to-postgis"&gt;Comparison to PostGIS&lt;/a&gt;&lt;/h4&gt;
-&lt;p&gt;The above benchmark are timings for basic operations, but let's see what speed-up we see for more complex operations.
+&lt;p&gt;The above benchmarks are timings for basic operations, but let's see what speed-up we see for more complex operations.
 To this end, I have taken an example of a spatial join from the &lt;a href="http://workshops.boundlessgeo.com/postgis-intro/"&gt;Boundless PostGIS tutorial&lt;/a&gt; (CC BY SA). &lt;a href="http://postgis.net/"&gt;PostGIS&lt;/a&gt; is the standard
 geospatial plugin for the popular PostgreSQL database, and also uses the GEOS library under the hood.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;PostGIS Query&lt;/strong&gt;&lt;/p&gt;
@@ -269,10 +269,10 @@ the internal building blocks of pandas that hold the data of the different colum
 This will require some changes to Pandas itself to enable custom block types
 (see &lt;a href="https://github.com/pandas-dev/pandas/issues/17144"&gt;this issue&lt;/a&gt; on the pandas
 issue tracker).&lt;/p&gt;
-&lt;p&gt;But next to the challenges, the cythonized GeoPandas version also promises: a speed-up, a memory improvement, and it makes it more feasible to experiment with using GeoPandas with Dask to &lt;strong&gt;parallelize or distribute geospatial analyses&lt;/strong&gt;. See companion blogpost of Matthew Rocklin.&lt;/p&gt;
+&lt;p&gt;But next to the challenges, the cythonized GeoPandas version also promises: a speed-up, a memory improvement, and it makes it more feasible to experiment with using GeoPandas with Dask to &lt;strong&gt;parallelize or distribute geospatial analyses&lt;/strong&gt;. See &lt;a href="http://matthewrocklin.com/blog/work/2017/09/21/accelerating-geopandas-1"&gt;companion blogpost&lt;/a&gt; of Matthew Rocklin.&lt;/p&gt;
 &lt;!-- + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -&gt; exploration of this) --&gt;
 
-&lt;p&gt;Last, the &lt;code&gt;GeometryArray&lt;/code&gt; concept might be more broadly useful that just for GeoPandas. If you have such use cases, we would love to hear about that!&lt;/p&gt;
+&lt;p&gt;Last, the &lt;code&gt;GeometryArray&lt;/code&gt; concept might be more broadly useful than just for GeoPandas. If you have such use cases, we would love to hear about that!&lt;/p&gt;
 &lt;h3 id="trying-this-out"&gt;&lt;a class="toclink" href="#trying-this-out"&gt;Trying this out!&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;We would love you to try out the new cythonized GeoPandas version, test it on some real use cases and provide feedback.&lt;/p&gt;
 &lt;p&gt;Installing the new version currently requires building it from source with Cython. However, if you already have the released version of GeoPandas installed, Cython should be the only additional dependency (the GEOS library to build against should then already be installed). And in that case, the following steps should suffice:&lt;/p&gt;
@@ -1386,13 +1386,6 @@ h6:hover .anchor-link {
 &lt;pre&gt;True&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
