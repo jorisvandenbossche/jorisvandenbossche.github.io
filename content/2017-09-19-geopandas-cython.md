@@ -225,7 +225,7 @@ cpdef distance(self, other):
     return out
 ```
 
-For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my [previous blogpost]({filename}/articles/2017-03-18-vectorized-shapely-cython.md) on this topic.
+For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my [previous blogpost]({filename}/2017-03-18-vectorized-shapely-cython.md) on this topic.
 
 
 New GeoPandas design
