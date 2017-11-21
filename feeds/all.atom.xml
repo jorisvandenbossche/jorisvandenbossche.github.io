@@ -1236,7 +1236,7 @@ But none of these solutions are ideal for the simple cases or can readily be int
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;This is brand new functionality in scikit-learn, so feedback is very welcome! (the &lt;a href="https://github.com/scikit-learn/scikit-learn/pull/9151"&gt;PR&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;! This is brand new functionality in scikit-learn, so feedback is very welcome! (the &lt;a href="https://github.com/scikit-learn/scikit-learn/pull/9151"&gt;PR&lt;/a&gt;)&lt;/strong&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
