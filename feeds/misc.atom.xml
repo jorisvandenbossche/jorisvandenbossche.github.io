@@ -979,7 +979,7 @@ h6:hover .anchor-link {
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;&lt;em&gt;This contribution was done while working for the Université Paris-Saclay Center for Data Science&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;This work is supported by the Université Paris-Saclay Center for Data Science&lt;/em&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -1000,13 +1000,13 @@ Short summary: a &lt;code&gt;CategoricalEncoder&lt;/code&gt; has landed in sciki
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;hr/&gt;
-&lt;p&gt;When working with prediction problems, in many cases your dataset will contain categorical variables. This are non-numeric variables (or if numeric, the values should not be interpreted as numeric values) that typically consist of a limited number of unique values (the categories or the levels). 
+&lt;p&gt;When working with prediction problems, in many cases your dataset will contain categorical variables. This are non-numeric variables -- or if numeric, the values should not be interpreted as numeric values -- that typically consist of a limited number of unique values (the categories or the levels). 
 On the other hand, most machine learning models require numeric input data. Therefore, categorical variables are &lt;em&gt;encoded&lt;/em&gt;: they are converted to one or multiple numeric features.
-A well known example of such encoding is one-hot or dummy encoding.&lt;/p&gt;
-&lt;p&gt;Currently there is no good out-of-the-box solution in scikit-learn. There exists a &lt;code&gt;OneHotEncoder&lt;/code&gt; which provides a way to obtain one-hot or dummy encoded features, but because it only works on integer columns and has a bit an awkward API, it is rather limited in practice. 
+A well known example is one-hot or dummy encoding.&lt;/p&gt;
+&lt;p&gt;Currently there is no good out-of-the-box solution in scikit-learn. There is the &lt;code&gt;OneHotEncoder&lt;/code&gt; which provides one-hot encoding, but because it only works on integer columns and has a bit of an awkward API, it is rather limited in practice. 
 Chris Mofitt recently wrote a nice guide on how to encode categorical variables in python (&lt;a href="http://pbpython.com/categorical-encoding.html"&gt;see his blogpost&lt;/a&gt;). He shows different ways how to solve this: by (mis)using the &lt;code&gt;LabelEncoder&lt;/code&gt; (which is actually meant for the target variable, not for encoding features) or using pandas' &lt;code&gt;get_dummies&lt;/code&gt;, etc.
 But none of these solutions are ideal for the simple cases or can readily be integrated in scikit-learn pipelines.&lt;/p&gt;
-&lt;p&gt;The newly added &lt;code&gt;CategoricalEncoder&lt;/code&gt; tries to solve this: provide a built-in way to encode your categorical variables with the most basic options (either a one-hot or dummy encoding or an ordinal encoding).&lt;/p&gt;
+&lt;p&gt;The newly added &lt;code&gt;CategoricalEncoder&lt;/code&gt; tries to solve this: provide a built-in way to encode your categorical variables with the some common options (either a one-hot or dummy encoding or an ordinal encoding).&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
