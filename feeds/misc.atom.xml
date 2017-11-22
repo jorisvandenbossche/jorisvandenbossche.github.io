@@ -1149,7 +1149,7 @@ But none of these solutions are ideal for the simple cases or can readily be int
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;This dataset contains two categorical variables ("sex" and "embarked"). Now we can use the &lt;code&gt;CategoricalEncoder&lt;/code&gt; to transform those two columns into one-hot encoded or dummy columns (the "sex" feature results in 2 dummy columns for female/male, the "embarked" feature in 3 columns, which gives togerther the resulting transformed array with 5 columns):&lt;/p&gt;
+&lt;p&gt;This dataset contains two categorical variables ("sex" and "embarked"). Now we can use the &lt;code&gt;CategoricalEncoder&lt;/code&gt; to transform those two columns into one-hot encoded or dummy columns (the "sex" feature results in 2 dummy columns for female/male, the "embarked" feature in 3 columns, which together gives the resulting transformed array with 5 columns):&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
