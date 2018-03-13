@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>Joris Van den Bossche</title><link href="https://jorisvandenbossche.github.io/" rel="alternate"></link><link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="self"></link><id>https://jorisvandenbossche.github.io/</id><updated>2018-03-13T09:00:00+01:00</updated><entry><title>Activity on the pandas github repo during the March 10 documentation sprint</title><link href="https://jorisvandenbossche.github.io/blog/2018/03/13/pandas-sprint-activity/" rel="alternate"></link><published>2018-03-13T09:00:00+01:00</published><updated>2018-03-13T09:00:00+01:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2018-03-13:/blog/2018/03/13/pandas-sprint-activity/</id><summary type="html">
 &lt;p&gt;
-Last weekend, Marc Garcia and many others organised a world-wide pandas documentation sprint (https://python-sprints.github.io/pandas/). The goal was to improve the pandas API documentation, and I have to say, it was a great success!
+Last weekend, Marc Garcia and many others organised a world-wide pandas documentation sprint (&lt;a href="https://python-sprints.github.io/pandas/"&gt;https://python-sprints.github.io/pandas/&lt;/a&gt;). The goal was to improve the pandas API documentation, and I have to say, it was a great success!
 &lt;/p&gt;
 </summary><content type="html">&lt;style type="text/css"&gt;/*!
 *
@@ -981,7 +981,7 @@ h6:hover .anchor-link {
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 
 &lt;p&gt;
-Last weekend, Marc Garcia and many others organised a world-wide pandas documentation sprint (https://python-sprints.github.io/pandas/). The goal was to improve the pandas API documentation, and I have to say, it was a great success!
+Last weekend, Marc Garcia and many others organised a world-wide pandas documentation sprint (&lt;a href="https://python-sprints.github.io/pandas/"&gt;https://python-sprints.github.io/pandas/&lt;/a&gt;). The goal was to improve the pandas API documentation, and I have to say, it was a great success!
 &lt;/p&gt;
 
 &lt;/div&gt;
