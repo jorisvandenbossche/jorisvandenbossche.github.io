@@ -4,4 +4,4 @@ Comments: true
 Slug: scikit-learn-columntransformer
 Tags: python, scikit-learn, machine learning
 
-{% notebook downloads/notebooks/scikit-learn-columntransformer-encoder.ipynb cells[2:] %}
+{% notebook downloads/notebooks/scikit-learn-columntransformer.ipynb cells[2:] %}
