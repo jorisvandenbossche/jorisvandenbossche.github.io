@@ -1000,7 +1000,7 @@ Short summary: the &lt;code&gt;ColumnTransformer&lt;/code&gt;, which allows to a
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;hr/&gt;
-&lt;p&gt;Real-world data often contains heterogenous data types. When processing the data before applying the final prediction model, we typically want to use different preprocessing steps and transformations for those different types of columns.&lt;br/&gt;
+&lt;p&gt;Real-world data often contains heterogeneous data types. When processing the data before applying the final prediction model, we typically want to use different preprocessing steps and transformations for those different types of columns.&lt;br/&gt;
 A simple example: we may want to scale the numerical features and one-hot encode the categorical features.&lt;/p&gt;
 &lt;p&gt;Up to now, scikit-learn did not provide a good solution to do this out of the box. You can do the preprocessing beforehand using eg pandas, or you can select subsets of columns and apply different transformers on them manually. But, that does not easily allow to put those preprocessing steps in a scikit-learn &lt;code&gt;Pipeline&lt;/code&gt;, which can be important to avoid data leakage or to do a grid search over preprocessing parameters.&lt;/p&gt;
 &lt;p&gt;There are third-party projects that try to address this. For example, the &lt;a href="https://github.com/scikit-learn-contrib/sklearn-pandas"&gt;&lt;code&gt;sklearn_pandas&lt;/code&gt;&lt;/a&gt; package has a &lt;code&gt;DataFrameMapper&lt;/code&gt; that maps subsets of a DataFrame's columns to a specific transformation. Many thanks to the authors of this library, as such "contrib" packages are essential in extending the functionality of scikit-learn, and to explore things that would take a long time in scikit-learn itself.&lt;br/&gt;
@@ -1229,6 +1229,8 @@ We can check this is indeed working as expected by transforming the input data&l
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;The rest of the post shows a more complete example of using the ColumnTransformer in a scikit-learn pipeline.&lt;/p&gt;
+&lt;hr/&gt;
 &lt;h3 id="Integrating-in-a-full-pipeline"&gt;Integrating in a full pipeline&lt;a class="anchor-link" href="#Integrating-in-a-full-pipeline"&gt;¶&lt;/a&gt;&lt;/h3&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -1478,14 +1480,12 @@ We can check this is indeed working as expected by transforming the input data&l
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [ ]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt; 
-&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;hr/&gt;
+&lt;p&gt;&lt;em&gt;This post was written in a Jupyter notebook. You can &lt;a href="http://jorisvandenbossche.github.io/downloads/notebooks/scikit-learn-columntransformer.ipynb"&gt;download&lt;/a&gt; this notebook, or see a static view &lt;a href="http://nbviewer.jupyter.org/url/jorisvandenbossche.github.io/downloads/notebooks/scikit-learn-columntransformer.ipynb"&gt;on nbviewer&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

@@ -1407,7 +1407,7 @@ Short summary: the <code>ColumnTransformer</code>, which allows to apply differe
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr/>
-<p>Real-world data often contains heterogenous data types. When processing the data before applying the final prediction model, we typically want to use different preprocessing steps and transformations for those different types of columns.<br/>
+<p>Real-world data often contains heterogeneous data types. When processing the data before applying the final prediction model, we typically want to use different preprocessing steps and transformations for those different types of columns.<br/>
 A simple example: we may want to scale the numerical features and one-hot encode the categorical features.</p>
 <p>Up to now, scikit-learn did not provide a good solution to do this out of the box. You can do the preprocessing beforehand using eg pandas, or you can select subsets of columns and apply different transformers on them manually. But, that does not easily allow to put those preprocessing steps in a scikit-learn <code>Pipeline</code>, which can be important to avoid data leakage or to do a grid search over preprocessing parameters.</p>
 <p>There are third-party projects that try to address this. For example, the <a href="https://github.com/scikit-learn-contrib/sklearn-pandas"><code>sklearn_pandas</code></a> package has a <code>DataFrameMapper</code> that maps subsets of a DataFrame's columns to a specific transformation. Many thanks to the authors of this library, as such "contrib" packages are essential in extending the functionality of scikit-learn, and to explore things that would take a long time in scikit-learn itself.<br/>
@@ -1636,6 +1636,8 @@ We can check this is indeed working as expected by transforming the input data</
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>The rest of the post shows a more complete example of using the ColumnTransformer in a scikit-learn pipeline.</p>
+<hr/>
 <h3 id="Integrating-in-a-full-pipeline">Integrating in a full pipeline<a class="anchor-link" href="#Integrating-in-a-full-pipeline">¶</a></h3>
 </div>
 </div>
@@ -1885,14 +1887,12 @@ We can check this is indeed working as expected by transforming the input data</
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In [ ]:</div>
-<div class="inner_cell">
-<div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr/>
+<p><em>This post was written in a Jupyter notebook. You can <a href="http://jorisvandenbossche.github.io/downloads/notebooks/scikit-learn-columntransformer.ipynb">download</a> this notebook, or see a static view <a href="http://nbviewer.jupyter.org/url/jorisvandenbossche.github.io/downloads/notebooks/scikit-learn-columntransformer.ipynb">on nbviewer</a>.</em></p>
 </div>
 </div>
 </div>
