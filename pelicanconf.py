@@ -49,6 +49,16 @@ MARKDOWN = {
 #THEME = "pelican-themes/pelican-hss"
 THEME = './theme'
 
+ABOUT_PAGE = '/pages/about.html'
+TWITTER_USERNAME = 'jorisvdbossche'
+GITHUB_USERNAME = 'jorisvandenbossche'
+STACKOVERFLOW_ADDRESS = 'https://stackoverflow.com/users/653364/joris'
+AUTHOR_BLOG = 'http://jorisvandenbossche.github.io'
+#SHOW_ARCHIVES = True
+#SHOW_FEED = False  # Need to address large feeds
+
+
+
 PELICAN_SOBER_ABOUT = "Pandas core developer. Working at the Paris-Saclay Center for Data Science"
 
 # Blogroll
