@@ -1,4 +1,4 @@
-Title: A new CategoricalEncoder for handling categorical features in scikit-learn
+Title: A new categorical encoder for handling categorical features in scikit-learn
 Date: 2017-11-20 09:00
 Comments: true
 Slug: categorical-encoder
