@@ -1438,7 +1438,7 @@ The <code>ColumnTransformer</code> aims to bring this functionality into the cor
 <div class="inner_cell">
 <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">titanic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"https://raw.githubusercontent.com/amueller/scipy-2017-sklearn/master/notebooks/datasets/titanic3.csv"</span><span class="p">)</span>
-<span class="c1"># there is still a small problem with using the CategoricalEncoder and missing values,</span>
+<span class="c1"># there is still a small problem with using the OneHotEncoder and missing values,</span>
 <span class="c1"># so for now I am going to assume there are no missing values by dropping them</span>
 <span class="n">titanic2</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">'pclass'</span><span class="p">,</span> <span class="s1">'sex'</span><span class="p">,</span> <span class="s1">'age'</span><span class="p">,</span> <span class="s1">'sibsp'</span><span class="p">,</span> <span class="s1">'parch'</span><span class="p">,</span> <span class="s1">'fare'</span><span class="p">,</span> <span class="s1">'embarked'</span><span class="p">])</span>
 </pre></div>
@@ -1569,7 +1569,7 @@ So let's use the <code>ColumnTransformer</code> to <strong>combine transformers<
 <div class="prompt input_prompt">In [5]:</div>
 <div class="inner_cell">
 <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">CategoricalEncoder</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
 <span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="k">import</span> <span class="n">ColumnTransformer</span><span class="p">,</span> <span class="n">make_column_transformer</span>
 </pre></div>
 </div>
@@ -1583,7 +1583,7 @@ So let's use the <code>ColumnTransformer</code> to <strong>combine transformers<
 <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">make_column_transformer</span><span class="p">(</span>
     <span class="p">([</span><span class="s1">'age'</span><span class="p">,</span> <span class="s1">'fare'</span><span class="p">],</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-    <span class="p">([</span><span class="s1">'pclass'</span><span class="p">,</span> <span class="s1">'sex'</span><span class="p">,</span> <span class="s1">'embarked'</span><span class="p">],</span> <span class="n">CategoricalEncoder</span><span class="p">())</span>
+    <span class="p">([</span><span class="s1">'pclass'</span><span class="p">,</span> <span class="s1">'sex'</span><span class="p">,</span> <span class="s1">'embarked'</span><span class="p">],</span> <span class="n">OneHotEncoder</span><span class="p">())</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1733,7 +1733,7 @@ We can check this is indeed working as expected by transforming the input data</
 <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">make_column_transformer</span><span class="p">(</span>
     <span class="p">(</span><span class="n">numerical_features</span><span class="p">,</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">SimpleImputer</span><span class="p">(),</span> <span class="n">StandardScaler</span><span class="p">())),</span>
-    <span class="p">(</span><span class="n">categorical_features</span><span class="p">,</span> <span class="n">CategoricalEncoder</span><span class="p">()))</span>
+    <span class="p">(</span><span class="n">categorical_features</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
