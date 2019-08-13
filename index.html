@@ -407,8 +407,38 @@ article .meta a.comments_btn:hover {
 
   <article>
     <header>
+      <h2><a href="https://jorisvandenbossche.github.io/blog/2019/08/13/geopandas-extension-array-refactor/">GeoPandas now uses the pandas ExtensionArray interface</a></h2>
+      <time datetime="" title="2019-08-13T20:00:00+02:00" pubdate>Di 13 August 2019</time>
+    </header>
+
+    <div class="article_content">
+      
+<p>
+Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the pandas ExtensionArray interface. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. But given the invasive code changes under the hood, testing is very welcome!
+</p>
+
+    </div>
+
+    <div class="meta">
+      <div>
+        <a href="https://jorisvandenbossche.github.io/blog/2019/08/13/geopandas-extension-array-refactor/" class="read_more">Read more &#8594;</a>
+      </div>
+
+      <div>
+            <a href="https://jorisvandenbossche.github.io/tag/python.html" class="tag">python</a>
+            <a href="https://jorisvandenbossche.github.io/tag/geospatial.html" class="tag">geospatial</a>
+            <a href="https://jorisvandenbossche.github.io/tag/geopandas.html" class="tag">geopandas</a>
+            <a href="https://jorisvandenbossche.github.io/tag/pandas.html" class="tag">pandas</a>
+      </div>
+
+    </div>
+
+  </article>
+  <div class="separator"></div>
+  <article>
+    <header>
       <h2><a href="https://jorisvandenbossche.github.io/blog/2018/05/28/scikit-learn-columntransformer/">Introducing the ColumnTransformer: applying different transformations to different features in a scikit-learn pipeline</a></h2>
-      <time datetime="" title="2018-05-28T09:00:00+02:00" pubdate>ma 28 mei 2018</time>
+      <time datetime="" title="2018-05-28T09:00:00+02:00" pubdate>Mo 28 Mai 2018</time>
     </header>
 
     <div class="article_content">
@@ -437,7 +467,7 @@ Short summary: the <code>ColumnTransformer</code>, which allows to apply differe
   <article>
     <header>
       <h2><a href="https://jorisvandenbossche.github.io/blog/2018/03/13/pandas-sprint-activity/">Activity on the pandas github repo during the March 10 documentation sprint</a></h2>
-      <time datetime="" title="2018-03-13T09:00:00+01:00" pubdate>di 13 maart 2018</time>
+      <time datetime="" title="2018-03-13T09:00:00+01:00" pubdate>Di 13 März 2018</time>
     </header>
 
     <div class="article_content">
@@ -467,7 +497,7 @@ Last weekend, Marc Garcia and many others organised a world-wide pandas document
   <article>
     <header>
       <h2><a href="https://jorisvandenbossche.github.io/blog/2017/11/20/categorical-encoder/">A new categorical encoder for handling categorical features in scikit-learn</a></h2>
-      <time datetime="" title="2017-11-20T09:00:00+01:00" pubdate>ma 20 november 2017</time>
+      <time datetime="" title="2017-11-20T09:00:00+01:00" pubdate>Mo 20 November 2017</time>
     </header>
 
     <div class="article_content">
@@ -496,7 +526,7 @@ Short summary: an improved categorical encoder has landed in scikit-learn (<a hr
   <article>
     <header>
       <h2><a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/">GeoPandas developments: redesign and improved performance using Cython</a></h2>
-      <time datetime="" title="2017-09-19T20:00:00+02:00" pubdate>di 19 september 2017</time>
+      <time datetime="" title="2017-09-19T20:00:00+02:00" pubdate>Di 19 September 2017</time>
     </header>
 
     <div class="article_content">
@@ -525,7 +555,7 @@ Short summary: an improved categorical encoder has landed in scikit-learn (<a hr
   <article>
     <header>
       <h2><a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">Vectorized shapely operations using Cython</a></h2>
-      <time datetime="" title="2017-03-18T09:00:00+01:00" pubdate>za 18 maart 2017</time>
+      <time datetime="" title="2017-03-18T09:00:00+01:00" pubdate>Sa 18 März 2017</time>
     </header>
 
     <div class="article_content">
@@ -534,36 +564,30 @@ Short summary: an improved categorical encoder has landed in scikit-learn (<a hr
 * IPython notebook
 *
 */
-/* CSS font colors for translated ANSI colors. */
-.ansibold {
-  font-weight: bold;
+/* CSS font colors for translated ANSI escape sequences */
+/* The color values are a mix of
+   http://www.xcolors.net/dl/baskerville-ivorylight and
+   http://www.xcolors.net/dl/euphrasia */
+.ansi-black-fg {
+  color: #3E424D;
 }
-/* use dark versions for foreground, to improve visibility */
-.ansiblack {
-  color: black;
+.ansi-black-bg {
+  background-color: #3E424D;
 }
-.ansired {
-  color: darkred;
+.ansi-black-intense-fg {
+  color: #282C36;
 }
-.ansigreen {
-  color: darkgreen;
+.ansi-black-intense-bg {
+  background-color: #282C36;
 }
-.ansiyellow {
-  color: #c4a000;
+.ansi-red-fg {
+  color: #E75C58;
 }
-.ansiblue {
-  color: darkblue;
+.ansi-red-bg {
+  background-color: #E75C58;
 }
-.ansipurple {
-  color: darkviolet;
-}
-.ansicyan {
-  color: steelblue;
-}
-.ansigray {
-  color: gray;
-}
-/* and light for background, for the …</style>
+.ansi-red-intense-fg {
+  color …</style>
     </div>
 
     <div class="meta">

@@ -407,7 +407,7 @@ article .meta a.comments_btn:hover {
     <article>
         <header>
             <h1>Vectorized shapely operations using Cython</h1>
-            <time datetime="article.date.isoformat()" pubdate>za 18 maart 2017</time>
+            <time datetime="article.date.isoformat()" pubdate>Sa 18 März 2017</time>
         </header>
 
         <div class="article_content">
@@ -416,9 +416,124 @@ article .meta a.comments_btn:hover {
 * IPython notebook
 *
 */
-/* CSS font colors for translated ANSI colors. */
+/* CSS font colors for translated ANSI escape sequences */
+/* The color values are a mix of
+   http://www.xcolors.net/dl/baskerville-ivorylight and
+   http://www.xcolors.net/dl/euphrasia */
+.ansi-black-fg {
+  color: #3E424D;
+}
+.ansi-black-bg {
+  background-color: #3E424D;
+}
+.ansi-black-intense-fg {
+  color: #282C36;
+}
+.ansi-black-intense-bg {
+  background-color: #282C36;
+}
+.ansi-red-fg {
+  color: #E75C58;
+}
+.ansi-red-bg {
+  background-color: #E75C58;
+}
+.ansi-red-intense-fg {
+  color: #B22B31;
+}
+.ansi-red-intense-bg {
+  background-color: #B22B31;
+}
+.ansi-green-fg {
+  color: #00A250;
+}
+.ansi-green-bg {
+  background-color: #00A250;
+}
+.ansi-green-intense-fg {
+  color: #007427;
+}
+.ansi-green-intense-bg {
+  background-color: #007427;
+}
+.ansi-yellow-fg {
+  color: #DDB62B;
+}
+.ansi-yellow-bg {
+  background-color: #DDB62B;
+}
+.ansi-yellow-intense-fg {
+  color: #B27D12;
+}
+.ansi-yellow-intense-bg {
+  background-color: #B27D12;
+}
+.ansi-blue-fg {
+  color: #208FFB;
+}
+.ansi-blue-bg {
+  background-color: #208FFB;
+}
+.ansi-blue-intense-fg {
+  color: #0065CA;
+}
+.ansi-blue-intense-bg {
+  background-color: #0065CA;
+}
+.ansi-magenta-fg {
+  color: #D160C4;
+}
+.ansi-magenta-bg {
+  background-color: #D160C4;
+}
+.ansi-magenta-intense-fg {
+  color: #A03196;
+}
+.ansi-magenta-intense-bg {
+  background-color: #A03196;
+}
+.ansi-cyan-fg {
+  color: #60C6C8;
+}
+.ansi-cyan-bg {
+  background-color: #60C6C8;
+}
+.ansi-cyan-intense-fg {
+  color: #258F8F;
+}
+.ansi-cyan-intense-bg {
+  background-color: #258F8F;
+}
+.ansi-white-fg {
+  color: #C5C1B4;
+}
+.ansi-white-bg {
+  background-color: #C5C1B4;
+}
+.ansi-white-intense-fg {
+  color: #A1A6B2;
+}
+.ansi-white-intense-bg {
+  background-color: #A1A6B2;
+}
+.ansi-default-inverse-fg {
+  color: #FFFFFF;
+}
+.ansi-default-inverse-bg {
+  background-color: #000000;
+}
+.ansi-bold {
+  font-weight: bold;
+}
+.ansi-underline {
+  text-decoration: underline;
+}
+/* The following styles are deprecated an will be removed in a future version */
 .ansibold {
   font-weight: bold;
+}
+.ansi-inverse {
+  outline: 0.5px dotted;
 }
 /* use dark versions for foreground, to improve visibility */
 .ansiblack {
@@ -497,12 +612,20 @@ div.cell {
   /* This acts as a spacer between cells, that is outside the border */
   margin: 0px;
   outline: none;
-  border-left-width: 1px;
-  padding-left: 5px;
-  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+  position: relative;
+  overflow: visible;
+}
+div.cell:before {
+  position: absolute;
+  display: block;
+  top: -1px;
+  left: -1px;
+  width: 5px;
+  height: calc(100% +  2px);
+  content: '';
+  background: transparent;
 }
 div.cell.jupyter-soft-selected {
-  border-left-color: #90CAF9;
   border-left-color: #E3F2FD;
   border-left-width: 1px;
   padding-left: 5px;
@@ -515,27 +638,39 @@ div.cell.jupyter-soft-selected {
     border-color: transparent;
   }
 }
-div.cell.selected {
+div.cell.selected,
+div.cell.selected.jupyter-soft-selected {
   border-color: #ababab;
-  border-left-width: 0px;
-  padding-left: 6px;
-  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+div.cell.selected:before,
+div.cell.selected.jupyter-soft-selected:before {
+  position: absolute;
+  display: block;
+  top: -1px;
+  left: -1px;
+  width: 5px;
+  height: calc(100% +  2px);
+  content: '';
+  background: #42A5F5;
 }
 @media print {
-  div.cell.selected {
+  div.cell.selected,
+  div.cell.selected.jupyter-soft-selected {
     border-color: transparent;
   }
 }
-div.cell.selected.jupyter-soft-selected {
-  border-left-width: 0;
-  padding-left: 6px;
-  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
-}
 .edit_mode div.cell.selected {
   border-color: #66BB6A;
-  border-left-width: 0px;
-  padding-left: 6px;
-  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+.edit_mode div.cell.selected:before {
+  position: absolute;
+  display: block;
+  top: -1px;
+  left: -1px;
+  width: 5px;
+  height: calc(100% +  2px);
+  content: '';
+  background: #66BB6A;
 }
 @media print {
   .edit_mode div.cell.selected {
@@ -731,7 +866,9 @@ div.input_area > div.highlight > pre {
 .CodeMirror-lines {
   /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
   /* we have set a different line-height and want this to scale with that. */
-  padding: 0.4em;
+  /* Note that this should set vertical padding only, since CodeMirror assumes
+       that horizontal padding will be set on CodeMirror pre */
+  padding: 0.4em 0;
 }
 .CodeMirror-linenumber {
   padding: 0 8px 0 4px;
@@ -741,11 +878,24 @@ div.input_area > div.highlight > pre {
   border-top-left-radius: 2px;
 }
 .CodeMirror pre {
-  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
-  /* .CodeMirror-lines */
-  padding: 0;
+  /* In CM3 this went to 4px from 0 in CM2. This sets horizontal padding only,
+    use .CodeMirror-lines for vertical */
+  padding: 0 0.4em;
   border: 0;
   border-radius: 0;
+}
+.CodeMirror-cursor {
+  border-left: 1.4px solid black;
+}
+@media screen and (min-width: 2138px) and (max-width: 4319px) {
+  .CodeMirror-cursor {
+    border-left: 2px solid black;
+  }
+}
+@media screen and (min-width: 4320px) {
+  .CodeMirror-cursor {
+    border-left: 4px solid black;
+  }
 }
 /*
 
@@ -993,6 +1143,9 @@ div.output_area img.unconfined,
 div.output_area svg.unconfined {
   max-width: none;
 }
+div.output_area .mglyph > img {
+  max-width: none;
+}
 /* This is needed to protect the pre formating from global settings such
    as that of bootstrap */
 .output {
@@ -1031,7 +1184,7 @@ div.output_area svg.unconfined {
 }
 div.output_area pre {
   margin: 0;
-  padding: 0;
+  padding: 1px 0 1px 0;
   border: 0;
   vertical-align: baseline;
   color: black;
@@ -1153,6 +1306,10 @@ div.output_unrecognized a:hover {
 .rendered_html h6:first-child {
   margin-top: 1em;
 }
+.rendered_html ul:not(.list-inline),
+.rendered_html ol:not(.list-inline) {
+  padding-left: 2em;
+}
 
 
 
@@ -1169,16 +1326,24 @@ div.output_unrecognized a:hover {
 }
 
 
+
+
+
 .rendered_html pre,
+
 
 
 
 .rendered_html tr,
 .rendered_html th,
 
-.rendered_html td,
 
-
+.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
 .rendered_html * + table {
   margin-top: 1em;
 }
@@ -1194,6 +1359,11 @@ div.output_unrecognized a:hover {
 
 .rendered_html img.unconfined,
 
+
+.rendered_html * + .alert {
+  margin-top: 1em;
+}
+[dir="rtl"] 
 div.text_cell {
   /* Old browsers */
   display: -webkit-box;
@@ -1244,8 +1414,15 @@ h6:hover .anchor-link {
   display: none;
 }
 .text_cell.rendered 
+.text_cell.rendered .rendered_html tr,
+.text_cell.rendered .rendered_html th,
+.text_cell.rendered 
 .text_cell.unrendered .text_cell_render {
   display: none;
+}
+.text_cell .dropzone .input_area {
+  border: 2px dashed #bababa;
+  margin: -1px;
 }
 .cm-header-1,
 .cm-header-2,
@@ -1384,374 +1561,484 @@ h6:hover .anchor-link {
 .ansi-bold { font-weight: bold; }
 </style>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Example-on-single-objects">Example on single objects<a class="anchor-link" href="#Example-on-single-objects">¶</a></h3>
+<h3 id="Example-on-single-objects">Example on single objects<a class="anchor-link" href="#Example-on-single-objects">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Let's create a Point and a Polygon object:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [1]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [2]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
 <span class="n">point</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[2]:</div>
+
+    <div class="prompt output_prompt">Out[2]:</div>
+
+
+
 <div class="output_svg output_subarea output_execute_result">
-<svg height="100.0" preserveaspectratio="xMinYMin meet" viewbox="49.0 49.0 2.0 2.0" width="100.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g transform="matrix(1,0,0,-1,0,100.0)"><circle cx="50.0" cy="50.0" fill="#66cc99" opacity="0.6" r="0.06" stroke="#555555" stroke-width="0.02"></circle></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100.0" height="100.0" viewBox="49.0 49.0 2.0 2.0" preserveAspectRatio="xMinYMin meet"><g transform="matrix(1,0,0,-1,0,100.0)"><circle cx="50.0" cy="50.0" r="0.06" stroke="#555555" stroke-width="0.02" fill="#66cc99" opacity="0.6" /></g></svg>
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [3]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">poly</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">([(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)])</span>
 <span class="n">poly</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[3]:</div>
+
+    <div class="prompt output_prompt">Out[3]:</div>
+
+
+
 <div class="output_svg output_subarea output_execute_result">
-<svg height="100.0" preserveaspectratio="xMinYMin meet" viewbox="6.4 6.4 97.19999999999999 97.19999999999999" width="100.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g transform="matrix(1,0,0,-1,0,110.0)"><path d="M 10.0,10.0 L 10.0,100.0 L 100.0,100.0 L 100.0,10.0 L 10.0,10.0 z" fill="#66cc99" fill-rule="evenodd" opacity="0.6" stroke="#555555" stroke-width="1.9439999999999997"></path></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100.0" height="100.0" viewBox="6.4 6.4 97.19999999999999 97.19999999999999" preserveAspectRatio="xMinYMin meet"><g transform="matrix(1,0,0,-1,0,110.0)"><path fill-rule="evenodd" fill="#66cc99" stroke="#555555" stroke-width="1.9439999999999997" opacity="0.6" d="M 10.0,10.0 L 10.0,100.0 L 100.0,100.0 L 100.0,10.0 L 10.0,10.0 z" /></g></svg>
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>A typical <em>spatial predicate</em> operation is to check whether the point is contained in the polygon:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [4]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">poly</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[4]:</div>
+
+    <div class="prompt output_prompt">Out[4]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>True</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Working-with-many-objects">Working with many objects<a class="anchor-link" href="#Working-with-many-objects">¶</a></h3>
+<h3 id="Working-with-many-objects">Working with many objects<a class="anchor-link" href="#Working-with-many-objects">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>However, often we do not have some single objects, but an array (or a GeoSeries) full of geometries.</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>For the test example, create an array of 10,000 Points:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [5]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [6]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[6]:</div>
+
+    <div class="prompt output_prompt">Out[6]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
-<pre>array([<shapely.geometry.point.Point object at 0x7f309c7d76a0>,
-       <shapely.geometry.point.Point object at 0x7f309c7d7518>,
-       <shapely.geometry.point.Point object at 0x7f309c7d7588>, ...,
-       <shapely.geometry.point.Point object at 0x7f309c42eeb8>,
-       <shapely.geometry.point.Point object at 0x7f309c42eef0>,
-       <shapely.geometry.point.Point object at 0x7f309c42ef28>], dtype=object)</pre>
+<pre>array([&lt;shapely.geometry.point.Point object at 0x7f309c7d76a0&gt;,
+       &lt;shapely.geometry.point.Point object at 0x7f309c7d7518&gt;,
+       &lt;shapely.geometry.point.Point object at 0x7f309c7d7588&gt;, ...,
+       &lt;shapely.geometry.point.Point object at 0x7f309c42eeb8&gt;,
+       &lt;shapely.geometry.point.Point object at 0x7f309c42eef0&gt;,
+       &lt;shapely.geometry.point.Point object at 0x7f309c42ef28&gt;], dtype=object)</pre>
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Python-function-for-vectorized-contains">Python function for vectorized contains<a class="anchor-link" href="#Python-function-for-vectorized-contains">¶</a></h3>
+<h3 id="Python-function-for-vectorized-contains">Python function for vectorized contains<a class="anchor-link" href="#Python-function-for-vectorized-contains">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>If we now want to do the same 'contains' operation but with the full array of points, we can write the following function looping over the shapely objects:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [7]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">contains_py</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">poly</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">poly</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">array</span><span class="p">])</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [8]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res1</span> <span class="o">=</span> <span class="n">contains_py</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span>
 <span class="n">res1</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[8]:</div>
+
+    <div class="prompt output_prompt">Out[8]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [9]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res1</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[9]:</div>
+
+    <div class="prompt output_prompt">Out[9]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>89</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>And let's time this function:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [10]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> contains_py(a, poly)
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>49 ms ± 1.65 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 </pre>
 </div>
 </div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Cython-function-for-&quot;vectorized-contains&quot;:-using-cython-to-do-the-for-loop-in-C">Cython function for "vectorized contains": using cython to do the for loop in C<a class="anchor-link" href="#Cython-function-for-&quot;vectorized-contains&quot;:-using-cython-to-do-the-for-loop-in-C">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id='Cython-function-for-"vectorized-contains":-using-cython-to-do-the-for-loop-in-C'>Cython function for "vectorized contains": using cython to do the for loop in C<a class="anchor-link" href='#Cython-function-for-"vectorized-contains":-using-cython-to-do-the-for-loop-in-C'>¶</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The main performance problem with this vectorized 'contains' function is that the for loop happens in python, making this slow (and this is also how geopandas does it under the hood).<br/>
+<p>The main performance problem with this vectorized 'contains' function is that the for loop happens in python, making this slow (and this is also how geopandas does it under the hood).<br>
 But, the actual 'contains' operation happens in C (by calling the GEOS library, wrapped by shapely). So let's try to make use of this fact by doing the for loop in Cython and calling the C GEOS function directly from there, without the overhead of switching to Python.</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [11]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>geos-config --version
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>3.5.1
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [12]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>geos-config --cflags
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>-I/home/joris/miniconda3/include
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [13]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>geos-config --clibs
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>-L/home/joris/miniconda3/lib -lgeos_c
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>(just copy pasted some things together based on <a href="https://github.com/Toblerity/Shapely/blob/master/shapely/vectorized/_vectorized.pyx">https://github.com/Toblerity/Shapely/blob/master/shapely/vectorized/_vectorized.pyx</a>)</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [14]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> cython
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [19]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="n">cython</span> <span class="o">-</span><span class="n">l</span> <span class="n">geos_c</span> <span class="o">-</span><span class="n">L</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="n">lib</span> <span class="o">-</span><span class="n">I</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="k">include</span> <span class="o">-</span><span class="n">a</span>
 
 <span class="k">import</span> <span class="nn">cython</span>
@@ -1762,7 +2049,7 @@ But, the actual 'contains' operation happens in C (by calling the GEOS library, 
 
 <span class="k">import</span> <span class="nn">shapely.prepared</span>
 
-<span class="k">include</span> <span class="s">"_geos.pxi"</span>
+<span class="k">include</span> <span class="s">&quot;_geos.pxi&quot;</span>
 
 
 <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
@@ -1778,7 +2065,7 @@ But, the actual 'contains' operation happens in C (by calling the GEOS library, 
     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span>
     <span class="k">cdef</span> <span class="kt">uintptr_t</span> <span class="nf">geos_geom</span>
     
-    <span class="c"># Prepare the geometry if it hasn't already been prepared.</span>
+    <span class="c"># Prepare the geometry if it hasn&#39;t already been prepared.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">PreparedGeometry</span><span class="p">):</span>
         <span class="n">geometry</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
         
@@ -1788,31 +2075,38 @@ But, the actual 'contains' operation happens in C (by calling the GEOS library, 
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="c"># Construct a coordinate sequence with our x, y values.</span>
         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">_geom</span>
-        <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span>
+        <span class="n">geom2</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span><span class="n">geos_geom</span>
         
-        <span class="c"># Put the result of whether the point is "contained" by the</span>
+        <span class="c"># Put the result of whether the point is &quot;contained&quot; by the</span>
         <span class="c"># prepared geometry into the result array. </span>
-        <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">&gt;</span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span>
         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span>
 
     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[19]:</div>
+
+    <div class="prompt output_prompt">Out[19]:</div>
+
+
+
 <div class="output_html rendered_html output_subarea output_execute_result">
 <!DOCTYPE html>
-
 <!-- Generated by Cython 0.24.1 -->
 <html>
 <head>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-<title>Cython: _cython_magic_82b59155c5d602a807243f9ffdef2d25.pyx</title>
-<style type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Cython: _cython_magic_82b59155c5d602a807243f9ffdef2d25.pyx</title>
+    <style type="text/css">
     
 
 .cython.tag  {  }
@@ -2163,7 +2457,7 @@ But, the actual 'contains' operation happens in C (by calling the GEOS library, 
 .cython .vm { color: #19177C } /* Name.Variable.Magic */
 .cython .il { color: #666666 } /* Literal.Number.Integer.Long */
     </style>
-<script>
+    <script>
     function toggleDiv(id) {
         theDiv = id.nextElementSibling
         if (theDiv.style.display != 'block') theDiv.style.display = 'block';
@@ -2174,92 +2468,92 @@ But, the actual 'contains' operation happens in C (by calling the GEOS library, 
 <body class="cython">
 <p><span style="border-bottom: solid 1px grey;">Generated by Cython 0.24.1</span></p>
 <p>
-<span style="background-color: #FFFF00">Yellow lines</span> hint at Python interaction.<br>
+    <span style="background-color: #FFFF00">Yellow lines</span> hint at Python interaction.<br />
     Click on a line that starts with a "<code>+</code>" to see the C code that Cython generated for it.
-</br></p>
-<div class="cython"><pre class="cython line score-0"> <span class="">01</span>: </pre>
-<pre class="cython line score-11" onclick="toggleDiv(this)">+<span class="">02</span>: <span class="k">import</span> <span class="nn">cython</span></pre>
-<pre class="cython code score-11 ">  __pyx_t_1 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-</pre><pre class="cython line score-0"> <span class="">03</span>: <span class="k">cimport</span> <span class="nn">cpython.array</span></pre>
-<pre class="cython line score-0"> <span class="">04</span>: </pre>
-<pre class="cython line score-8" onclick="toggleDiv(this)">+<span class="">05</span>: <span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
-<pre class="cython code score-8 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-</pre><pre class="cython line score-0"> <span class="">06</span>: <span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
-<pre class="cython line score-0"> <span class="">07</span>: </pre>
-<pre class="cython line score-8" onclick="toggleDiv(this)">+<span class="">08</span>: <span class="k">import</span> <span class="nn">shapely.prepared</span></pre>
-<pre class="cython code score-8 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_shapely_prepared, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_shapely, __pyx_t_1) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-</pre><pre class="cython line score-0"> <span class="">09</span>: </pre>
-<pre class="cython line score-0"> <span class="">10</span>: <span class="k">include</span> <span class="s">"_geos.pxi"</span></pre>
-<pre class="cython line score-0"> <span class="">11</span>: </pre>
-<pre class="cython line score-0"> <span class="">12</span>: </pre>
-<pre class="cython line score-0"> <span class="">13</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
-<pre class="cython line score-0"> <span class="">14</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
-<pre class="cython line score-59" onclick="toggleDiv(this)">+<span class="">15</span>: <span class="k">def</span> <span class="nf">contains_cy</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span></pre>
-<pre class="cython code score-59 ">/* Python wrapper */
+</p>
+<div class="cython"><pre class="cython line score-0">&#xA0;<span class="">01</span>: </pre>
+<pre class="cython line score-11" onclick='toggleDiv(this)'>+<span class="">02</span>: <span class="k">import</span> <span class="nn">cython</span></pre>
+<pre class='cython code score-11 '>  __pyx_t_1 = <span class='py_c_api'>PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_test, __pyx_t_1) &lt; 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">03</span>: <span class="k">cimport</span> <span class="nn">cpython.array</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">04</span>: </pre>
+<pre class="cython line score-8" onclick='toggleDiv(this)'>+<span class="">05</span>: <span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class='cython code score-8 '>  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_Import</span>(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_np, __pyx_t_1) &lt; 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">06</span>: <span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">07</span>: </pre>
+<pre class="cython line score-8" onclick='toggleDiv(this)'>+<span class="">08</span>: <span class="k">import</span> <span class="nn">shapely.prepared</span></pre>
+<pre class='cython code score-8 '>  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_Import</span>(__pyx_n_s_shapely_prepared, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_shapely, __pyx_t_1) &lt; 0) __PYX_ERR(0, 8, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">09</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">10</span>: <span class="k">include</span> <span class="s">&quot;_geos.pxi&quot;</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">11</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">12</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">13</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">14</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-59" onclick='toggleDiv(this)'>+<span class="">15</span>: <span class="k">def</span> <span class="nf">contains_cy</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span></pre>
+<pre class='cython code score-59 '>/* Python wrapper */
 static PyObject *__pyx_pw_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static PyMethodDef __pyx_mdef_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy = {"contains_cy", (PyCFunction)__pyx_pw_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy, METH_VARARGS|METH_KEYWORDS, 0};
 static PyObject *__pyx_pw_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_array = 0;
   PyObject *__pyx_v_geometry = 0;
   PyObject *__pyx_r = 0;
-  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
-  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy (wrapper)", 0);
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("contains_cy (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_array,&__pyx_n_s_geometry,0};
+    static PyObject **__pyx_pyargnames[] = {&amp;__pyx_n_s_array,&amp;__pyx_n_s_geometry,0};
     PyObject* values[2] = {0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args);
+      const Py_ssize_t pos_args = <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args);
       switch (pos_args) {
-        case  2: values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
-        case  1: values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
+        case  2: values[1] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 1);
+        case  1: values[0] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 0);
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
-      kw_args = <span class="py_c_api">PyDict_Size</span>(__pyx_kwds);
+      kw_args = <span class='py_c_api'>PyDict_Size</span>(__pyx_kwds);
       switch (pos_args) {
         case  0:
-        if (likely((values[0] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_array)) != 0)) kw_args--;
+        if (likely((values[0] = <span class='py_c_api'>PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_array)) != 0)) kw_args--;
         else goto __pyx_L5_argtuple_error;
         case  1:
-        if (likely((values[1] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_geometry)) != 0)) kw_args--;
+        if (likely((values[1] = <span class='py_c_api'>PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_geometry)) != 0)) kw_args--;
         else {
-          <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy", 1, 2, 2, 1); __PYX_ERR(0, 15, __pyx_L3_error)
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("contains_cy", 1, 2, 2, 1); __PYX_ERR(0, 15, __pyx_L3_error)
         }
       }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(<span class="pyx_c_api">__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "contains_cy") < 0)) __PYX_ERR(0, 15, __pyx_L3_error)
+      if (unlikely(kw_args &gt; 0)) {
+        if (unlikely(<span class='pyx_c_api'>__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "contains_cy") &lt; 0)) __PYX_ERR(0, 15, __pyx_L3_error)
       }
-    } else if (<span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args) != 2) {
+    } else if (<span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
     } else {
-      values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
-      values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
+      values[0] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 0);
+      values[1] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 1);
     }
     __pyx_v_array = values[0];
     __pyx_v_geometry = values[1];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy", 1, 2, 2, <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args)); __PYX_ERR(0, 15, __pyx_L3_error)
+  <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("contains_cy", 1, 2, 2, <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args)); __PYX_ERR(0, 15, __pyx_L3_error)
   __pyx_L3_error:;
-  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_82b59155c5d602a807243f9ffdef2d25.contains_cy", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("_cython_magic_82b59155c5d602a807243f9ffdef2d25.contains_cy", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   __pyx_r = __pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_contains_cy(__pyx_self, __pyx_v_array, __pyx_v_geometry);
 
   /* function exit code */
-  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 
@@ -2274,319 +2568,356 @@ static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_conta
   __Pyx_LocalBuf_ND __pyx_pybuffernd_result;
   __Pyx_Buffer __pyx_pybuffer_result;
   PyObject *__pyx_r = NULL;
-  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
-  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy", 0);
-  <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_v_geometry);
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("contains_cy", 0);
+  <span class='pyx_macro_api'>__Pyx_INCREF</span>(__pyx_v_geometry);
   __pyx_pybuffer_result.pybuffer.buf = NULL;
   __pyx_pybuffer_result.refcount = 0;
   __pyx_pybuffernd_result.data = NULL;
-  __pyx_pybuffernd_result.rcbuffer = &__pyx_pybuffer_result;
+  __pyx_pybuffernd_result.rcbuffer = &amp;__pyx_pybuffer_result;
 /* … */
   /* function exit code */
   __pyx_L1_error:;
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_3);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_4);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_5);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_6);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_3);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_4);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_5);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_6);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
-    <span class="pyx_c_api">__Pyx_ErrFetch</span>(&__pyx_type, &__pyx_value, &__pyx_tb);
-    <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
-  <span class="pyx_c_api">__Pyx_ErrRestore</span>(__pyx_type, __pyx_value, __pyx_tb);}
-  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_82b59155c5d602a807243f9ffdef2d25.contains_cy", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    <span class='pyx_c_api'>__Pyx_ErrFetch</span>(&amp;__pyx_type, &amp;__pyx_value, &amp;__pyx_tb);
+    <span class='pyx_c_api'>__Pyx_SafeReleaseBuffer</span>(&amp;__pyx_pybuffernd_result.rcbuffer-&gt;pybuffer);
+  <span class='pyx_c_api'>__Pyx_ErrRestore</span>(__pyx_type, __pyx_value, __pyx_tb);}
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("_cython_magic_82b59155c5d602a807243f9ffdef2d25.contains_cy", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
-  <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
+  <span class='pyx_c_api'>__Pyx_SafeReleaseBuffer</span>(&amp;__pyx_pybuffernd_result.rcbuffer-&gt;pybuffer);
   __pyx_L2:;
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>((PyObject *)__pyx_v_result);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_v_geometry);
-  <span class="refnanny">__Pyx_XGIVEREF</span>(__pyx_r);
-  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>((PyObject *)__pyx_v_result);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_v_geometry);
+  <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 /* … */
-  __pyx_tuple__7 = <span class="py_c_api">PyTuple_Pack</span>(10, __pyx_n_s_array, __pyx_n_s_geometry, __pyx_n_s_idx, __pyx_n_s_n, __pyx_n_s_result, __pyx_n_s_geos_handle, __pyx_n_s_geom1, __pyx_n_s_geom2, __pyx_n_s_geos_geom, __pyx_n_s_geos_h); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 15, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_tuple__7);
-  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_tuple__7);
+  __pyx_tuple__7 = <span class='py_c_api'>PyTuple_Pack</span>(10, __pyx_n_s_array, __pyx_n_s_geometry, __pyx_n_s_idx, __pyx_n_s_n, __pyx_n_s_result, __pyx_n_s_geos_handle, __pyx_n_s_geom1, __pyx_n_s_geom2, __pyx_n_s_geos_geom, __pyx_n_s_geos_h); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__7);
+  <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__7);
 /* … */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy, NULL, __pyx_n_s_cython_magic_82b59155c5d602a807); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_contains_cy, __pyx_t_1) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-</pre><pre class="cython line score-0"> <span class="">16</span>: </pre>
-<pre class="cython line score-0"> <span class="">17</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span></pre>
-<pre class="cython line score-10" onclick="toggleDiv(this)">+<span class="">18</span>:     <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span></pre>
-<pre class="cython code score-10 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_v_array, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyInt_As_unsigned_int</span>(__pyx_t_1); if (unlikely((__pyx_t_2 == (unsigned int)-1) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 18, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_1contains_cy, NULL, __pyx_n_s_cython_magic_82b59155c5d602a807); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_contains_cy, __pyx_t_1) &lt; 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">16</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">17</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span></pre>
+<pre class="cython line score-10" onclick='toggleDiv(this)'>+<span class="">18</span>:     <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span></pre>
+<pre class='cython code score-10 '>  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_v_array, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_PyInt_As_unsigned_int</span>(__pyx_t_1); if (unlikely((__pyx_t_2 == (unsigned int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) __PYX_ERR(0, 18, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_n = __pyx_t_2;
-</pre><pre class="cython line score-39" onclick="toggleDiv(this)">+<span class="">19</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></pre>
-<pre class="cython code score-39 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  __pyx_t_3 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_3);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyInt_From_unsigned_int</span>(__pyx_v_n); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  __pyx_t_4 = <span class="py_c_api">PyTuple_New</span>(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
-  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_t_1);
-  <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_4, 0, __pyx_t_1);
+</pre><pre class="cython line score-39" onclick='toggleDiv(this)'>+<span class="">19</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></pre>
+<pre class='cython code score-39 '>  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_3 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_3);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyInt_From_unsigned_int</span>(__pyx_v_n); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_4 = <span class='py_c_api'>PyTuple_New</span>(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_t_1);
+  <span class='py_macro_api'>PyTuple_SET_ITEM</span>(__pyx_t_4, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  __pyx_t_5 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_5);
-  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_uint8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_3, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  if (!(likely(((__pyx_t_6) == Py_None) || likely(<span class="pyx_c_api">__Pyx_TypeTest</span>(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_1 = <span class='py_c_api'>PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_5 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_5);
+  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_uint8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_6) &lt; 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_t_3, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 19, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  if (!(likely(((__pyx_t_6) == Py_None) || likely(<span class='pyx_c_api'>__Pyx_TypeTest</span>(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 19, __pyx_L1_error)
   __pyx_t_7 = ((PyArrayObject *)__pyx_t_6);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(<span class="pyx_c_api">__Pyx_GetBufferAndValidate</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_nn___pyx_t_5numpy_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 1, __pyx_stack) == -1)) {
-      __pyx_v_result = ((PyArrayObject *)Py_None); <span class="pyx_macro_api">__Pyx_INCREF</span>(Py_None); __pyx_pybuffernd_result.rcbuffer->pybuffer.buf = NULL;
+    if (unlikely(<span class='pyx_c_api'>__Pyx_GetBufferAndValidate</span>(&amp;__pyx_pybuffernd_result.rcbuffer-&gt;pybuffer, (PyObject*)__pyx_t_7, &amp;__Pyx_TypeInfo_nn___pyx_t_5numpy_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 1, __pyx_stack) == -1)) {
+      __pyx_v_result = ((PyArrayObject *)Py_None); <span class='pyx_macro_api'>__Pyx_INCREF</span>(Py_None); __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.buf = NULL;
       __PYX_ERR(0, 19, __pyx_L1_error)
-    } else {__pyx_pybuffernd_result.diminfo[0].strides = __pyx_pybuffernd_result.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_result.diminfo[0].shape = __pyx_pybuffernd_result.rcbuffer->pybuffer.shape[0];
+    } else {__pyx_pybuffernd_result.diminfo[0].strides = __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.strides[0]; __pyx_pybuffernd_result.diminfo[0].shape = __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.shape[0];
     }
   }
   __pyx_t_7 = 0;
   __pyx_v_result = ((PyArrayObject *)__pyx_t_6);
   __pyx_t_6 = 0;
-</pre><pre class="cython line score-0"> <span class="">20</span>: </pre>
-<pre class="cython line score-0"> <span class="">21</span>:     <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span></pre>
-<pre class="cython line score-0"> <span class="">22</span>:     <span class="k">cdef</span> <span class="kt">GEOSPreparedGeometry</span> *<span class="nf">geom1</span></pre>
-<pre class="cython line score-0"> <span class="">23</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span></pre>
-<pre class="cython line score-0"> <span class="">24</span>:     <span class="k">cdef</span> <span class="kt">uintptr_t</span> <span class="nf">geos_geom</span></pre>
-<pre class="cython line score-0"> <span class="">25</span>: </pre>
-<pre class="cython line score-0"> <span class="">26</span>:     <span class="c"># Prepare the geometry if it hasn't already been prepared.</span></pre>
-<pre class="cython line score-14" onclick="toggleDiv(this)">+<span class="">27</span>:     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">PreparedGeometry</span><span class="p">):</span></pre>
-<pre class="cython code score-14 ">  __pyx_t_6 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_6, __pyx_n_s_prepared); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_PreparedGeometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = <span class="py_c_api">PyObject_IsInstance</span>(__pyx_v_geometry, __pyx_t_6); if (unlikely(__pyx_t_8 == -1)) __PYX_ERR(0, 27, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">20</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">21</span>:     <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">22</span>:     <span class="k">cdef</span> <span class="kt">GEOSPreparedGeometry</span> *<span class="nf">geom1</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">23</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">24</span>:     <span class="k">cdef</span> <span class="kt">uintptr_t</span> <span class="nf">geos_geom</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">25</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">26</span>:     <span class="c"># Prepare the geometry if it hasn&#39;t already been prepared.</span></pre>
+<pre class="cython line score-14" onclick='toggleDiv(this)'>+<span class="">27</span>:     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">PreparedGeometry</span><span class="p">):</span></pre>
+<pre class='cython code score-14 '>  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_6, __pyx_n_s_prepared); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_PreparedGeometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_8 = <span class='py_c_api'>PyObject_IsInstance</span>(__pyx_v_geometry, __pyx_t_6); if (unlikely(__pyx_t_8 == -1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_t_9 = ((!(__pyx_t_8 != 0)) != 0);
   if (__pyx_t_9) {
 /* … */
   }
-</pre><pre class="cython line score-33" onclick="toggleDiv(this)">+<span class="">28</span>:         <span class="n">geometry</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
-<pre class="cython code score-33 ">    __pyx_t_1 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
-    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-    __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_prepared); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
-    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
-    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_4, __pyx_n_s_prep); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
-    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+</pre><pre class="cython line score-33" onclick='toggleDiv(this)'>+<span class="">28</span>:         <span class="n">geometry</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
+<pre class='cython code score-33 '>    __pyx_t_1 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_shapely); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+    __pyx_t_4 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_prepared); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
+    <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_4, __pyx_n_s_prep); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+    <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+    <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
-    if (CYTHON_COMPILING_IN_CPYTHON && likely(<span class="py_c_api">PyMethod_Check</span>(__pyx_t_1))) {
-      __pyx_t_4 = <span class="py_macro_api">PyMethod_GET_SELF</span>(__pyx_t_1);
+    if (CYTHON_COMPILING_IN_CPYTHON &amp;&amp; likely(<span class='py_c_api'>PyMethod_Check</span>(__pyx_t_1))) {
+      __pyx_t_4 = <span class='py_macro_api'>PyMethod_GET_SELF</span>(__pyx_t_1);
       if (likely(__pyx_t_4)) {
-        PyObject* function = <span class="py_macro_api">PyMethod_GET_FUNCTION</span>(__pyx_t_1);
-        <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_t_4);
-        <span class="pyx_macro_api">__Pyx_INCREF</span>(function);
-        <span class="pyx_macro_api">__Pyx_DECREF_SET</span>(__pyx_t_1, function);
+        PyObject* function = <span class='py_macro_api'>PyMethod_GET_FUNCTION</span>(__pyx_t_1);
+        <span class='pyx_macro_api'>__Pyx_INCREF</span>(__pyx_t_4);
+        <span class='pyx_macro_api'>__Pyx_INCREF</span>(function);
+        <span class='pyx_macro_api'>__Pyx_DECREF_SET</span>(__pyx_t_1, function);
       }
     }
     if (!__pyx_t_4) {
-      __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_CallOneArg</span>(__pyx_t_1, __pyx_v_geometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
-      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
+      __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_CallOneArg</span>(__pyx_t_1, __pyx_v_geometry); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
     } else {
-      __pyx_t_3 = <span class="py_c_api">PyTuple_New</span>(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 28, __pyx_L1_error)
-      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_3);
-      <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_t_4); <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
-      <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_v_geometry);
-      <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_v_geometry);
-      <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_3, 0+1, __pyx_v_geometry);
-      __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_t_3, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
-      <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-      <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_3 = <span class='py_c_api'>PyTuple_New</span>(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_3);
+      <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_t_4); <span class='py_macro_api'>PyTuple_SET_ITEM</span>(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
+      <span class='pyx_macro_api'>__Pyx_INCREF</span>(__pyx_v_geometry);
+      <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_v_geometry);
+      <span class='py_macro_api'>PyTuple_SET_ITEM</span>(__pyx_t_3, 0+1, __pyx_v_geometry);
+      __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_t_3, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 28, __pyx_L1_error)
+      <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+      <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
     }
-    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-    <span class="pyx_macro_api">__Pyx_DECREF_SET</span>(__pyx_v_geometry, __pyx_t_6);
+    <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+    <span class='pyx_macro_api'>__Pyx_DECREF_SET</span>(__pyx_v_geometry, __pyx_t_6);
     __pyx_t_6 = 0;
-</pre><pre class="cython line score-0"> <span class="">29</span>: </pre>
-<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">30</span>:     <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span></pre>
-<pre class="cython code score-0 ">  __pyx_v_geos_h = __pyx_f_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_get_geos_context_handle();
-</pre><pre class="cython line score-5" onclick="toggleDiv(this)">+<span class="">31</span>:     <span class="n">geom1</span> <span class="o">=</span> <span class="n">geos_from_prepared</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
-<pre class="cython code score-5 ">  __pyx_t_10 = __pyx_f_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_geos_from_prepared(__pyx_v_geometry); if (unlikely(<span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 31, __pyx_L1_error)
+</pre><pre class="cython line score-0">&#xA0;<span class="">29</span>: </pre>
+<pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">30</span>:     <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_geos_h = __pyx_f_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_get_geos_context_handle();
+</pre><pre class="cython line score-5" onclick='toggleDiv(this)'>+<span class="">31</span>:     <span class="n">geom1</span> <span class="o">=</span> <span class="n">geos_from_prepared</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span></pre>
+<pre class='cython code score-5 '>  __pyx_t_10 = __pyx_f_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_geos_from_prepared(__pyx_v_geometry); if (unlikely(<span class='py_c_api'>PyErr_Occurred</span>())) __PYX_ERR(0, 31, __pyx_L1_error)
   __pyx_v_geom1 = __pyx_t_10;
-</pre><pre class="cython line score-0"> <span class="">32</span>: </pre>
-<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">33</span>:     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span></pre>
-<pre class="cython code score-0 ">  __pyx_t_2 = __pyx_v_n;
-  for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_2; __pyx_t_11+=1) {
+</pre><pre class="cython line score-0">&#xA0;<span class="">32</span>: </pre>
+<pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">33</span>:     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span></pre>
+<pre class='cython code score-0 '>  __pyx_t_2 = __pyx_v_n;
+  for (__pyx_t_11 = 0; __pyx_t_11 &lt; __pyx_t_2; __pyx_t_11+=1) {
     __pyx_v_idx = __pyx_t_11;
-</pre><pre class="cython line score-0"> <span class="">34</span>:         <span class="c"># Construct a coordinate sequence with our x, y values.</span></pre>
-<pre class="cython line score-13" onclick="toggleDiv(this)">+<span class="">35</span>:         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">_geom</span></pre>
-<pre class="cython code score-13 ">    __pyx_t_6 = <span class="pyx_c_api">__Pyx_GetItemInt</span>(__pyx_v_array, __pyx_v_idx, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 35, __pyx_L1_error)
-    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-    __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_6, __pyx_n_s_geom); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
-    <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_12 = <span class="pyx_c_api">__Pyx_PyInt_As_size_t</span>(__pyx_t_1); if (unlikely((__pyx_t_12 == (uintptr_t)-1) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 35, __pyx_L1_error)
-    <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">34</span>:         <span class="c"># Construct a coordinate sequence with our x, y values.</span></pre>
+<pre class="cython line score-13" onclick='toggleDiv(this)'>+<span class="">35</span>:         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">_geom</span></pre>
+<pre class='cython code score-13 '>    __pyx_t_6 = <span class='pyx_c_api'>__Pyx_GetItemInt</span>(__pyx_v_array, __pyx_v_idx, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 35, __pyx_L1_error)
+    <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+    __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_6, __pyx_n_s_geom); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+    <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+    <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_12 = <span class='pyx_c_api'>__Pyx_PyInt_As_size_t</span>(__pyx_t_1); if (unlikely((__pyx_t_12 == (uintptr_t)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) __PYX_ERR(0, 35, __pyx_L1_error)
+    <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_geos_geom = __pyx_t_12;
-</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">36</span>:         <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span></pre>
-<pre class="cython code score-0 ">    __pyx_v_geom2 = ((GEOSGeometry *)__pyx_v_geos_geom);
-</pre><pre class="cython line score-0"> <span class="">37</span>: </pre>
-<pre class="cython line score-0"> <span class="">38</span>:         <span class="c"># Put the result of whether the point is "contained" by the</span></pre>
-<pre class="cython line score-0"> <span class="">39</span>:         <span class="c"># prepared geometry into the result array. </span></pre>
-<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">40</span>:         <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span></pre>
-<pre class="cython code score-0 ">    __pyx_t_13 = __pyx_v_idx;
-    *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_uint8_t *, __pyx_pybuffernd_result.rcbuffer->pybuffer.buf, __pyx_t_13, __pyx_pybuffernd_result.diminfo[0].strides) = ((__pyx_t_5numpy_uint8_t)GEOSPreparedContains_r(__pyx_v_geos_h, __pyx_v_geom1, __pyx_v_geom2));
+</pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">36</span>:         <span class="n">geom2</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span><span class="n">geos_geom</span></pre>
+<pre class='cython code score-0 '>    __pyx_v_geom2 = ((GEOSGeometry *)__pyx_v_geos_geom);
+</pre><pre class="cython line score-0">&#xA0;<span class="">37</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">38</span>:         <span class="c"># Put the result of whether the point is &quot;contained&quot; by the</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">39</span>:         <span class="c"># prepared geometry into the result array. </span></pre>
+<pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">40</span>:         <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">&gt;</span> <span class="n">GEOSPreparedContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span></pre>
+<pre class='cython code score-0 '>    __pyx_t_13 = __pyx_v_idx;
+    *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_uint8_t *, __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.buf, __pyx_t_13, __pyx_pybuffernd_result.diminfo[0].strides) = ((__pyx_t_5numpy_uint8_t)GEOSPreparedContains_r(__pyx_v_geos_h, __pyx_v_geom1, __pyx_v_geom2));
   }
-</pre><pre class="cython line score-0"> <span class="">41</span>:         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span></pre>
-<pre class="cython line score-0"> <span class="">42</span>: </pre>
-<pre class="cython line score-23" onclick="toggleDiv(this)">+<span class="">43</span>:     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></pre>
-<pre class="cython code score-23 ">  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_r);
-  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(((PyObject *)__pyx_v_result), __pyx_n_s_view); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  __pyx_t_6 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 43, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  __pyx_t_3 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 43, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_3);
-  __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_3, __pyx_n_s_bool); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 43, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 43, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_empty_tuple, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 43, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">41</span>:         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">42</span>: </pre>
+<pre class="cython line score-23" onclick='toggleDiv(this)'>+<span class="">43</span>:     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></pre>
+<pre class='cython code score-23 '>  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(((PyObject *)__pyx_v_result), __pyx_n_s_view); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_6 = <span class='py_c_api'>PyDict_New</span>(); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_3 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_3);
+  __pyx_t_4 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_3, __pyx_n_s_bool); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_4) &lt; 0) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_empty_tuple, __pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 43, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_r = __pyx_t_4;
   __pyx_t_4 = 0;
   goto __pyx_L0;
 </pre></div></body></html>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [20]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res2</span> <span class="o">=</span> <span class="n">contains_cy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 <span class="n">res2</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[20]:</div>
+
+    <div class="prompt output_prompt">Out[20]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [21]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res2</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[21]:</div>
+
+    <div class="prompt output_prompt">Out[21]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>89</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [22]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [26]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> contains_cy(a, p)
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>2.07 ms ± 124 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Already much faster !!</p>
-<p>From about 50 ms to 2 ms -> 25x speed-up</p>
+<p>From about 50 ms to 2 ms -&gt; 25x speed-up</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Passing-_geom-pointers-instead-of-Geometry-objects">Passing <code>_geom</code> pointers instead of Geometry objects<a class="anchor-link" href="#Passing-_geom-pointers-instead-of-Geometry-objects">¶</a></h4>
+<h4 id="Passing-_geom-pointers-instead-of-Geometry-objects">Passing <code>_geom</code> pointers instead of Geometry objects<a class="anchor-link" href="#Passing-_geom-pointers-instead-of-Geometry-objects">&#182;</a></h4>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>As can be seen in the annotated cython code above, one of the bottlenecks in the for loop part is <code>geos_geom = array[idx]._geom</code> (yellow colored line), where I access the geometry python <code>object</code> (<code>a</code> is an object dtyped array) and get the <code>_geom</code> attribute. This has to switch to python to get the attribute, and therefore gives a slowdown.</p>
 <p>Let's try to make an array of those integer <code>_geom</code> pointers in advance, and pass this to an adapted version of the cython function:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [27]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="n">cython</span> <span class="o">-</span><span class="n">l</span> <span class="n">geos_c</span> <span class="o">-</span><span class="n">L</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="n">lib</span> <span class="o">-</span><span class="n">I</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">joris</span><span class="o">/</span><span class="n">miniconda3</span><span class="o">/</span><span class="k">include</span> <span class="o">-</span><span class="n">a</span>
 
 <span class="k">import</span> <span class="nn">cython</span>
@@ -2595,7 +2926,7 @@ static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_conta
 <span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="k">cdef</span> <span class="kr">extern</span> <span class="k">from</span> <span class="s">"geos_c.h"</span><span class="p">:</span>
+<span class="k">cdef</span> <span class="kr">extern</span> <span class="k">from</span> <span class="s">&quot;geos_c.h&quot;</span><span class="p">:</span>
     <span class="k">ctypedef</span> <span class="n">void</span> <span class="o">*</span><span class="n">GEOSContextHandle_t</span>
     <span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">GEOSGeometry</span>
     <span class="n">char</span> <span class="n">GEOSContains_r</span><span class="p">(</span><span class="n">GEOSContextHandle_t</span><span class="p">,</span> <span class="n">const</span> <span class="n">GEOSGeometry</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">GEOSGeometry</span><span class="o">*</span><span class="p">)</span> <span class="k">nogil</span>
@@ -2604,7 +2935,7 @@ static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_conta
     <span class="c"># Note: This requires that lgeos is defined, so needs to be imported as:</span>
     <span class="k">from</span> <span class="nn">shapely.geos</span> <span class="k">import</span> <span class="n">lgeos</span>
     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">uintp_t</span> <span class="nf">handle</span> <span class="o">=</span> <span class="n">lgeos</span><span class="o">.</span><span class="n">geos_handle</span>
-    <span class="k">return</span> <span class="o"><</span><span class="n">GEOSContextHandle_t</span><span class="o">></span><span class="n">handle</span>
+    <span class="k">return</span> <span class="o">&lt;</span><span class="n">GEOSContextHandle_t</span><span class="o">&gt;</span><span class="n">handle</span>
 
 
 <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
@@ -2623,35 +2954,42 @@ static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_conta
 
     <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span>
     <span class="n">geos_geom1</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">__geom__</span> 
-    <span class="n">geom1</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span> <span class="n">geos_geom1</span>
+    <span class="n">geom1</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span> <span class="n">geos_geom1</span>
     
     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span>
+        <span class="n">geom2</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span><span class="n">geos_geom</span>
 
-        <span class="c"># Put the result of whether the point is "contained" by the</span>
+        <span class="c"># Put the result of whether the point is &quot;contained&quot; by the</span>
         <span class="c"># prepared geometry into the result array. </span>
-        <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">&gt;</span> <span class="n">GEOSContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span>
         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span>
 
     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[27]:</div>
+
+    <div class="prompt output_prompt">Out[27]:</div>
+
+
+
 <div class="output_html rendered_html output_subarea output_execute_result">
 <!DOCTYPE html>
-
 <!-- Generated by Cython 0.26 -->
 <html>
 <head>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-<title>Cython: _cython_magic_69b3f517e97837cffcede7e1a60806aa.pyx</title>
-<style type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Cython: _cython_magic_69b3f517e97837cffcede7e1a60806aa.pyx</title>
+    <style type="text/css">
     
 
 .cython.tag  {  }
@@ -3002,7 +3340,7 @@ static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_conta
 .cython .vm { color: #19177C } /* Name.Variable.Magic */
 .cython .il { color: #666666 } /* Literal.Number.Integer.Long */
     </style>
-<script>
+    <script>
     function toggleDiv(id) {
         theDiv = id.nextElementSibling
         if (theDiv.style.display != 'block') theDiv.style.display = 'block';
@@ -3013,137 +3351,137 @@ static PyObject *__pyx_pf_46_cython_magic_82b59155c5d602a807243f9ffdef2d25_conta
 <body class="cython">
 <p><span style="border-bottom: solid 1px grey;">Generated by Cython 0.26</span></p>
 <p>
-<span style="background-color: #FFFF00">Yellow lines</span> hint at Python interaction.<br/>
+    <span style="background-color: #FFFF00">Yellow lines</span> hint at Python interaction.<br />
     Click on a line that starts with a "<code>+</code>" to see the C code that Cython generated for it.
 </p>
-<div class="cython"><pre class="cython line score-0"> <span class="">01</span>: </pre>
-<pre class="cython line score-11" onclick="toggleDiv(this)">+<span class="">02</span>: <span class="k">import</span> <span class="nn">cython</span></pre>
-<pre class="cython code score-11 ">  __pyx_t_1 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-</pre><pre class="cython line score-0"> <span class="">03</span>: <span class="k">cimport</span> <span class="nn">cpython.array</span></pre>
-<pre class="cython line score-0"> <span class="">04</span>: </pre>
-<pre class="cython line score-8" onclick="toggleDiv(this)">+<span class="">05</span>: <span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
-<pre class="cython code score-8 ">  __pyx_t_1 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_numpy, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-</pre><pre class="cython line score-0"> <span class="">06</span>: <span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
-<pre class="cython line score-0"> <span class="">07</span>: </pre>
-<pre class="cython line score-0"> <span class="">08</span>: <span class="k">cdef</span> <span class="kr">extern</span> <span class="k">from</span> <span class="s">"geos_c.h"</span><span class="p">:</span></pre>
-<pre class="cython line score-0"> <span class="">09</span>:     <span class="k">ctypedef</span> <span class="n">void</span> <span class="o">*</span><span class="n">GEOSContextHandle_t</span></pre>
-<pre class="cython line score-0"> <span class="">10</span>:     <span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">GEOSGeometry</span></pre>
-<pre class="cython line score-0"> <span class="">11</span>:     <span class="n">char</span> <span class="n">GEOSContains_r</span><span class="p">(</span><span class="n">GEOSContextHandle_t</span><span class="p">,</span> <span class="n">const</span> <span class="n">GEOSGeometry</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">GEOSGeometry</span><span class="o">*</span><span class="p">)</span> <span class="k">nogil</span></pre>
-<pre class="cython line score-0"> <span class="">12</span>: </pre>
-<pre class="cython line score-5" onclick="toggleDiv(this)">+<span class="">13</span>: <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">get_geos_context_handle</span><span class="p">():</span></pre>
-<pre class="cython code score-5 ">static GEOSContextHandle_t __pyx_f_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_get_geos_context_handle(void) {
+<div class="cython"><pre class="cython line score-0">&#xA0;<span class="">01</span>: </pre>
+<pre class="cython line score-11" onclick='toggleDiv(this)'>+<span class="">02</span>: <span class="k">import</span> <span class="nn">cython</span></pre>
+<pre class='cython code score-11 '>  __pyx_t_1 = <span class='py_c_api'>PyDict_New</span>(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_test, __pyx_t_1) &lt; 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">03</span>: <span class="k">cimport</span> <span class="nn">cpython.array</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">04</span>: </pre>
+<pre class="cython line score-8" onclick='toggleDiv(this)'>+<span class="">05</span>: <span class="k">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class='cython code score-8 '>  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_Import</span>(__pyx_n_s_numpy, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_np, __pyx_t_1) &lt; 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">06</span>: <span class="k">cimport</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">07</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">08</span>: <span class="k">cdef</span> <span class="kr">extern</span> <span class="k">from</span> <span class="s">&quot;geos_c.h&quot;</span><span class="p">:</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">09</span>:     <span class="k">ctypedef</span> <span class="n">void</span> <span class="o">*</span><span class="n">GEOSContextHandle_t</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">10</span>:     <span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">GEOSGeometry</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">11</span>:     <span class="n">char</span> <span class="n">GEOSContains_r</span><span class="p">(</span><span class="n">GEOSContextHandle_t</span><span class="p">,</span> <span class="n">const</span> <span class="n">GEOSGeometry</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">GEOSGeometry</span><span class="o">*</span><span class="p">)</span> <span class="k">nogil</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">12</span>: </pre>
+<pre class="cython line score-5" onclick='toggleDiv(this)'>+<span class="">13</span>: <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">get_geos_context_handle</span><span class="p">():</span></pre>
+<pre class='cython code score-5 '>static GEOSContextHandle_t __pyx_f_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_get_geos_context_handle(void) {
   PyObject *__pyx_v_lgeos = NULL;
   __pyx_t_5numpy_uintp_t __pyx_v_handle;
   GEOSContextHandle_t __pyx_r;
-  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
-  <span class="refnanny">__Pyx_RefNannySetupContext</span>("get_geos_context_handle", 0);
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("get_geos_context_handle", 0);
 /* … */
   /* function exit code */
   __pyx_L1_error:;
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_2);
-  <span class="pyx_c_api">__Pyx_WriteUnraisable</span>("_cython_magic_69b3f517e97837cffcede7e1a60806aa.get_geos_context_handle", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_2);
+  <span class='pyx_c_api'>__Pyx_WriteUnraisable</span>("_cython_magic_69b3f517e97837cffcede7e1a60806aa.get_geos_context_handle", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_r = 0;
   __pyx_L0:;
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_v_lgeos);
-  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_v_lgeos);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
-</pre><pre class="cython line score-0"> <span class="">14</span>:     <span class="c"># Note: This requires that lgeos is defined, so needs to be imported as:</span></pre>
-<pre class="cython line score-15" onclick="toggleDiv(this)">+<span class="">15</span>:     <span class="k">from</span> <span class="nn">shapely.geos</span> <span class="k">import</span> <span class="n">lgeos</span></pre>
-<pre class="cython code score-15 ">  __pyx_t_1 = <span class="py_c_api">PyList_New</span>(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_n_s_lgeos);
-  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_n_s_lgeos);
-  <span class="py_macro_api">PyList_SET_ITEM</span>(__pyx_t_1, 0, __pyx_n_s_lgeos);
-  __pyx_t_2 = <span class="pyx_c_api">__Pyx_Import</span>(__pyx_n_s_shapely_geos, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 15, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = <span class="pyx_c_api">__Pyx_ImportFrom</span>(__pyx_t_2, __pyx_n_s_lgeos); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_INCREF</span>(__pyx_t_1);
+</pre><pre class="cython line score-0">&#xA0;<span class="">14</span>:     <span class="c"># Note: This requires that lgeos is defined, so needs to be imported as:</span></pre>
+<pre class="cython line score-15" onclick='toggleDiv(this)'>+<span class="">15</span>:     <span class="k">from</span> <span class="nn">shapely.geos</span> <span class="k">import</span> <span class="n">lgeos</span></pre>
+<pre class='cython code score-15 '>  __pyx_t_1 = <span class='py_c_api'>PyList_New</span>(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_INCREF</span>(__pyx_n_s_lgeos);
+  <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_n_s_lgeos);
+  <span class='py_macro_api'>PyList_SET_ITEM</span>(__pyx_t_1, 0, __pyx_n_s_lgeos);
+  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_Import</span>(__pyx_n_s_shapely_geos, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_ImportFrom</span>(__pyx_t_2, __pyx_n_s_lgeos); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_INCREF</span>(__pyx_t_1);
   __pyx_v_lgeos = __pyx_t_1;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
-</pre><pre class="cython line score-10" onclick="toggleDiv(this)">+<span class="">16</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">uintp_t</span> <span class="nf">handle</span> <span class="o">=</span> <span class="n">lgeos</span><span class="o">.</span><span class="n">geos_handle</span></pre>
-<pre class="cython code score-10 ">  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_v_lgeos, __pyx_n_s_geos_handle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
-  __pyx_t_3 = <span class="pyx_c_api">__Pyx_PyInt_As_size_t</span>(__pyx_t_2); if (unlikely((__pyx_t_3 == ((npy_uintp)-1)) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 16, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+</pre><pre class="cython line score-10" onclick='toggleDiv(this)'>+<span class="">16</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">uintp_t</span> <span class="nf">handle</span> <span class="o">=</span> <span class="n">lgeos</span><span class="o">.</span><span class="n">geos_handle</span></pre>
+<pre class='cython code score-10 '>  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_v_lgeos, __pyx_n_s_geos_handle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_3 = <span class='pyx_c_api'>__Pyx_PyInt_As_size_t</span>(__pyx_t_2); if (unlikely((__pyx_t_3 == ((npy_uintp)-1)) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) __PYX_ERR(0, 16, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_handle = __pyx_t_3;
-</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">17</span>:     <span class="k">return</span> <span class="o"><</span><span class="n">GEOSContextHandle_t</span><span class="o">></span><span class="n">handle</span></pre>
-<pre class="cython code score-0 ">  __pyx_r = ((GEOSContextHandle_t)__pyx_v_handle);
+</pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">17</span>:     <span class="k">return</span> <span class="o">&lt;</span><span class="n">GEOSContextHandle_t</span><span class="o">&gt;</span><span class="n">handle</span></pre>
+<pre class='cython code score-0 '>  __pyx_r = ((GEOSContextHandle_t)__pyx_v_handle);
   goto __pyx_L0;
-</pre><pre class="cython line score-0"> <span class="">18</span>: </pre>
-<pre class="cython line score-0"> <span class="">19</span>: </pre>
-<pre class="cython line score-0"> <span class="">20</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
-<pre class="cython line score-0"> <span class="">21</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
-<pre class="cython line score-59" onclick="toggleDiv(this)">+<span class="">22</span>: <span class="k">def</span> <span class="nf">contains_cy2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64_t</span><span class="p">[:]</span> <span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span></pre>
-<pre class="cython code score-59 ">/* Python wrapper */
+</pre><pre class="cython line score-0">&#xA0;<span class="">18</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">19</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">20</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">21</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-59" onclick='toggleDiv(this)'>+<span class="">22</span>: <span class="k">def</span> <span class="nf">contains_cy2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64_t</span><span class="p">[:]</span> <span class="n">array</span><span class="p">,</span> <span class="n">geometry</span><span class="p">):</span></pre>
+<pre class='cython code score-59 '>/* Python wrapper */
 static PyObject *__pyx_pw_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_1contains_cy2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static PyMethodDef __pyx_mdef_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_1contains_cy2 = {"contains_cy2", (PyCFunction)__pyx_pw_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_1contains_cy2, METH_VARARGS|METH_KEYWORDS, 0};
 static PyObject *__pyx_pw_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_1contains_cy2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_array = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_v_geometry = 0;
   PyObject *__pyx_r = 0;
-  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
-  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy2 (wrapper)", 0);
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("contains_cy2 (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_array,&__pyx_n_s_geometry,0};
+    static PyObject **__pyx_pyargnames[] = {&amp;__pyx_n_s_array,&amp;__pyx_n_s_geometry,0};
     PyObject* values[2] = {0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args);
+      const Py_ssize_t pos_args = <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args);
       switch (pos_args) {
-        case  2: values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
+        case  2: values[1] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 1);
         CYTHON_FALLTHROUGH;
-        case  1: values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
+        case  1: values[0] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 0);
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
-      kw_args = <span class="py_c_api">PyDict_Size</span>(__pyx_kwds);
+      kw_args = <span class='py_c_api'>PyDict_Size</span>(__pyx_kwds);
       switch (pos_args) {
         case  0:
-        if (likely((values[0] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_array)) != 0)) kw_args--;
+        if (likely((values[0] = <span class='py_c_api'>PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_array)) != 0)) kw_args--;
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
-        if (likely((values[1] = <span class="py_c_api">PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_geometry)) != 0)) kw_args--;
+        if (likely((values[1] = <span class='py_c_api'>PyDict_GetItem</span>(__pyx_kwds, __pyx_n_s_geometry)) != 0)) kw_args--;
         else {
-          <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy2", 1, 2, 2, 1); __PYX_ERR(0, 22, __pyx_L3_error)
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("contains_cy2", 1, 2, 2, 1); __PYX_ERR(0, 22, __pyx_L3_error)
         }
       }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(<span class="pyx_c_api">__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "contains_cy2") < 0)) __PYX_ERR(0, 22, __pyx_L3_error)
+      if (unlikely(kw_args &gt; 0)) {
+        if (unlikely(<span class='pyx_c_api'>__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "contains_cy2") &lt; 0)) __PYX_ERR(0, 22, __pyx_L3_error)
       }
-    } else if (<span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args) != 2) {
+    } else if (<span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
     } else {
-      values[0] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 0);
-      values[1] = <span class="py_macro_api">PyTuple_GET_ITEM</span>(__pyx_args, 1);
+      values[0] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 0);
+      values[1] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 1);
     }
     __pyx_v_array = __Pyx_PyObject_to_MemoryviewSlice_ds_nn___pyx_t_5numpy_int64_t(values[0]); if (unlikely(!__pyx_v_array.memview)) __PYX_ERR(0, 22, __pyx_L3_error)
     __pyx_v_geometry = values[1];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  <span class="pyx_c_api">__Pyx_RaiseArgtupleInvalid</span>("contains_cy2", 1, 2, 2, <span class="py_macro_api">PyTuple_GET_SIZE</span>(__pyx_args)); __PYX_ERR(0, 22, __pyx_L3_error)
+  <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("contains_cy2", 1, 2, 2, <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args)); __PYX_ERR(0, 22, __pyx_L3_error)
   __pyx_L3_error:;
-  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_69b3f517e97837cffcede7e1a60806aa.contains_cy2", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("_cython_magic_69b3f517e97837cffcede7e1a60806aa.contains_cy2", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   __pyx_r = __pyx_pf_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_contains_cy2(__pyx_self, __pyx_v_array, __pyx_v_geometry);
 
   /* function exit code */
-  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 
@@ -3159,474 +3497,591 @@ static PyObject *__pyx_pf_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_conta
   __Pyx_LocalBuf_ND __pyx_pybuffernd_result;
   __Pyx_Buffer __pyx_pybuffer_result;
   PyObject *__pyx_r = NULL;
-  <span class="refnanny">__Pyx_RefNannyDeclarations</span>
-  <span class="refnanny">__Pyx_RefNannySetupContext</span>("contains_cy2", 0);
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("contains_cy2", 0);
   __pyx_pybuffer_result.pybuffer.buf = NULL;
   __pyx_pybuffer_result.refcount = 0;
   __pyx_pybuffernd_result.data = NULL;
-  __pyx_pybuffernd_result.rcbuffer = &__pyx_pybuffer_result;
+  __pyx_pybuffernd_result.rcbuffer = &amp;__pyx_pybuffer_result;
 /* … */
   /* function exit code */
   __pyx_L1_error:;
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_2);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_4);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_5);
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_t_6);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_2);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_4);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_5);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_6);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
-    <span class="pyx_c_api">__Pyx_ErrFetch</span>(&__pyx_type, &__pyx_value, &__pyx_tb);
-    <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
-  <span class="pyx_c_api">__Pyx_ErrRestore</span>(__pyx_type, __pyx_value, __pyx_tb);}
-  <span class="pyx_c_api">__Pyx_AddTraceback</span>("_cython_magic_69b3f517e97837cffcede7e1a60806aa.contains_cy2", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    <span class='pyx_c_api'>__Pyx_ErrFetch</span>(&amp;__pyx_type, &amp;__pyx_value, &amp;__pyx_tb);
+    <span class='pyx_c_api'>__Pyx_SafeReleaseBuffer</span>(&amp;__pyx_pybuffernd_result.rcbuffer-&gt;pybuffer);
+  <span class='pyx_c_api'>__Pyx_ErrRestore</span>(__pyx_type, __pyx_value, __pyx_tb);}
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("_cython_magic_69b3f517e97837cffcede7e1a60806aa.contains_cy2", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
-  <span class="pyx_c_api">__Pyx_SafeReleaseBuffer</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer);
+  <span class='pyx_c_api'>__Pyx_SafeReleaseBuffer</span>(&amp;__pyx_pybuffernd_result.rcbuffer-&gt;pybuffer);
   __pyx_L2:;
-  <span class="pyx_macro_api">__Pyx_XDECREF</span>((PyObject *)__pyx_v_result);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_array, 1);
-  <span class="refnanny">__Pyx_XGIVEREF</span>(__pyx_r);
-  <span class="refnanny">__Pyx_RefNannyFinishContext</span>();
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>((PyObject *)__pyx_v_result);
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_array, 1);
+  <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 /* … */
-  __pyx_tuple__29 = <span class="py_c_api">PyTuple_Pack</span>(11, __pyx_n_s_array, __pyx_n_s_geometry, __pyx_n_s_idx, __pyx_n_s_n, __pyx_n_s_result, __pyx_n_s_geos_handle, __pyx_n_s_geom1, __pyx_n_s_geom2, __pyx_n_s_geos_geom, __pyx_n_s_geos_geom1, __pyx_n_s_geos_h); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 22, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_tuple__29);
-  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_tuple__29);
+  __pyx_tuple__29 = <span class='py_c_api'>PyTuple_Pack</span>(11, __pyx_n_s_array, __pyx_n_s_geometry, __pyx_n_s_idx, __pyx_n_s_n, __pyx_n_s_result, __pyx_n_s_geos_handle, __pyx_n_s_geom1, __pyx_n_s_geom2, __pyx_n_s_geos_geom, __pyx_n_s_geos_geom1, __pyx_n_s_geos_h); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 22, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__29);
+  <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__29);
 /* … */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_1contains_cy2, NULL, __pyx_n_s_cython_magic_69b3f517e97837cffc); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_d, __pyx_n_s_contains_cy2, __pyx_t_1) < 0) __PYX_ERR(0, 22, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_codeobj__30 = (PyObject*)<span class="pyx_c_api">__Pyx_PyCode_New</span>(2, 0, 11, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_joris_cache_ipython_cython, __pyx_n_s_contains_cy2, 22, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 22, __pyx_L1_error)
-</pre><pre class="cython line score-0"> <span class="">23</span>: </pre>
-<pre class="cython line score-0"> <span class="">24</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span></pre>
-<pre class="cython line score-11" onclick="toggleDiv(this)">+<span class="">25</span>:     <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span></pre>
-<pre class="cython code score-11 ">  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_array, 1, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_5numpy_int64_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_5numpy_int64_t, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 25, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = <span class="pyx_c_api">__Pyx_PyInt_As_unsigned_int</span>(__pyx_t_2); if (unlikely((__pyx_t_3 == (unsigned int)-1) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 25, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_1contains_cy2, NULL, __pyx_n_s_cython_magic_69b3f517e97837cffc); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_contains_cy2, __pyx_t_1) &lt; 0) __PYX_ERR(0, 22, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_codeobj__30 = (PyObject*)<span class='pyx_c_api'>__Pyx_PyCode_New</span>(2, 0, 11, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_joris_cache_ipython_cython, __pyx_n_s_contains_cy2, 22, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 22, __pyx_L1_error)
+</pre><pre class="cython line score-0">&#xA0;<span class="">23</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">24</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">idx</span></pre>
+<pre class="cython line score-11" onclick='toggleDiv(this)'>+<span class="">25</span>:     <span class="k">cdef</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">n</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span></pre>
+<pre class='cython code score-11 '>  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_array, 1, (PyObject *(*)(char *)) __pyx_memview_get_nn___pyx_t_5numpy_int64_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn___pyx_t_5numpy_int64_t, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 25, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_3 = <span class='pyx_c_api'>__Pyx_PyInt_As_unsigned_int</span>(__pyx_t_2); if (unlikely((__pyx_t_3 == (unsigned int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) __PYX_ERR(0, 25, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_n = __pyx_t_3;
-</pre><pre class="cython line score-39" onclick="toggleDiv(this)">+<span class="">26</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></pre>
-<pre class="cython code score-39 ">  __pyx_t_2 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
-  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_2, __pyx_n_s_empty); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = <span class="pyx_c_api">__Pyx_PyInt_From_unsigned_int</span>(__pyx_v_n); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
-  __pyx_t_4 = <span class="py_c_api">PyTuple_New</span>(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
-  <span class="refnanny">__Pyx_GIVEREF</span>(__pyx_t_2);
-  <span class="py_macro_api">PyTuple_SET_ITEM</span>(__pyx_t_4, 0, __pyx_t_2);
+</pre><pre class="cython line score-39" onclick='toggleDiv(this)'>+<span class="">26</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">ndarray</span>[<span class="kt">np</span>.<span class="nf">uint8_t</span><span class="p">,</span> <span class="nf">ndim</span><span class="o">=</span><span class="mf">1</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="bp">True</span><span class="p">]</span> <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></pre>
+<pre class='cython code score-39 '>  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_2, __pyx_n_s_empty); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_PyInt_From_unsigned_int</span>(__pyx_v_n); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_4 = <span class='py_c_api'>PyTuple_New</span>(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
+  <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_t_2);
+  <span class='py_macro_api'>PyTuple_SET_ITEM</span>(__pyx_t_4, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
-  __pyx_t_5 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_5);
-  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_uint8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 26, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_6) == Py_None) || likely(<span class="pyx_c_api">__Pyx_TypeTest</span>(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_2 = <span class='py_c_api'>PyDict_New</span>(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_5 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_5);
+  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_uint8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_6) &lt; 0) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_t_1, __pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 26, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+  if (!(likely(((__pyx_t_6) == Py_None) || likely(<span class='pyx_c_api'>__Pyx_TypeTest</span>(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 26, __pyx_L1_error)
   __pyx_t_7 = ((PyArrayObject *)__pyx_t_6);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(<span class="pyx_c_api">__Pyx_GetBufferAndValidate</span>(&__pyx_pybuffernd_result.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_nn___pyx_t_5numpy_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 1, __pyx_stack) == -1)) {
-      __pyx_v_result = ((PyArrayObject *)Py_None); <span class="pyx_macro_api">__Pyx_INCREF</span>(Py_None); __pyx_pybuffernd_result.rcbuffer->pybuffer.buf = NULL;
+    if (unlikely(<span class='pyx_c_api'>__Pyx_GetBufferAndValidate</span>(&amp;__pyx_pybuffernd_result.rcbuffer-&gt;pybuffer, (PyObject*)__pyx_t_7, &amp;__Pyx_TypeInfo_nn___pyx_t_5numpy_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 1, __pyx_stack) == -1)) {
+      __pyx_v_result = ((PyArrayObject *)Py_None); <span class='pyx_macro_api'>__Pyx_INCREF</span>(Py_None); __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.buf = NULL;
       __PYX_ERR(0, 26, __pyx_L1_error)
-    } else {__pyx_pybuffernd_result.diminfo[0].strides = __pyx_pybuffernd_result.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_result.diminfo[0].shape = __pyx_pybuffernd_result.rcbuffer->pybuffer.shape[0];
+    } else {__pyx_pybuffernd_result.diminfo[0].strides = __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.strides[0]; __pyx_pybuffernd_result.diminfo[0].shape = __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.shape[0];
     }
   }
   __pyx_t_7 = 0;
   __pyx_v_result = ((PyArrayObject *)__pyx_t_6);
   __pyx_t_6 = 0;
-</pre><pre class="cython line score-0"> <span class="">27</span>: </pre>
-<pre class="cython line score-0"> <span class="">28</span>:     <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span></pre>
-<pre class="cython line score-0"> <span class="">29</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom1</span></pre>
-<pre class="cython line score-0"> <span class="">30</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span></pre>
-<pre class="cython line score-0"> <span class="">31</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">uintp_t</span> <span class="nf">geos_geom</span></pre>
-<pre class="cython line score-0"> <span class="">32</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">uintp_t</span> <span class="nf">geos_geom1</span></pre>
-<pre class="cython line score-0"> <span class="">33</span>: </pre>
-<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">34</span>:     <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span></pre>
-<pre class="cython code score-0 ">  __pyx_v_geos_h = __pyx_f_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_get_geos_context_handle();
-</pre><pre class="cython line score-10" onclick="toggleDiv(this)">+<span class="">35</span>:     <span class="n">geos_geom1</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">__geom__</span></pre>
-<pre class="cython code score-10 ">  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_v_geometry, __pyx_n_s_geom); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 35, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  __pyx_t_8 = <span class="pyx_c_api">__Pyx_PyInt_As_size_t</span>(__pyx_t_6); if (unlikely((__pyx_t_8 == ((npy_uintp)-1)) && <span class="py_c_api">PyErr_Occurred</span>())) __PYX_ERR(0, 35, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">27</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">28</span>:     <span class="k">cdef</span> <span class="kt">GEOSContextHandle_t</span> <span class="nf">geos_handle</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">29</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom1</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">30</span>:     <span class="k">cdef</span> <span class="kt">GEOSGeometry</span> *<span class="nf">geom2</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">31</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">uintp_t</span> <span class="nf">geos_geom</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">32</span>:     <span class="k">cdef</span> <span class="kt">np</span>.<span class="kt">uintp_t</span> <span class="nf">geos_geom1</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">33</span>: </pre>
+<pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">34</span>:     <span class="n">geos_h</span> <span class="o">=</span> <span class="n">get_geos_context_handle</span><span class="p">()</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_geos_h = __pyx_f_46_cython_magic_69b3f517e97837cffcede7e1a60806aa_get_geos_context_handle();
+</pre><pre class="cython line score-10" onclick='toggleDiv(this)'>+<span class="">35</span>:     <span class="n">geos_geom1</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">__geom__</span></pre>
+<pre class='cython code score-10 '>  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_v_geometry, __pyx_n_s_geom); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 35, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_8 = <span class='pyx_c_api'>__Pyx_PyInt_As_size_t</span>(__pyx_t_6); if (unlikely((__pyx_t_8 == ((npy_uintp)-1)) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) __PYX_ERR(0, 35, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_geos_geom1 = __pyx_t_8;
-</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">36</span>:     <span class="n">geom1</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span> <span class="n">geos_geom1</span></pre>
-<pre class="cython code score-0 ">  __pyx_v_geom1 = ((GEOSGeometry *)__pyx_v_geos_geom1);
-</pre><pre class="cython line score-0"> <span class="">37</span>: </pre>
-<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">38</span>:     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span></pre>
-<pre class="cython code score-0 ">  __pyx_t_3 = __pyx_v_n;
-  for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_3; __pyx_t_9+=1) {
+</pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">36</span>:     <span class="n">geom1</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span> <span class="n">geos_geom1</span></pre>
+<pre class='cython code score-0 '>  __pyx_v_geom1 = ((GEOSGeometry *)__pyx_v_geos_geom1);
+</pre><pre class="cython line score-0">&#xA0;<span class="">37</span>: </pre>
+<pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">38</span>:     <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span></pre>
+<pre class='cython code score-0 '>  __pyx_t_3 = __pyx_v_n;
+  for (__pyx_t_9 = 0; __pyx_t_9 &lt; __pyx_t_3; __pyx_t_9+=1) {
     __pyx_v_idx = __pyx_t_9;
-</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">39</span>:         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span></pre>
-<pre class="cython code score-0 ">    __pyx_t_10 = __pyx_v_idx;
+</pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">39</span>:         <span class="n">geos_geom</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span></pre>
+<pre class='cython code score-0 '>    __pyx_t_10 = __pyx_v_idx;
     __pyx_v_geos_geom = (*((__pyx_t_5numpy_int64_t *) ( /* dim=0 */ (__pyx_v_array.data + __pyx_t_10 * __pyx_v_array.strides[0]) )));
-</pre><pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">40</span>:         <span class="n">geom2</span> <span class="o">=</span> <span class="o"><</span><span class="n">GEOSGeometry</span> <span class="o">*></span><span class="n">geos_geom</span></pre>
-<pre class="cython code score-0 ">    __pyx_v_geom2 = ((GEOSGeometry *)__pyx_v_geos_geom);
-</pre><pre class="cython line score-0"> <span class="">41</span>: </pre>
-<pre class="cython line score-0"> <span class="">42</span>:         <span class="c"># Put the result of whether the point is "contained" by the</span></pre>
-<pre class="cython line score-0"> <span class="">43</span>:         <span class="c"># prepared geometry into the result array. </span></pre>
-<pre class="cython line score-0" onclick="toggleDiv(this)">+<span class="">44</span>:         <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o"><</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">></span> <span class="n">GEOSContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span></pre>
-<pre class="cython code score-0 ">    __pyx_t_11 = __pyx_v_idx;
-    *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_uint8_t *, __pyx_pybuffernd_result.rcbuffer->pybuffer.buf, __pyx_t_11, __pyx_pybuffernd_result.diminfo[0].strides) = ((__pyx_t_5numpy_uint8_t)GEOSContains_r(__pyx_v_geos_h, __pyx_v_geom1, __pyx_v_geom2));
+</pre><pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">40</span>:         <span class="n">geom2</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span><span class="n">geos_geom</span></pre>
+<pre class='cython code score-0 '>    __pyx_v_geom2 = ((GEOSGeometry *)__pyx_v_geos_geom);
+</pre><pre class="cython line score-0">&#xA0;<span class="">41</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">42</span>:         <span class="c"># Put the result of whether the point is &quot;contained&quot; by the</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">43</span>:         <span class="c"># prepared geometry into the result array. </span></pre>
+<pre class="cython line score-0" onclick='toggleDiv(this)'>+<span class="">44</span>:         <span class="n">result</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">np</span><span class="o">.</span><span class="n">uint8_t</span><span class="o">&gt;</span> <span class="n">GEOSContains_r</span><span class="p">(</span><span class="n">geos_h</span><span class="p">,</span> <span class="n">geom1</span><span class="p">,</span> <span class="n">geom2</span><span class="p">)</span></pre>
+<pre class='cython code score-0 '>    __pyx_t_11 = __pyx_v_idx;
+    *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_uint8_t *, __pyx_pybuffernd_result.rcbuffer-&gt;pybuffer.buf, __pyx_t_11, __pyx_pybuffernd_result.diminfo[0].strides) = ((__pyx_t_5numpy_uint8_t)GEOSContains_r(__pyx_v_geos_h, __pyx_v_geom1, __pyx_v_geom2));
   }
-</pre><pre class="cython line score-0"> <span class="">45</span>:         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span></pre>
-<pre class="cython line score-0"> <span class="">46</span>: </pre>
-<pre class="cython line score-23" onclick="toggleDiv(this)">+<span class="">47</span>:     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></pre>
-<pre class="cython code score-23 ">  <span class="pyx_macro_api">__Pyx_XDECREF</span>(__pyx_r);
-  __pyx_t_6 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(((PyObject *)__pyx_v_result), __pyx_n_s_view); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 47, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_6);
-  __pyx_t_2 = <span class="py_c_api">PyDict_New</span>(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_2);
-  __pyx_t_4 = <span class="pyx_c_api">__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 47, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_4);
-  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_GetAttrStr</span>(__pyx_t_4, __pyx_n_s_bool); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
-  if (<span class="py_c_api">PyDict_SetItem</span>(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 47, __pyx_L1_error)
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = <span class="pyx_c_api">__Pyx_PyObject_Call</span>(__pyx_t_6, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
-  <span class="refnanny">__Pyx_GOTREF</span>(__pyx_t_1);
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
-  <span class="pyx_macro_api">__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
+</pre><pre class="cython line score-0">&#xA0;<span class="">45</span>:         <span class="c">#GEOSGeom_destroy_r(geos_h, geom2)</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">46</span>: </pre>
+<pre class="cython line score-23" onclick='toggleDiv(this)'>+<span class="">47</span>:     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></pre>
+<pre class='cython code score-23 '>  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
+  __pyx_t_6 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(((PyObject *)__pyx_v_result), __pyx_n_s_view); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 47, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
+  __pyx_t_2 = <span class='py_c_api'>PyDict_New</span>(); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
+  __pyx_t_4 = <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 47, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_4, __pyx_n_s_bool); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_1) &lt; 0) __PYX_ERR(0, 47, __pyx_L1_error)
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_t_6, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
+  <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 </pre></div></body></html>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [28]:</div>
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">a2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">_geom</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [29]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">a2</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[29]:</div>
+
+    <div class="prompt output_prompt">Out[29]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>array([40688656, 35212704, 35200416, ..., 43157344, 43157552, 43157760])</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [30]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">a2</span><span class="o">.</span><span class="n">dtype</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[30]:</div>
+
+    <div class="prompt output_prompt">Out[30]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
-<pre>dtype('int64')</pre>
+<pre>dtype(&#39;int64&#39;)</pre>
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [31]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res3</span> <span class="o">=</span> <span class="n">contains_cy2</span><span class="p">(</span><span class="n">a2</span><span class="p">,</span> <span class="n">poly</span><span class="p">)</span>
 <span class="n">res3</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[31]:</div>
+
+    <div class="prompt output_prompt">Out[31]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [32]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res3</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[32]:</div>
+
+    <div class="prompt output_prompt">Out[32]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>89</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [33]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">res3</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [35]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> contains_cy2(a2, poly)
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>209 µs ± 13.7 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Further massive speed-up !!</p>
-<p>From 50 ms to 2 ms and now to 0.2 ms -> 250x speed-up !!</p>
+<p>From 50 ms to 2 ms and now to 0.2 ms -&gt; 250x speed-up !!</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>We have to note that the creation of the array of <code>geom</code> pointers also is costly, but this could be cached (if multiple operations are done), and can probably be optimized as well using cython/</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [36]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> np.array([x._geom for x in a])
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>3.14 ms ± 106 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Comparison-with-the-shapely.vectorized.contains-function">Comparison with the <code>shapely.vectorized.contains</code> function<a class="anchor-link" href="#Comparison-with-the-shapely.vectorized.contains-function">¶</a></h4>
+<h4 id="Comparison-with-the-shapely.vectorized.contains-function">Comparison with the <code>shapely.vectorized.contains</code> function<a class="anchor-link" href="#Comparison-with-the-shapely.vectorized.contains-function">&#182;</a></h4>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><code>shapely</code> already has an optimized vectorized contains function in cython, but this accepts arrays of x and y coordinates instead of an array of Point geometries:</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [37]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">a_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
 <span class="n">a_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [39]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">shapely.prepared</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [41]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">p2</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">prepared</span><span class="o">.</span><span class="n">prep</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [42]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">shapely.vectorized</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [43]:</div>
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res4</span> <span class="o">=</span> <span class="n">shapely</span><span class="o">.</span><span class="n">vectorized</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span> <span class="n">a_x</span><span class="p">,</span> <span class="n">a_y</span><span class="p">)</span>
 <span class="n">res4</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[43]:</div>
+
+    <div class="prompt output_prompt">Out[43]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>array([False, False, False, ..., False, False, False], dtype=bool)</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [44]:</div>
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">res4</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt output_prompt">Out[44]:</div>
+
+    <div class="prompt output_prompt">Out[44]:</div>
+
+
+
+
 <div class="output_text output_subarea output_execute_result">
 <pre>89</pre>
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [45]:</div>
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">res4</span><span class="p">)</span>
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [47]:</div>
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
-<div class="input_area">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> shapely.vectorized.contains(poly, a_x, a_y)
 </pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
-<div class="prompt"></div>
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>3.96 ms ± 66.2 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>So it seems that the creation of the Geometry object from the x, y coordinates gives some overhead, as this is a bit slower than our <code>contains_cy</code> function.</p>
+
 </div>
 </div>
 </div>
+ 
+
 
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var mathjaxscript = document.createElement('script');
