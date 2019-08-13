@@ -1565,7 +1565,7 @@ h6:hover .anchor-link {
 <div class="text_cell_render border-box-sizing rendered_html">
 
 <p>
-Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the pandas ExtensionArray interface. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. But given the invasive code changes under the hood, testing is very welcome!
+Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the <i>pandas ExtensionArray interface</i>. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. And given the invasive code changes under the hood, testing is very welcome!
 </p>
 
 </div>
@@ -1576,7 +1576,7 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
 <p>GeoPandas extends the <code>pandas</code> data analysis library to enable spatial operations on geometric types. More specifically, it provides the <code>GeoSeries</code> and <code>GeoDataFrame</code> classes (sublcasses of the pandas <code>Series</code> and <code>DataFrame</code>) to work with geospatial vector datasets.</p>
-<p>In the last releases, pandas focused on extensibility. It introduced the "pandas ExtensionArray interface", which allows third-party libraries to specify custom data types that extend numpy data types and how they should be handled within pandas. A perfect fit for GeoPandas, and being able to use this in GeoPandas was one of the drivers for me to contribute to those developments in pandas. See this <a href="https://dev.pandas.io/pandas-blog/pandas-extension-arrays.html">blog post</a> for more about ExtensionArrays.</p>
+<p>In the last releases, pandas focused on extensibility. It introduced the <em>"pandas ExtensionArray interface"</em>, which allows third-party libraries to specify custom data types that extend numpy data types and how they should be handled within pandas. A perfect fit for GeoPandas, and being able to use this in GeoPandas was one of the drivers for me to contribute to those developments in pandas. See this <a href="https://dev.pandas.io/pandas-blog/pandas-extension-arrays.html">blog post</a> for more about ExtensionArrays.</p>
 <p>The upcoming 0.6.0 release of GeoPandas features a refactor of the internals of GeoPandas, now finally using this new ExtensionArray interface of pandas. This are mainly code changes under the hood, without really changing how GeoPandas gets used. But it will more improvements in the future.</p>
 
 </div>
@@ -1584,7 +1584,7 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span>
@@ -1601,7 +1601,7 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[1]:</div>
+    <div class="prompt output_prompt">Out[2]:</div>
 
 
 
@@ -1633,24 +1633,10 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gdf</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">geopandas</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;nybb&#39;</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_rows</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="kn">import</span> <span class="nn">warnings</span><span class="p">;</span> <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="s1">&#39;GeoSeries.isna&#39;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gdf</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">geopandas</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;nybb&#39;</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -1839,11 +1825,11 @@ dtype: object</pre>
 
 <div class="output_text output_subarea output_execute_result">
 <pre>&lt;GeometryArray&gt;
-[&lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e34780&gt;,
- &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d975f8&gt;,
- &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d97588&gt;,
- &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e0c7f0&gt;,
- &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f20902b5c88&gt;]
+[&lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340afbf8d0&gt;,
+ &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21ac8&gt;,
+ &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21b00&gt;,
+ &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af218d0&gt;,
+ &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21588&gt;]
 Length: 5, dtype: geometry</pre>
 </div>
 
@@ -1918,11 +1904,11 @@ Length: 5, dtype: geometry</pre>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([&lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e34780&gt;,
-       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d975f8&gt;,
-       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d97588&gt;,
-       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e0c7f0&gt;,
-       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f20902b5c88&gt;],
+<pre>array([&lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340afbf8d0&gt;,
+       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21ac8&gt;,
+       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21b00&gt;,
+       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af218d0&gt;,
+       &lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21588&gt;],
       dtype=object)</pre>
 </div>
 
@@ -1935,7 +1921,7 @@ Length: 5, dtype: geometry</pre>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Note that this is not a "native" geometry data type. It still stores the Shapely objects in a object-dtype numpy array under the hood, but now wrapped in the <code>GeometryArray</code> to better integrate in pandas. At least for now, see below on future performance improvements.</p>
+<p>Note that this is not a "native" geometry data type. It still stores the Shapely objects in a object-dtype numpy array under the hood, but now wrapped in the <code>GeometryArray</code> to better integrate in pandas. Or, at least for now, see below on future performance improvements.</p>
 
 </div>
 </div>
@@ -2163,7 +2149,7 @@ pip install --pre geopandas==0.6.0rc1
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Upcoming-performance-improvements">Upcoming performance improvements<a class="anchor-link" href="#Upcoming-performance-improvements">&#182;</a></h2><p>With this initial 0.6.0 release using the pandas ExtensionArray interface, we didn't change much functionality of GeoPandas, yet. But it will allow us to focus for the next release on important performance improvements. I already <a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/">blogged about that</a> quite some time ago, but now that the 0.6.0 refactor is done, it finally seems that this will land in the near future in GeoPandas itself!</p>
+<h2 id="Upcoming-performance-improvements">Upcoming performance improvements<a class="anchor-link" href="#Upcoming-performance-improvements">&#182;</a></h2><p>With this initial 0.6.0 release using the pandas ExtensionArray interface, we didn't change much functionality of GeoPandas, yet. But it will allow us to focus for the next release on important performance improvements. I already <a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/">blogged about that</a> quite some time ago, but now that the 0.6.0 refactor is done, we can now finally work towards landing this in the near future in GeoPandas itself!</p>
 
 </div>
 </div>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>Joris Van den Bossche</title><link href="https://jorisvandenbossche.github.io/" rel="alternate"></link><link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="self"></link><id>https://jorisvandenbossche.github.io/</id><updated>2019-08-13T20:00:00+02:00</updated><entry><title>GeoPandas now uses the pandas ExtensionArray interface</title><link href="https://jorisvandenbossche.github.io/blog/2019/08/13/geopandas-extension-array-refactor/" rel="alternate"></link><published>2019-08-13T20:00:00+02:00</published><updated>2019-08-13T20:00:00+02:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2019-08-13:/blog/2019/08/13/geopandas-extension-array-refactor/</id><summary type="html">
 &lt;p&gt;
-Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the pandas ExtensionArray interface. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. But given the invasive code changes under the hood, testing is very welcome!
+Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the &lt;i&gt;pandas ExtensionArray interface&lt;/i&gt;. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. And given the invasive code changes under the hood, testing is very welcome!
 &lt;/p&gt;
 </summary><content type="html">&lt;style type="text/css"&gt;/*!
 *
@@ -1157,7 +1157,7 @@ h6:hover .anchor-link {
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 
 &lt;p&gt;
-Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the pandas ExtensionArray interface. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. But given the invasive code changes under the hood, testing is very welcome!
+Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the &lt;i&gt;pandas ExtensionArray interface&lt;/i&gt;. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. And given the invasive code changes under the hood, testing is very welcome!
 &lt;/p&gt;
 
 &lt;/div&gt;
@@ -1168,7 +1168,7 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;hr&gt;
 &lt;p&gt;GeoPandas extends the &lt;code&gt;pandas&lt;/code&gt; data analysis library to enable spatial operations on geometric types. More specifically, it provides the &lt;code&gt;GeoSeries&lt;/code&gt; and &lt;code&gt;GeoDataFrame&lt;/code&gt; classes (sublcasses of the pandas &lt;code&gt;Series&lt;/code&gt; and &lt;code&gt;DataFrame&lt;/code&gt;) to work with geospatial vector datasets.&lt;/p&gt;
-&lt;p&gt;In the last releases, pandas focused on extensibility. It introduced the "pandas ExtensionArray interface", which allows third-party libraries to specify custom data types that extend numpy data types and how they should be handled within pandas. A perfect fit for GeoPandas, and being able to use this in GeoPandas was one of the drivers for me to contribute to those developments in pandas. See this &lt;a href="https://dev.pandas.io/pandas-blog/pandas-extension-arrays.html"&gt;blog post&lt;/a&gt; for more about ExtensionArrays.&lt;/p&gt;
+&lt;p&gt;In the last releases, pandas focused on extensibility. It introduced the &lt;em&gt;"pandas ExtensionArray interface"&lt;/em&gt;, which allows third-party libraries to specify custom data types that extend numpy data types and how they should be handled within pandas. A perfect fit for GeoPandas, and being able to use this in GeoPandas was one of the drivers for me to contribute to those developments in pandas. See this &lt;a href="https://dev.pandas.io/pandas-blog/pandas-extension-arrays.html"&gt;blog post&lt;/a&gt; for more about ExtensionArrays.&lt;/p&gt;
 &lt;p&gt;The upcoming 0.6.0 release of GeoPandas features a refactor of the internals of GeoPandas, now finally using this new ExtensionArray interface of pandas. This are mainly code changes under the hood, without really changing how GeoPandas gets used. But it will more improvements in the future.&lt;/p&gt;
 
 &lt;/div&gt;
@@ -1176,7 +1176,7 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[1]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[2]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;geopandas&lt;/span&gt;
@@ -1193,7 +1193,7 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 
 &lt;div class="output_area"&gt;
 
-    &lt;div class="prompt output_prompt"&gt;Out[1]:&lt;/div&gt;
+    &lt;div class="prompt output_prompt"&gt;Out[2]:&lt;/div&gt;
 
 
 
@@ -1225,24 +1225,10 @@ Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor b
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[2]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-    &lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;gdf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;nybb&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-    &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
 &lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[3]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;display&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;max_rows&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;
-&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;warnings&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;warnings&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filterwarnings&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;ignore&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;GeoSeries.isna&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ne"&gt;UserWarning&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;gdf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;nybb&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
     &lt;/div&gt;
@@ -1431,11 +1417,11 @@ dtype: object&lt;/pre&gt;
 
 &lt;div class="output_text output_subarea output_execute_result"&gt;
 &lt;pre&gt;&amp;lt;GeometryArray&amp;gt;
-[&amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e34780&amp;gt;,
- &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d975f8&amp;gt;,
- &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d97588&amp;gt;,
- &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e0c7f0&amp;gt;,
- &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f20902b5c88&amp;gt;]
+[&amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340afbf8d0&amp;gt;,
+ &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21ac8&amp;gt;,
+ &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21b00&amp;gt;,
+ &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af218d0&amp;gt;,
+ &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21588&amp;gt;]
 Length: 5, dtype: geometry&lt;/pre&gt;
 &lt;/div&gt;
 
@@ -1510,11 +1496,11 @@ Length: 5, dtype: geometry&lt;/pre&gt;
 
 
 &lt;div class="output_text output_subarea output_execute_result"&gt;
-&lt;pre&gt;array([&amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e34780&amp;gt;,
-       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d975f8&amp;gt;,
-       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063d97588&amp;gt;,
-       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f2063e0c7f0&amp;gt;,
-       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f20902b5c88&amp;gt;],
+&lt;pre&gt;array([&amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340afbf8d0&amp;gt;,
+       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21ac8&amp;gt;,
+       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21b00&amp;gt;,
+       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af218d0&amp;gt;,
+       &amp;lt;shapely.geometry.multipolygon.MultiPolygon object at 0x7f340af21588&amp;gt;],
       dtype=object)&lt;/pre&gt;
 &lt;/div&gt;
 
@@ -1527,7 +1513,7 @@ Length: 5, dtype: geometry&lt;/pre&gt;
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Note that this is not a "native" geometry data type. It still stores the Shapely objects in a object-dtype numpy array under the hood, but now wrapped in the &lt;code&gt;GeometryArray&lt;/code&gt; to better integrate in pandas. At least for now, see below on future performance improvements.&lt;/p&gt;
+&lt;p&gt;Note that this is not a "native" geometry data type. It still stores the Shapely objects in a object-dtype numpy array under the hood, but now wrapped in the &lt;code&gt;GeometryArray&lt;/code&gt; to better integrate in pandas. Or, at least for now, see below on future performance improvements.&lt;/p&gt;
 
 &lt;/div&gt;
 &lt;/div&gt;
@@ -1755,7 +1741,7 @@ pip install --pre geopandas==0.6.0rc1
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h2 id="Upcoming-performance-improvements"&gt;Upcoming performance improvements&lt;a class="anchor-link" href="#Upcoming-performance-improvements"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;With this initial 0.6.0 release using the pandas ExtensionArray interface, we didn't change much functionality of GeoPandas, yet. But it will allow us to focus for the next release on important performance improvements. I already &lt;a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/"&gt;blogged about that&lt;/a&gt; quite some time ago, but now that the 0.6.0 refactor is done, it finally seems that this will land in the near future in GeoPandas itself!&lt;/p&gt;
+&lt;h2 id="Upcoming-performance-improvements"&gt;Upcoming performance improvements&lt;a class="anchor-link" href="#Upcoming-performance-improvements"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;With this initial 0.6.0 release using the pandas ExtensionArray interface, we didn't change much functionality of GeoPandas, yet. But it will allow us to focus for the next release on important performance improvements. I already &lt;a href="https://jorisvandenbossche.github.io/blog/2017/09/19/geopandas-cython/"&gt;blogged about that&lt;/a&gt; quite some time ago, but now that the 0.6.0 refactor is done, we can now finally work towards landing this in the near future in GeoPandas itself!&lt;/p&gt;
 
 &lt;/div&gt;
 &lt;/div&gt;
