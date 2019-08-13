@@ -4,5 +4,5 @@ Tags: python, geospatial, geopandas, pandas
 Slug: geopandas-extension-array-refactor
 Comments: true
 
-{% notebook downloads/notebooks/geopandas-extension-array-refactor.ipynb cells[1:] %}
+{% notebook downloads/notebooks/geopandas-extension-array-refactor.ipynb cells[2:] %}
 
