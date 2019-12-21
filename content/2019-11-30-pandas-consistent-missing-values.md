@@ -13,6 +13,16 @@ introduced.
 
 <!-- PELICAN_END_SUMMARY -->
 
+```python
+>>> pd.Series([1, 2, pd.NA], dtype="Int64")
+0     1
+1     2
+2    NA
+dtype: Int64
+```
+
+See below for more examples.
+
 ### Background
 
 The handling of missing values in pandas is currently a bit "messy", so to say.
@@ -192,3 +202,6 @@ without needing to always specify them (see e.g.
 This is all very new. There are still some API questions we are not fully sure
 about (e.g. what should (boolean) indexing do with missing values?), and we
 probably overlooked some others. So feedback is very welcome!
+
+Thanks to all the people that already contributed in the discussions. And
+especially thanks to Tom Augspurger for his PRs helping to get this into pandas.
