@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="author" content="Joris Van den Bossche">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <title>Towards consistent missing value handling in Pandas | Joris Van den Bossche</title>
+
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="alternate" type="application/atom+xml" title="Joris Van den Bossche blog atom feed" href="/feeds/all.atom.xml" />
+        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700' rel='stylesheet' type='text/css'>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="/theme/css/icons.css"/>
+        <style>.highlight .hll { background-color: #ffffcc }
+.highlight .c { color: #60a0b0; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #60a0b0; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #007020 } /* Comment.Preproc */
+.highlight .c1 { color: #60a0b0; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #60a0b0; background-color: #fff0f0 } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #c65d09; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #902000 } /* Keyword.Type */
+.highlight .m { color: #40a070 } /* Literal.Number */
+.highlight .s { color: #4070a0 } /* Literal.String */
+.highlight .na { color: #4070a0 } /* Name.Attribute */
+.highlight .nb { color: #007020 } /* Name.Builtin */
+.highlight .nc { color: #0e84b5; font-weight: bold } /* Name.Class */
+.highlight .no { color: #60add5 } /* Name.Constant */
+.highlight .nd { color: #555555; font-weight: bold } /* Name.Decorator */
+.highlight .ni { color: #d55537; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #007020 } /* Name.Exception */
+.highlight .nf { color: #06287e } /* Name.Function */
+.highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.highlight .nn { color: #0e84b5; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #bb60d5 } /* Name.Variable */
+.highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #40a070 } /* Literal.Number.Float */
+.highlight .mh { color: #40a070 } /* Literal.Number.Hex */
+.highlight .mi { color: #40a070 } /* Literal.Number.Integer */
+.highlight .mo { color: #40a070 } /* Literal.Number.Oct */
+.highlight .sb { color: #4070a0 } /* Literal.String.Backtick */
+.highlight .sc { color: #4070a0 } /* Literal.String.Char */
+.highlight .sd { color: #4070a0; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #4070a0 } /* Literal.String.Double */
+.highlight .se { color: #4070a0; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #4070a0 } /* Literal.String.Heredoc */
+.highlight .si { color: #70a0d0; font-style: italic } /* Literal.String.Interpol */
+.highlight .sx { color: #c65d09 } /* Literal.String.Other */
+.highlight .sr { color: #235388 } /* Literal.String.Regex */
+.highlight .s1 { color: #4070a0 } /* Literal.String.Single */
+.highlight .ss { color: #517918 } /* Literal.String.Symbol */
+.highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #bb60d5 } /* Name.Variable.Class */
+.highlight .vg { color: #bb60d5 } /* Name.Variable.Global */
+.highlight .vi { color: #bb60d5 } /* Name.Variable.Instance */
+.highlight .il { color: #40a070 } /* Literal.Number.Integer.Long */</style>
+        <style>body {
+  margin: 0;
+  padding: 0;
+  font: 15px 'Source Sans Pro', sans-serif;
+  line-height: 1.6em;
+  color: #222;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: #007EE5;
+  text-decoration: none;
+}
+a:hover {
+  color: #007EE5;
+  text-decoration: none;
+}
+header.main-header {
+  background: none repeat scroll 0% 0% #205F29;
+  margin-bottom: 0px;
+}
+header.main-header a {
+  color: #fff;
+}
+header.main-header .container {
+  max-width: 1000px;
+}
+header.main-header .container nav a:hover {
+  background-color: #5C881C;
+}
+article {
+  margin: 0;
+}
+article header.about {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+article header {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+article header h1 {
+  margin-bottom: 2px;
+  font-weight: 700;
+  color: #000;
+}
+article header time {
+  color: #9E9E9E;
+  font-size: 0.85em;
+  float: right;
+}
+article header time.left {
+  color: #9E9E9E;
+  font-size: 0.85em;
+  float: left;
+}
+article div.social-links ul {
+  padding: 0px;
+}
+article div.social-links li {
+  display: inline;
+  font-size: 20px;
+}
+article div.social-links li a {
+  color: #000;
+  padding: 10px;
+}
+article div.social-links li a:hover {
+  color: #666;
+  text-decoration: none;
+}
+article p {
+  font-size: 16px;
+  margin-bottom: 20px;
+  line-height: 1.6em;
+}
+article p.note {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 0.533em 0.733em;
+}
+article p.update {
+  background-color: #FEEFB3;
+  border: 1px solid #e6e68a;
+  padding: 0.533em 0.733em;
+}
+article p.alert {
+  background-color: #ffe2e2;
+  border: 1px solid #ffb2b2;
+  padding: 0.533em 0.733em;
+}
+article ul,
+article ol {
+  margin-top: 0px;
+  margin-bottom: 25px;
+}
+article li {
+  font-size: 16px;
+  line-height: 1.6em;
+}
+article a:hover {
+  text-decoration: underline;
+}
+article blockquote {
+  border-left: 2px solid #c7c7cc;
+  color: #666;
+  margin: 30px 0;
+  padding: 0 0 0 25px;
+}
+article img {
+  max-width: 100%;
+}
+article code {
+  color: #333;
+  background-color: #EEE;
+  border-radius: 0;
+  font-size: 13px;
+}
+article .meta {
+  font-size: 11px;
+}
+article .meta a:hover {
+  text-decoration: none;
+}
+article .meta div {
+  margin-bottom: 20px;
+  display: block;
+}
+article .meta a.tag {
+  margin: 0 10px 10px 0;
+  padding: 1px 12px;
+  display: inline-block;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.05);
+}
+article .meta a.tag:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+article .meta a.read_more,
+article .meta a.comments_btn {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 20px;
+  color: #205F29;
+  background: #FFF;
+  border: 1px solid #205F29;
+}
+article .meta a.read_more:hover,
+article .meta a.comments_btn:hover {
+  color: #FFF;
+  background: #5C881C;
+}
+.index {
+  max-width: 700px;
+}
+.index article header h2 {
+  font-size: 36px;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+.index article header h2 a {
+  color: #000;
+}
+.index article header h2 a:hover {
+  color: #007EE5;
+  text-decoration: none;
+}
+.index .separator {
+  padding: 40px 0 0 0;
+  margin: 0 0 40px 0;
+  height: 10px;
+  border-bottom: solid 1px #CCC;
+}
+.index .pagination {
+  display: block;
+  margin-bottom: 100px;
+}
+.index .pagination .left {
+  text-align: right;
+}
+.index .pagination .right {
+  text-align: left;
+}
+.index .pagination a {
+  display: inline-block;
+  border: 2px solid #5C881C;
+  margin: 0 5px;
+  padding: 8px 20px;
+  font-weight: bold;
+  color: #5C881C;
+}
+.index .pagination a:hover {
+  color: #FFF;
+  background: #5C881C;
+}
+.post {
+  max-width: 800px;
+}
+.post h2:before {
+  content: "# ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h3:before {
+  content: "## ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post h4:before {
+  content: "### ";
+  font-weight: bold;
+  color: #DDD;
+}
+.post article .meta {
+  margin: 50px 0 100px;
+}
+.list {
+  max-width: 700px;
+}
+.list ul.double-list {
+  margin: 0 auto 60px;
+  padding: 0;
+  list-style-type: none;
+}
+.list ul.double-list li {
+  padding: 5px 0;
+}
+.list ul.double-list li h2 {
+  font-size: 1em;
+  display: inline;
+  font-weight: normal;
+}
+.list ul.double-list li span {
+  font-family: sans-serif;
+  text-transform: uppercase;
+  text-align: right;
+  float: right;
+  padding-top: 3px;
+  font-size: 12px;
+  color: #999;
+}
+.full-width-content {
+  padding-top: 10px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+.col-xs-1,
+.col-sm-1,
+.col-md-1,
+.col-lg-1,
+.col-xs-2,
+.col-sm-2,
+.col-md-2,
+.col-lg-2,
+.col-xs-3,
+.col-sm-3,
+.col-md-3,
+.col-lg-3,
+.col-xs-4,
+.col-sm-4,
+.col-md-4,
+.col-lg-4,
+.col-xs-5,
+.col-sm-5,
+.col-md-5,
+.col-lg-5,
+.col-xs-6,
+.col-sm-6,
+.col-md-6,
+.col-lg-6,
+.col-xs-7,
+.col-sm-7,
+.col-md-7,
+.col-lg-7,
+.col-xs-8,
+.col-sm-8,
+.col-md-8,
+.col-lg-8,
+.col-xs-9,
+.col-sm-9,
+.col-md-9,
+.col-lg-9,
+.col-xs-10,
+.col-sm-10,
+.col-md-10,
+.col-lg-10,
+.col-xs-11,
+.col-sm-11,
+.col-md-11,
+.col-lg-11,
+.col-xs-12,
+.col-sm-12,
+.col-md-12,
+.col-lg-12 {
+  padding-right: 0px;
+  padding-left: 0px;
+}</style>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    </head>
+
+    <body>
+        <header class="navbar navbar-inverse bs-docs-nav">
+            <div class="container-fluid">
+                <div class="navbar-header">
+		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#theNavbar">
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span>
+		    <span class="icon-bar"></span> 
+		  </button>
+                  <a class="navbar-brand" href="/" title="Home" class="title">Joris Van den Bossche</a>
+                </div>
+                <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation" id="theNavbar">
+		    <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/pages/about.html" title="About">About</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <div id="wrap">
+<div class="container post">
+    <article>
+        <header>
+            <h1>Towards consistent missing value handling in Pandas</h1>
+            <time datetime="article.date.isoformat()" pubdate>Sa 30 November 2019</time>
+        </header>
+
+        <div class="article_content">
+            
+
+<p>This blogpost gives some background and motivation for my proposal on better
+missing value support in pandas, and the ongoing changes landing in the
+development version (to be released in pandas 1.0): a new <code>pd.NA</code> scalar is
+introduced.</p>
+
+
+<h3 id="background"><a class="toclink" href="#background">Background</a></h3>
+<p>The handling of missing values in pandas is currently a bit "messy", so to say.
+The biggest gotcha is that a column with integer data cannot hold missing
+values. If for some reason a missing value gets introduced (e.g. as a result of
+a certain operation, or just when reading in data), the values are converted to
+floats:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
+<span class="mi">0</span>    <span class="mi">1</span>
+<span class="mi">1</span>    <span class="mi">2</span>
+<span class="mi">2</span>    <span class="mi">3</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">int64</span>
+
+<span class="o">&gt;&gt;&gt;</span>  <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
+<span class="mi">0</span>    <span class="n">NaN</span>
+<span class="mi">1</span>    <span class="mf">2.0</span>
+<span class="mi">2</span>    <span class="mf">3.0</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">float64</span>
+</pre></div>
+
+
+<p>In addition to the above gotcha, there are some others confusing aspects about
+the missing value story in pandas:</p>
+<ul>
+<li>Also boolean data (in addition to integer data) do not support missing values.</li>
+<li>For object dtype data (which is typically used to store strings), we use
+  <code>np.nan</code> (a float number!) as the missing value indicator, and also allow
+  <code>None</code> (so you can have both <code>np.nan</code> and <code>None</code> acting as a missing
+  value).</li>
+<li>For datetime-like data, pandas uses <code>pd.NaT</code> ("not-a-time").</li>
+</ul>
+<p>As a result, we have a situation that is inconsistent and at times confusing,
+ànd lacking fundamental features.</p>
+<p>There are <strong>good historical reasons</strong> for this situation. Numpy, which backs the
+columns of a pandas DataFrame, has no built-in support for missing values. In
+absence of this support, the "NaN" value was the obvious choice as missing value
+for float data. Although NaN in itself is not an indicator for missing values
+(rather it can be the result of a computation), it's the closest concept
+available, so pandas decided to use NaN as the missing value indicator.</p>
+<p>Pandas has already extended the numpy type system for many years (e.g. for
+categorical data, for timezone support, ..). But more recently, there is an
+effort to formalize this in the concept of the "<strong>ExtensionArray</strong>" (see the
+<a href="https://dev.pandas.io/pandas-blog/pandas-extension-arrays.html">pandas blogpost</a>
+for more details). Along with this effort, some new data types, such as an
+<a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/integer_na.html">integer dtype</a>
+with missing value support, were implemented. And those new dtypes give us a
+chance to experiment with better missing value support in pandas!</p>
+<h3 id="a-proposal-for-a-new-na-scalar-to-represent-missing-values"><a class="toclink" href="#a-proposal-for-a-new-na-scalar-to-represent-missing-values">A proposal for a new NA scalar to represent missing values</a></h3>
+<p>With the above background in mind, I wrote up a proposal to introduce <strong>a new NA
+value for representing scalar missing values</strong> that can be used consistently
+across all data types.</p>
+<p>This new <code>pd.NA</code> value (a "singleton) can be used instead of np.nan or None as
+the scalar missing value (the value you get back when you access a missing value
+in a Series or DataFrame).</p>
+<p>Motivation for this change:</p>
+<ul>
+<li><strong>Consistent user interface.</strong> Currently, the value that is displayed or that
+  you get back for a missing scalar (e.g. from scalar access <code>s[idx]</code>) depends
+  on the data type. Some types support missing values, others don't. This
+  proposal would (eventually) ensure that all data types support missing values
+  and that you get back <code>pd.NA</code> regardless of the dtype.</li>
+<li><strong>No "mis-use" of the np.nan floating point value.</strong> The NaN value is a
+  specific floating point value, and not necessarily an indicator for missing
+  values (although pandas has always used it that way, also for non-float
+  dtypes).</li>
+<li><strong>A missing value that behaves accordingly.</strong> Our current behaviour of missing
+  values is inherited from the behaviour of <code>np.nan</code>. Other languages that have
+  a NA/NULL value that is distinguished from NaN (e.g. Julia, SQL, R) typically
+  have different behaviour in comparison and logical operations. For example,
+  comparison with NA could give NA instead of False, and consequently we need to
+  have a boolean dtype with NA support. A new NA value opens up the possibility
+  of having such NA-specific behaviour.</li>
+<li>An "NA" scalar <strong>matches the terminology</strong> that is used throughout pandas in
+  functions and argument names (<code>isna</code>, <code>dropna</code>, <code>fillna</code>, <code>skipna</code>, ...).</li>
+</ul>
+<p>See the full <a href="https://hackmd.io/@jorisvandenbossche/Sk0wMeAmB">proposal</a> and the
+<a href="https://github.com/pandas-dev/pandas/issues/28095">GitHub issue</a> where it has
+been discussed for more details.</p>
+<h3 id="a-few-examples"><a class="toclink" href="#a-few-examples">A few examples</a></h3>
+<p>Basic support for <code>pd.NA</code> has landed in the development version of pandas now
+(to be released in pandas 1.0), while we are still working on further
+integration. But so we can already show a few examples how it looks like.</p>
+<p>For example, creating a "nullable" integer Series with missing value support
+(which was already introduced in pandas 0.24, but will now start to use the new
+<code>pd.NA</code>):</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span>
+<span class="mi">0</span>     <span class="mi">1</span>
+<span class="mi">1</span>     <span class="mi">2</span>
+<span class="mi">2</span>    <span class="n">NA</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">Int64</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">NA</span>
+</pre></div>
+
+
+<p>and the same missing value is used for strings:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span>
+<span class="mi">0</span>     <span class="n">a</span>
+<span class="mi">1</span>    <span class="n">NA</span>
+<span class="mi">2</span>     <span class="n">b</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">string</span>
+</pre></div>
+
+
+<p>Comparison operations now propagate missing values:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">&gt;</span> <span class="mi">1</span>
+<span class="mi">0</span>    <span class="bp">False</span>
+<span class="mi">1</span>     <span class="bp">True</span>
+<span class="mi">2</span>       <span class="n">NA</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">boolean</span>
+</pre></div>
+
+
+<p>while before, when using <code>np.nan</code> as missing value, such comparisons resulted in
+<code>False</code> values:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s_nan</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s_nan</span>
+<span class="mi">0</span>    <span class="mf">1.0</span>
+<span class="mi">1</span>    <span class="mf">2.0</span>
+<span class="mi">2</span>    <span class="n">NaN</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">float64</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s_nan</span> <span class="o">&gt;</span> <span class="mi">1</span>
+<span class="mi">0</span>    <span class="bp">False</span>
+<span class="mi">1</span>     <span class="bp">True</span>
+<span class="mi">2</span>    <span class="bp">False</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="nb">bool</span>
+</pre></div>
+
+
+<h3 id="how-does-this-work"><a class="toclink" href="#how-does-this-work">How does this work?</a></h3>
+<p>The integer and boolean data types shown above are still based on numpy arrays,
+and numpy still doesn't support missing values. So how does this then work?</p>
+<p>The <code>pd.NA</code> value is the scalar, user-facing object. It is returned when
+accessing or returning a single value that is missing, but is not necessarily
+stored as such under the hood.</p>
+<p>For example, for the new integer dtype with missing value support, the
+implementation uses a "masked array" approach: one numpy array to store the
+integer values, and one boolean numpy array (mask) to store for each value
+whether it is a valid value or a missing value.</p>
+<h3 id="how-can-i-use-this-feedback-welcome"><a class="toclink" href="#how-can-i-use-this-feedback-welcome">How can I use this? Feedback welcome!</a></h3>
+<p>For now, <code>pd.NA</code> as missing value is only used in some of the new,
+ExtensionArray-based data types for integers, bools and strings (but we are
+planning to support for more data types).</p>
+<p>Those data types are not yet used by default. Meaning that, when creating a
+Series or DataFrame or importing from a file, you need to explicitly specify the
+data type to be one of those new data types (e.g. <code>dtype="Int64"</code> with a
+capital). We are looking into making it easier to start using those data types
+without needing to always specify them (see e.g.
+<a href="https://github.com/pandas-dev/pandas/issues/29752">GH-29752</a>).</p>
+<p>This is all very new. There are still some API questions we are not fully sure
+about (e.g. what should (boolean) indexing do with missing values?), and we
+probably overlooked some others. So feedback is very welcome!</p>
+        </div>
+
+        <div class="meta">
+            <div>
+                    <a href="https://jorisvandenbossche.github.io/tag/python.html" class="tag">python</a>
+                    <a href="https://jorisvandenbossche.github.io/tag/pandas.html" class="tag">pandas</a>
+            </div>
+        </div>
+    </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+    <script type="text/javascript">
+      var disqus_shortname = 'jorisvandenbossche-blog';
+      var disqus_identifier = '/blog/2019/11/30/pandas-consistent-missing-values/';
+      var disqus_url = 'https://jorisvandenbossche.github.io/blog/2019/11/30/pandas-consistent-missing-values/';
+      var disqus_title = 'Towards consistent missing value handling in Pandas';
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+  </section>
+
+</div>
+
+<style type="text/css">
+{
+    max-width: 700px;
+}
+
+.text_cell .prompt {
+    display: none;
+}
+
+div.cell {
+    padding: 0;
+}
+
+div.text_cell_render {
+    padding: 0;
+}
+
+div.prompt {
+    font-size: 13px;
+    min-width: 10ex;
+}
+
+div.input_prompt {
+    padding: .7em 0.2em;
+}
+
+div.output_prompt {
+    padding: .4em .2em;
+}
+
+div.input_area {
+    margin: .2em 0.4em;
+/*    max-width: 580px; */
+}
+
+table.dataframe {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+table.dataframe th, td {
+    padding: 4px;
+    text-align: left;
+}
+
+pre code {
+    background-color: inherit;
+}</style>
+
+        </div>
+<!--
+    <footer>
+      <p>
+        © 2012-2017 Joris Van den Bossche, license <a href=""> </a>
+        unless otherwise noted.
+        Generated by <a href= "http://docs.getpelican.com/">Pelican</a>.
+      </p>
+    </footer>
+-->
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-106868563-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-106868563-1');
+    ga('send', 'pageview');
+</script>
+    </body>
+</html>
