@@ -13,6 +13,15 @@ development version (to be released in pandas 1.0): a new &lt;code&gt;pd.NA&lt;/
 introduced.&lt;/p&gt;
 
 
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Series&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;NA&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;dtype&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Int64&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;0&lt;/span&gt;     &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt;     &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="mi"&gt;2&lt;/span&gt;    &lt;span class="n"&gt;NA&lt;/span&gt;
+&lt;span class="n"&gt;dtype&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Int64&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;See below for more examples.&lt;/p&gt;
 &lt;h3 id="background"&gt;&lt;a class="toclink" href="#background"&gt;Background&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;The handling of missing values in pandas is currently a bit "messy", so to say.
 The biggest gotcha is that a column with integer data cannot hold missing
@@ -169,7 +178,9 @@ without needing to always specify them (see e.g.
 &lt;a href="https://github.com/pandas-dev/pandas/issues/29752"&gt;GH-29752&lt;/a&gt;).&lt;/p&gt;
 &lt;p&gt;This is all very new. There are still some API questions we are not fully sure
 about (e.g. what should (boolean) indexing do with missing values?), and we
-probably overlooked some others. So feedback is very welcome!&lt;/p&gt;</content><category term="python"></category><category term="pandas"></category></entry><entry><title>GeoPandas now uses the pandas ExtensionArray interface</title><link href="https://jorisvandenbossche.github.io/blog/2019/08/13/geopandas-extension-array-refactor/" rel="alternate"></link><published>2019-08-13T20:00:00+02:00</published><updated>2019-08-13T20:00:00+02:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2019-08-13:/blog/2019/08/13/geopandas-extension-array-refactor/</id><summary type="html">
+probably overlooked some others. So feedback is very welcome!&lt;/p&gt;
+&lt;p&gt;Thanks to all the people that already contributed in the discussions. And
+especially thanks to Tom Augspurger for his PRs helping to get this into pandas.&lt;/p&gt;</content><category term="python"></category><category term="pandas"></category></entry><entry><title>GeoPandas now uses the pandas ExtensionArray interface</title><link href="https://jorisvandenbossche.github.io/blog/2019/08/13/geopandas-extension-array-refactor/" rel="alternate"></link><published>2019-08-13T20:00:00+02:00</published><updated>2019-08-13T20:00:00+02:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2019-08-13:/blog/2019/08/13/geopandas-extension-array-refactor/</id><summary type="html">
 &lt;p&gt;
 Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the &lt;i&gt;pandas ExtensionArray interface&lt;/i&gt;. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. And given the invasive code changes under the hood, testing is very welcome!
 &lt;/p&gt;

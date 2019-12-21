@@ -419,6 +419,15 @@ development version (to be released in pandas 1.0): a new <code>pd.NA</code> sca
 introduced.</p>
 
 
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
+<span class="mi">0</span>     <span class="mi">1</span>
+<span class="mi">1</span>     <span class="mi">2</span>
+<span class="mi">2</span>    <span class="n">NA</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">Int64</span>
+</pre></div>
+
+
+<p>See below for more examples.</p>
 <h3 id="background"><a class="toclink" href="#background">Background</a></h3>
 <p>The handling of missing values in pandas is currently a bit "messy", so to say.
 The biggest gotcha is that a column with integer data cannot hold missing
@@ -576,6 +585,8 @@ without needing to always specify them (see e.g.
 <p>This is all very new. There are still some API questions we are not fully sure
 about (e.g. what should (boolean) indexing do with missing values?), and we
 probably overlooked some others. So feedback is very welcome!</p>
+<p>Thanks to all the people that already contributed in the discussions. And
+especially thanks to Tom Augspurger for his PRs helping to get this into pandas.</p>
         </div>
 
         <div class="meta">
