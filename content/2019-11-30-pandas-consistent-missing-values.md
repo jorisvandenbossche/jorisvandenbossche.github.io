@@ -7,11 +7,14 @@ Comments: true
 <!-- PELICAN_BEGIN_SUMMARY -->
 
 This blogpost gives some background and motivation for my proposal on better
-missing value support in pandas, and the ongoing changes landing in the
+missing value support in pandas, and the changes that have been merged in the
 development version (to be released in pandas 1.0): a new `pd.NA` scalar is
-introduced.
+introduced that can be used consistently across all data types..
 
 <!-- PELICAN_END_SUMMARY -->
+
+For example, we can now have missing values in an integer Series (which would
+have resulted in floats before) when using the new nullable integer dtype:
 
 ```python
 >>> pd.Series([1, 2, pd.NA], dtype="Int64")
@@ -58,7 +61,7 @@ the missing value story in pandas:
 * For datetime-like data, pandas uses ``pd.NaT`` ("not-a-time").
 
 As a result, we have a situation that is inconsistent and at times confusing,
-ànd lacking fundamental features.
+and lacking fundamental features.
 
 There are **good historical reasons** for this situation. Numpy, which backs the
 columns of a pandas DataFrame, has no built-in support for missing values. In
@@ -82,7 +85,7 @@ With the above background in mind, I wrote up a proposal to introduce **a new NA
 value for representing scalar missing values** that can be used consistently
 across all data types.
 
-This new `pd.NA` value (a "singleton) can be used instead of np.nan or None as
+This new `pd.NA` value (a "singleton") can be used instead of np.nan or None as
 the scalar missing value (the value you get back when you access a missing value
 in a Series or DataFrame).
 
@@ -122,7 +125,7 @@ For example, creating a "nullable" integer Series with missing value support
 `pd.NA`):
 
 ```python
->>> s1 = pd.Series([1, 2, None], dtype="Int64")
+>>> s1 = pd.Series([1, 2, pd.NA], dtype="Int64")
 >>> s1
 0     1
 1     2
@@ -133,7 +136,9 @@ dtype: Int64
 NA
 ```
 
-and the same missing value is used for strings:
+and the same missing value is used for the new dedicated string data type (see
+the [release notes](https://dev.pandas.io/docs/whatsnew/v1.0.0.html#dedicated-string-data-type)
+on this new dtype):
 
 ```python
 >>> s2 = pd.Series(["a", pd.NA, "b"], dtype="string")
@@ -175,7 +180,7 @@ dtype: bool
 ### How does this work?
 
 The integer and boolean data types shown above are still based on numpy arrays,
-and numpy still doesn't support missing values. So how does this then work?
+and numpy still doesn't support missing values. So how does this work then?
 
 The `pd.NA` value is the scalar, user-facing object. It is returned when
 accessing or returning a single value that is missing, but is not necessarily
