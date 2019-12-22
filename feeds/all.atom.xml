@@ -44,7 +44,7 @@ floats:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;In addition to the above gotcha, there are some others confusing aspects about
+&lt;p&gt;In addition to the above gotcha, there are some other confusing aspects about
 the missing value story in pandas:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Also boolean data (in addition to integer data) do not support missing values.&lt;/li&gt;
@@ -77,15 +77,15 @@ across all data types.&lt;/p&gt;
 &lt;p&gt;This new &lt;code&gt;pd.NA&lt;/code&gt; value (a "singleton) can be used instead of np.nan or None as
 the scalar missing value (the value you get back when you access a missing value
 in a Series or DataFrame).&lt;/p&gt;
-&lt;p&gt;Motivation for this change:&lt;/p&gt;
+&lt;p&gt;The motivation for this change:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Consistent user interface.&lt;/strong&gt; Currently, the value that is displayed or that
   you get back for a missing scalar (e.g. from scalar access &lt;code&gt;s[idx]&lt;/code&gt;) depends
   on the data type. Some types support missing values, others don't. This
   proposal would (eventually) ensure that all data types support missing values
   and that you get back &lt;code&gt;pd.NA&lt;/code&gt; regardless of the dtype.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;No "mis-use" of the np.nan floating point value.&lt;/strong&gt; The NaN value is a
-  specific floating point value, and not necessarily an indicator for missing
+&lt;li&gt;&lt;strong&gt;No "mis-use" of the np.nan floating-point value.&lt;/strong&gt; The NaN value is a
+  specific floating-point value, and not necessarily an indicator for missing
   values (although pandas has always used it that way, also for non-float
   dtypes).&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;A missing value that behaves accordingly.&lt;/strong&gt; Our current behaviour of missing
@@ -104,7 +104,7 @@ been discussed for more details.&lt;/p&gt;
 &lt;h3 id="a-few-examples"&gt;&lt;a class="toclink" href="#a-few-examples"&gt;A few examples&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;Basic support for &lt;code&gt;pd.NA&lt;/code&gt; has landed in the development version of pandas now
 (to be released in pandas 1.0), while we are still working on further
-integration. But so we can already show a few examples how it looks like.&lt;/p&gt;
+integration. But so we can already show a few examples of how it looks like.&lt;/p&gt;
 &lt;p&gt;For example, creating a "nullable" integer Series with missing value support
 (which was already introduced in pandas 0.24, but will now start to use the new
 &lt;code&gt;pd.NA&lt;/code&gt;):&lt;/p&gt;
@@ -169,7 +169,7 @@ whether it is a valid value or a missing value.&lt;/p&gt;
 &lt;h3 id="how-can-i-use-this-feedback-welcome"&gt;&lt;a class="toclink" href="#how-can-i-use-this-feedback-welcome"&gt;How can I use this? Feedback welcome!&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;For now, &lt;code&gt;pd.NA&lt;/code&gt; as missing value is only used in some of the new,
 ExtensionArray-based data types for integers, bools and strings (but we are
-planning to support for more data types).&lt;/p&gt;
+planning to add support for more data types).&lt;/p&gt;
 &lt;p&gt;Those data types are not yet used by default. Meaning that, when creating a
 Series or DataFrame or importing from a file, you need to explicitly specify the
 data type to be one of those new data types (e.g. &lt;code&gt;dtype="Int64"&lt;/code&gt; with a
@@ -178,8 +178,8 @@ without needing to always specify them (see e.g.
 &lt;a href="https://github.com/pandas-dev/pandas/issues/29752"&gt;GH-29752&lt;/a&gt;).&lt;/p&gt;
 &lt;p&gt;This is all very new. There are still some API questions we are not fully sure
 about (e.g. what should (boolean) indexing do with missing values?), and we
-probably overlooked some others. So feedback is very welcome!&lt;/p&gt;
-&lt;p&gt;Thanks to all the people that already contributed in the discussions. And
+probably overlooked some others. &lt;strong&gt;So feedback is very welcome!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Thanks to all the people that already contributed to the discussions. And
 especially thanks to Tom Augspurger for his PRs helping to get this into pandas.&lt;/p&gt;</content><category term="python"></category><category term="pandas"></category></entry><entry><title>GeoPandas now uses the pandas ExtensionArray interface</title><link href="https://jorisvandenbossche.github.io/blog/2019/08/13/geopandas-extension-array-refactor/" rel="alternate"></link><published>2019-08-13T20:00:00+02:00</published><updated>2019-08-13T20:00:00+02:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2019-08-13:/blog/2019/08/13/geopandas-extension-array-refactor/</id><summary type="html">
 &lt;p&gt;
 Short summary: the upcoming 0.6.0 release of GeoPandas will feature a refactor based on the &lt;i&gt;pandas ExtensionArray interface&lt;/i&gt;. Although this change should keep the user interface mostly stable, it enables more robust integration with pandas and allows for more upcoming changes in the future. And given the invasive code changes under the hood, testing is very welcome!
