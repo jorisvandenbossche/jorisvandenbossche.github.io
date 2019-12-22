@@ -414,11 +414,13 @@ article .meta a.comments_btn:hover {
             
 
 <p>This blogpost gives some background and motivation for my proposal on better
-missing value support in pandas, and the ongoing changes landing in the
+missing value support in pandas, and the changes that have been merged in the
 development version (to be released in pandas 1.0): a new <code>pd.NA</code> scalar is
-introduced.</p>
+introduced that can be used consistently across all data types..</p>
 
 
+<p>For example, we can now have missing values in an integer Series (which would
+have resulted in floats before) when using the new nullable integer dtype:</p>
 <div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
 <span class="mi">0</span>     <span class="mi">1</span>
 <span class="mi">1</span>     <span class="mi">2</span>
@@ -461,7 +463,7 @@ the missing value story in pandas:</p>
 <li>For datetime-like data, pandas uses <code>pd.NaT</code> ("not-a-time").</li>
 </ul>
 <p>As a result, we have a situation that is inconsistent and at times confusing,
-ànd lacking fundamental features.</p>
+and lacking fundamental features.</p>
 <p>There are <strong>good historical reasons</strong> for this situation. Numpy, which backs the
 columns of a pandas DataFrame, has no built-in support for missing values. In
 absence of this support, the "NaN" value was the obvious choice as missing value
@@ -480,7 +482,7 @@ chance to experiment with better missing value support in pandas!</p>
 <p>With the above background in mind, I wrote up a proposal to introduce <strong>a new NA
 value for representing scalar missing values</strong> that can be used consistently
 across all data types.</p>
-<p>This new <code>pd.NA</code> value (a "singleton) can be used instead of np.nan or None as
+<p>This new <code>pd.NA</code> value (a "singleton") can be used instead of np.nan or None as
 the scalar missing value (the value you get back when you access a missing value
 in a Series or DataFrame).</p>
 <p>The motivation for this change:</p>
@@ -514,7 +516,7 @@ integration. But so we can already show a few examples of how it looks like.</p>
 <p>For example, creating a "nullable" integer Series with missing value support
 (which was already introduced in pandas 0.24, but will now start to use the new
 <code>pd.NA</code>):</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span>
 <span class="mi">0</span>     <span class="mi">1</span>
 <span class="mi">1</span>     <span class="mi">2</span>
@@ -526,7 +528,9 @@ integration. But so we can already show a few examples of how it looks like.</p>
 </pre></div>
 
 
-<p>and the same missing value is used for strings:</p>
+<p>and the same missing value is used for the new dedicated string data type (see
+the <a href="https://dev.pandas.io/docs/whatsnew/v1.0.0.html#dedicated-string-data-type">release notes</a>
+on this new dtype):</p>
 <div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span>
 <span class="mi">0</span>     <span class="n">a</span>
@@ -564,7 +568,7 @@ integration. But so we can already show a few examples of how it looks like.</p>
 
 <h3 id="how-does-this-work"><a class="toclink" href="#how-does-this-work">How does this work?</a></h3>
 <p>The integer and boolean data types shown above are still based on numpy arrays,
-and numpy still doesn't support missing values. So how does this then work?</p>
+and numpy still doesn't support missing values. So how does this work then?</p>
 <p>The <code>pd.NA</code> value is the scalar, user-facing object. It is returned when
 accessing or returning a single value that is missing, but is not necessarily
 stored as such under the hood.</p>
