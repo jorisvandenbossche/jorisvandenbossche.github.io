@@ -47,7 +47,7 @@ dtype: int64
 dtype: float64
 ```
 
-In addition to the above gotcha, there are some others confusing aspects about
+In addition to the above gotcha, there are some other confusing aspects about
 the missing value story in pandas:
 
 * Also boolean data (in addition to integer data) do not support missing values.
@@ -86,15 +86,15 @@ This new `pd.NA` value (a "singleton) can be used instead of np.nan or None as
 the scalar missing value (the value you get back when you access a missing value
 in a Series or DataFrame).
 
-Motivation for this change:
+The motivation for this change:
 
 - **Consistent user interface.** Currently, the value that is displayed or that
   you get back for a missing scalar (e.g. from scalar access `s[idx]`) depends
   on the data type. Some types support missing values, others don't. This
   proposal would (eventually) ensure that all data types support missing values
   and that you get back `pd.NA` regardless of the dtype.
-- **No "mis-use" of the np.nan floating point value.** The NaN value is a
-  specific floating point value, and not necessarily an indicator for missing
+- **No "mis-use" of the np.nan floating-point value.** The NaN value is a
+  specific floating-point value, and not necessarily an indicator for missing
   values (although pandas has always used it that way, also for non-float
   dtypes).
 - **A missing value that behaves accordingly.** Our current behaviour of missing
@@ -115,7 +115,7 @@ been discussed for more details.
 
 Basic support for `pd.NA` has landed in the development version of pandas now
 (to be released in pandas 1.0), while we are still working on further
-integration. But so we can already show a few examples how it looks like.
+integration. But so we can already show a few examples of how it looks like.
 
 For example, creating a "nullable" integer Series with missing value support
 (which was already introduced in pandas 0.24, but will now start to use the new
@@ -190,7 +190,7 @@ whether it is a valid value or a missing value.
 
 For now, `pd.NA` as missing value is only used in some of the new,
 ExtensionArray-based data types for integers, bools and strings (but we are
-planning to support for more data types).
+planning to add support for more data types).
 
 Those data types are not yet used by default. Meaning that, when creating a
 Series or DataFrame or importing from a file, you need to explicitly specify the
@@ -201,7 +201,7 @@ without needing to always specify them (see e.g.
 
 This is all very new. There are still some API questions we are not fully sure
 about (e.g. what should (boolean) indexing do with missing values?), and we
-probably overlooked some others. So feedback is very welcome!
+probably overlooked some others. **So feedback is very welcome!**
 
-Thanks to all the people that already contributed in the discussions. And
+Thanks to all the people that already contributed to the discussions. And
 especially thanks to Tom Augspurger for his PRs helping to get this into pandas.
