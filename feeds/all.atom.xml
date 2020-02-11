@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>Joris Van den Bossche</title><link href="https://jorisvandenbossche.github.io/" rel="alternate"></link><link href="https://jorisvandenbossche.github.io/feeds/all.atom.xml" rel="self"></link><id>https://jorisvandenbossche.github.io/</id><updated>2020-02-11T09:00:00+01:00</updated><entry><title>GeoPandas now uses pyproj.CRS and catches up with PROJ 6</title><link href="https://jorisvandenbossche.github.io/blog/2020/02/11/geopandas-pyproj-crs/" rel="alternate"></link><published>2020-02-11T09:00:00+01:00</published><updated>2020-02-11T09:00:00+01:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2020-02-11:/blog/2020/02/11/geopandas-pyproj-crs/</id><summary type="html">
 &lt;p&gt;
-Short summary: the upcoming 0.7.0 release of GeoPandas will start using `pyproj.CRS` to represent the Coordinate Reference System of a GeoDataFrame. This brings along a better user interface, many changes and improvements from PROJ 6, but might also require some changes in your code (getting rid of proj4 strings).
+Short summary: the upcoming 0.7.0 release of GeoPandas will start using &lt;code&gt;pyproj.CRS&lt;/code&gt; to represent the Coordinate Reference System of a GeoDataFrame. This brings along a better user interface, many changes and improvements from PROJ 6, but might also require some changes in your code (getting rid of proj4 strings).
 &lt;/p&gt;
 </summary><content type="html">&lt;style type="text/css"&gt;/*!
 *
@@ -1157,7 +1157,7 @@ h6:hover .anchor-link {
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 
 &lt;p&gt;
-Short summary: the upcoming 0.7.0 release of GeoPandas will start using `pyproj.CRS` to represent the Coordinate Reference System of a GeoDataFrame. This brings along a better user interface, many changes and improvements from PROJ 6, but might also require some changes in your code (getting rid of proj4 strings).
+Short summary: the upcoming 0.7.0 release of GeoPandas will start using &lt;code&gt;pyproj.CRS&lt;/code&gt; to represent the Coordinate Reference System of a GeoDataFrame. This brings along a better user interface, many changes and improvements from PROJ 6, but might also require some changes in your code (getting rid of proj4 strings).
 &lt;/p&gt;
 
 &lt;/div&gt;
