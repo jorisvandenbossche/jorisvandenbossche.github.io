@@ -1581,7 +1581,7 @@ Datum: Reseau National Belge 1972
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h2 id="Thanks-to-the-PROJ-and-pyproj-communities!"&gt;Thanks to the PROJ and pyproj communities!&lt;a class="anchor-link" href="#Thanks-to-the-PROJ-and-pyproj-communities!"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is an important change for GeoPandas, providing better and more user-friendly handling of Coordinate Reference Systems. And all that is only possible thanks to the PROJ and pyproj projects (and special thanks to &lt;a href="https://twitter.com/EvenRouault"&gt;Even Raoult&lt;/a&gt; for a lot of the PROJ work, and to &lt;a href="https://github.com/snowman2"&gt;Alan Snow&lt;/a&gt; for his work on pyproj and integrating this in GeoPandas).&lt;/p&gt;
+&lt;h2 id="Thanks-to-the-PROJ-and-pyproj-communities!"&gt;Thanks to the PROJ and pyproj communities!&lt;a class="anchor-link" href="#Thanks-to-the-PROJ-and-pyproj-communities!"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is an important change for GeoPandas, providing better and more user-friendly handling of Coordinate Reference Systems. And all that is only possible thanks to the PROJ and pyproj projects (and special thanks to &lt;a href="https://twitter.com/EvenRouault"&gt;Even Rouault&lt;/a&gt; for a lot of the PROJ work, and to &lt;a href="https://github.com/snowman2"&gt;Alan Snow&lt;/a&gt; for his work on pyproj and integrating this in GeoPandas).&lt;/p&gt;
 
 &lt;/div&gt;
 &lt;/div&gt;
