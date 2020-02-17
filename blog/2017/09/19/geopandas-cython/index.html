@@ -426,7 +426,7 @@ Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). P
 <p>GeoPandas combines the capabilities of pandas with Python's 'geospatial stack' (<a href="https://shapely.readthedocs.io/en/stable/">Shapely</a> to manage geometries like points, linestrings, and polygons; <a href="http://toblerity.org/fiona/">Fiona</a> to handle data import and export, ...). This stack consists of packages that provide intuitive Python wrappers around the OSGeo C/C++ libraries (GDAL/OGR, GEOS, ...) which power virtually every open source geospatial library or application, like PostGIS, QGIS, etc.</p>
 <h3 id="small-demo"><a class="toclink" href="#small-demo">Small demo</a></h3>
 <p>For example, we can use GeoPandas to load and plot the <a href="https://opendata.paris.fr/explore/dataset/quartier_paris/">Paris districts</a>:</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;quartier_paris.geojson&quot;</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
@@ -554,7 +554,7 @@ a Python interface and reference to GEOS Geometry objects in C and provide all t
 <p>Additionally, the Shapely python objects can take up a significant amount of RAM relative to the GEOS Geometry objects that they wrap.</p>
 <h4 id="some-timings"><a class="toclink" href="#some-timings">Some timings</a></h4>
 <p>Let's explore this bad performance with a small benchmark:</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="kn">as</span> <span class="nn">gpd</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
@@ -585,7 +585,7 @@ Cython to perform the for loops in C and to call the underlying C library GEOS d
     <span class="n">geometries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geometry_array</span>
 
     <span class="k">with</span> <span class="n">nogil</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="n">left_geom</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">GEOSGeometry</span> <span class="o">*&gt;</span> <span class="n">geometries</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">left_geom</span> <span class="o">!=</span> <span class="n">NULL</span><span class="p">:</span>
                 <span class="n">out</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">GEOSDistance_r</span><span class="p">(</span><span class="n">left_geom</span><span class="p">,</span> <span class="n">some_point</span><span class="o">.</span><span class="n">__geom</span><span class="p">)</span>
@@ -646,7 +646,7 @@ geospatial plugin for the popular PostgreSQL database, and also uses the GEOS li
 <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;NAME&#39;</span><span class="p">)[[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
 <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
-<span class="n">res</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
 
@@ -685,9 +685,9 @@ issue tracker).</p>
 <h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out!</a></h3>
 <p>We would love you to try out the new cythonized GeoPandas version, test it on some real use cases and provide feedback.</p>
 <p>Installing the new version currently requires building it from source with Cython. However, if you already have the released version of GeoPandas installed, Cython should be the only additional dependency (the GEOS library to build against should then already be installed). And in that case, the following steps should suffice:</p>
-<div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">geopandas</span><span class="o">/</span><span class="n">geopandas</span>
-<span class="n">git</span> <span class="n">checkout</span> <span class="n">geopandas</span><span class="o">-</span><span class="n">cython</span>
-<span class="n">make</span> <span class="n">install</span>
+<div class="highlight"><pre><span></span><span class="err">git clone https://github.com/geopandas/geopandas</span>
+<span class="err">git checkout geopandas-cython</span>
+<span class="err">make install</span>
 </pre></div>
 
 

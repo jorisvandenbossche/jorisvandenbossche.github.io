@@ -1,417 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta name="author" content="Joris Van den Bossche">
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
-        <title>A new categorical encoder for handling categorical features in scikit-learn | Joris Van den Bossche</title>
-
-	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-	<link rel="icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="alternate" type="application/atom+xml" title="Joris Van den Bossche blog atom feed" href="/feeds/all.atom.xml" />
-        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700' rel='stylesheet' type='text/css'>
-
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="/theme/css/icons.css"/>
-        <style>.highlight .hll { background-color: #ffffcc }
-.highlight .c { color: #60a0b0; font-style: italic } /* Comment */
-.highlight .err { border: 1px solid #FF0000 } /* Error */
-.highlight .k { color: #007020; font-weight: bold } /* Keyword */
-.highlight .o { color: #666666 } /* Operator */
-.highlight .cm { color: #60a0b0; font-style: italic } /* Comment.Multiline */
-.highlight .cp { color: #007020 } /* Comment.Preproc */
-.highlight .c1 { color: #60a0b0; font-style: italic } /* Comment.Single */
-.highlight .cs { color: #60a0b0; background-color: #fff0f0 } /* Comment.Special */
-.highlight .gd { color: #A00000 } /* Generic.Deleted */
-.highlight .ge { font-style: italic } /* Generic.Emph */
-.highlight .gr { color: #FF0000 } /* Generic.Error */
-.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
-.highlight .gi { color: #00A000 } /* Generic.Inserted */
-.highlight .go { color: #808080 } /* Generic.Output */
-.highlight .gp { color: #c65d09; font-weight: bold } /* Generic.Prompt */
-.highlight .gs { font-weight: bold } /* Generic.Strong */
-.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-.highlight .gt { color: #0040D0 } /* Generic.Traceback */
-.highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
-.highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
-.highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
-.highlight .kp { color: #007020 } /* Keyword.Pseudo */
-.highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
-.highlight .kt { color: #902000 } /* Keyword.Type */
-.highlight .m { color: #40a070 } /* Literal.Number */
-.highlight .s { color: #4070a0 } /* Literal.String */
-.highlight .na { color: #4070a0 } /* Name.Attribute */
-.highlight .nb { color: #007020 } /* Name.Builtin */
-.highlight .nc { color: #0e84b5; font-weight: bold } /* Name.Class */
-.highlight .no { color: #60add5 } /* Name.Constant */
-.highlight .nd { color: #555555; font-weight: bold } /* Name.Decorator */
-.highlight .ni { color: #d55537; font-weight: bold } /* Name.Entity */
-.highlight .ne { color: #007020 } /* Name.Exception */
-.highlight .nf { color: #06287e } /* Name.Function */
-.highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
-.highlight .nn { color: #0e84b5; font-weight: bold } /* Name.Namespace */
-.highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
-.highlight .nv { color: #bb60d5 } /* Name.Variable */
-.highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
-.highlight .w { color: #bbbbbb } /* Text.Whitespace */
-.highlight .mf { color: #40a070 } /* Literal.Number.Float */
-.highlight .mh { color: #40a070 } /* Literal.Number.Hex */
-.highlight .mi { color: #40a070 } /* Literal.Number.Integer */
-.highlight .mo { color: #40a070 } /* Literal.Number.Oct */
-.highlight .sb { color: #4070a0 } /* Literal.String.Backtick */
-.highlight .sc { color: #4070a0 } /* Literal.String.Char */
-.highlight .sd { color: #4070a0; font-style: italic } /* Literal.String.Doc */
-.highlight .s2 { color: #4070a0 } /* Literal.String.Double */
-.highlight .se { color: #4070a0; font-weight: bold } /* Literal.String.Escape */
-.highlight .sh { color: #4070a0 } /* Literal.String.Heredoc */
-.highlight .si { color: #70a0d0; font-style: italic } /* Literal.String.Interpol */
-.highlight .sx { color: #c65d09 } /* Literal.String.Other */
-.highlight .sr { color: #235388 } /* Literal.String.Regex */
-.highlight .s1 { color: #4070a0 } /* Literal.String.Single */
-.highlight .ss { color: #517918 } /* Literal.String.Symbol */
-.highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
-.highlight .vc { color: #bb60d5 } /* Name.Variable.Class */
-.highlight .vg { color: #bb60d5 } /* Name.Variable.Global */
-.highlight .vi { color: #bb60d5 } /* Name.Variable.Instance */
-.highlight .il { color: #40a070 } /* Literal.Number.Integer.Long */</style>
-        <style>body {
-  margin: 0;
-  padding: 0;
-  font: 15px 'Source Sans Pro', sans-serif;
-  line-height: 1.6em;
-  color: #222;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-a {
-  color: #007EE5;
-  text-decoration: none;
-}
-a:hover {
-  color: #007EE5;
-  text-decoration: none;
-}
-header.main-header {
-  background: none repeat scroll 0% 0% #205F29;
-  margin-bottom: 0px;
-}
-header.main-header a {
-  color: #fff;
-}
-header.main-header .container {
-  max-width: 1000px;
-}
-header.main-header .container nav a:hover {
-  background-color: #5C881C;
-}
-article {
-  margin: 0;
-}
-article header.about {
-  margin-bottom: 0px;
-  padding-bottom: 0px;
-}
-article header {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-}
-article header h1 {
-  margin-bottom: 2px;
-  font-weight: 700;
-  color: #000;
-}
-article header time {
-  color: #9E9E9E;
-  font-size: 0.85em;
-  float: right;
-}
-article header time.left {
-  color: #9E9E9E;
-  font-size: 0.85em;
-  float: left;
-}
-article div.social-links ul {
-  padding: 0px;
-}
-article div.social-links li {
-  display: inline;
-  font-size: 20px;
-}
-article div.social-links li a {
-  color: #000;
-  padding: 10px;
-}
-article div.social-links li a:hover {
-  color: #666;
-  text-decoration: none;
-}
-article p {
-  font-size: 16px;
-  margin-bottom: 20px;
-  line-height: 1.6em;
-}
-article p.note {
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  padding: 0.533em 0.733em;
-}
-article p.update {
-  background-color: #FEEFB3;
-  border: 1px solid #e6e68a;
-  padding: 0.533em 0.733em;
-}
-article p.alert {
-  background-color: #ffe2e2;
-  border: 1px solid #ffb2b2;
-  padding: 0.533em 0.733em;
-}
-article ul,
-article ol {
-  margin-top: 0px;
-  margin-bottom: 25px;
-}
-article li {
-  font-size: 16px;
-  line-height: 1.6em;
-}
-article a:hover {
-  text-decoration: underline;
-}
-article blockquote {
-  border-left: 2px solid #c7c7cc;
-  color: #666;
-  margin: 30px 0;
-  padding: 0 0 0 25px;
-}
-article img {
-  max-width: 100%;
-}
-article code {
-  color: #333;
-  background-color: #EEE;
-  border-radius: 0;
-  font-size: 13px;
-}
-article .meta {
-  font-size: 11px;
-}
-article .meta a:hover {
-  text-decoration: none;
-}
-article .meta div {
-  margin-bottom: 20px;
-  display: block;
-}
-article .meta a.tag {
-  margin: 0 10px 10px 0;
-  padding: 1px 12px;
-  display: inline-block;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.8);
-  background: rgba(0, 0, 0, 0.05);
-}
-article .meta a.tag:hover {
-  background: rgba(0, 0, 0, 0.15);
-}
-article .meta a.read_more,
-article .meta a.comments_btn {
-  font-size: 14px;
-  font-weight: 800;
-  padding: 10px 20px;
-  color: #205F29;
-  background: #FFF;
-  border: 1px solid #205F29;
-}
-article .meta a.read_more:hover,
-article .meta a.comments_btn:hover {
-  color: #FFF;
-  background: #5C881C;
-}
-.index {
-  max-width: 700px;
-}
-.index article header h2 {
-  font-size: 36px;
-  margin-bottom: 2px;
-  font-weight: 700;
-}
-.index article header h2 a {
-  color: #000;
-}
-.index article header h2 a:hover {
-  color: #007EE5;
-  text-decoration: none;
-}
-.index .separator {
-  padding: 40px 0 0 0;
-  margin: 0 0 40px 0;
-  height: 10px;
-  border-bottom: solid 1px #CCC;
-}
-.index .pagination {
-  display: block;
-  margin-bottom: 100px;
-}
-.index .pagination .left {
-  text-align: right;
-}
-.index .pagination .right {
-  text-align: left;
-}
-.index .pagination a {
-  display: inline-block;
-  border: 2px solid #5C881C;
-  margin: 0 5px;
-  padding: 8px 20px;
-  font-weight: bold;
-  color: #5C881C;
-}
-.index .pagination a:hover {
-  color: #FFF;
-  background: #5C881C;
-}
-.post {
-  max-width: 800px;
-}
-.post h2:before {
-  content: "# ";
-  font-weight: bold;
-  color: #DDD;
-}
-.post h3:before {
-  content: "## ";
-  font-weight: bold;
-  color: #DDD;
-}
-.post h4:before {
-  content: "### ";
-  font-weight: bold;
-  color: #DDD;
-}
-.post article .meta {
-  margin: 50px 0 100px;
-}
-.list {
-  max-width: 700px;
-}
-.list ul.double-list {
-  margin: 0 auto 60px;
-  padding: 0;
-  list-style-type: none;
-}
-.list ul.double-list li {
-  padding: 5px 0;
-}
-.list ul.double-list li h2 {
-  font-size: 1em;
-  display: inline;
-  font-weight: normal;
-}
-.list ul.double-list li span {
-  font-family: sans-serif;
-  text-transform: uppercase;
-  text-align: right;
-  float: right;
-  padding-top: 3px;
-  font-size: 12px;
-  color: #999;
-}
-.full-width-content {
-  padding-top: 10px;
-  padding-left: 0px;
-  padding-right: 0px;
-  margin-left: -20px;
-  margin-right: -20px;
-}
-.col-xs-1,
-.col-sm-1,
-.col-md-1,
-.col-lg-1,
-.col-xs-2,
-.col-sm-2,
-.col-md-2,
-.col-lg-2,
-.col-xs-3,
-.col-sm-3,
-.col-md-3,
-.col-lg-3,
-.col-xs-4,
-.col-sm-4,
-.col-md-4,
-.col-lg-4,
-.col-xs-5,
-.col-sm-5,
-.col-md-5,
-.col-lg-5,
-.col-xs-6,
-.col-sm-6,
-.col-md-6,
-.col-lg-6,
-.col-xs-7,
-.col-sm-7,
-.col-md-7,
-.col-lg-7,
-.col-xs-8,
-.col-sm-8,
-.col-md-8,
-.col-lg-8,
-.col-xs-9,
-.col-sm-9,
-.col-md-9,
-.col-lg-9,
-.col-xs-10,
-.col-sm-10,
-.col-md-10,
-.col-lg-10,
-.col-xs-11,
-.col-sm-11,
-.col-md-11,
-.col-lg-11,
-.col-xs-12,
-.col-sm-12,
-.col-md-12,
-.col-lg-12 {
-  padding-right: 0px;
-  padding-left: 0px;
-}</style>
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-
-    </head>
-
-    <body>
-        <header class="navbar navbar-inverse bs-docs-nav">
-            <div class="container-fluid">
-                <div class="navbar-header">
-		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#theNavbar">
-		    <span class="icon-bar"></span>
-		    <span class="icon-bar"></span>
-		    <span class="icon-bar"></span> 
-		  </button>
-                  <a class="navbar-brand" href="/" title="Home" class="title">Joris Van den Bossche</a>
-                </div>
-                <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation" id="theNavbar">
-		    <ul class="nav navbar-nav navbar-right">
-                            <li><a href="/pages/about.html" title="About">About</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-
-        <div id="wrap">
-<div class="container post">
-    <article>
-        <header>
-            <h1>A new categorical encoder for handling categorical features in scikit-learn</h1>
-            <time datetime="article.date.isoformat()" pubdate>Mo 20 November 2017</time>
-        </header>
-
-        <div class="article_content">
-            <style type="text/css">/*!
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Joris Van den Bossche - pyproj</title><link href="https://jorisvandenbossche.github.io/" rel="alternate"></link><link href="https://jorisvandenbossche.github.io/feeds/pyproj.atom.xml" rel="self"></link><id>https://jorisvandenbossche.github.io/</id><updated>2020-02-11T09:00:00+01:00</updated><entry><title>GeoPandas now uses pyproj.CRS and catches up with PROJ 6</title><link href="https://jorisvandenbossche.github.io/blog/2020/02/11/geopandas-pyproj-crs/" rel="alternate"></link><published>2020-02-11T09:00:00+01:00</published><updated>2020-02-11T09:00:00+01:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2020-02-11:/blog/2020/02/11/geopandas-pyproj-crs/</id><summary type="html">
+&lt;p&gt;
+Short summary: the upcoming 0.7.0 release of GeoPandas will start using &lt;code&gt;pyproj.CRS&lt;/code&gt; to represent the Coordinate Reference System of a GeoDataFrame. This brings along a better user interface, many changes and improvements from PROJ 6, but might also require some changes in your code (getting rid of proj4 strings).
+&lt;/p&gt;
+</summary><content type="html">&lt;style type="text/css"&gt;/*!
 *
 * IPython notebook
 *
@@ -773,7 +365,7 @@ div.unrecognized_cell .inner_cell a:hover {
   text-decoration: none;
 }
 @media (max-width: 540px) {
-  div.unrecognized_cell > div.prompt {
+  div.unrecognized_cell &gt; div.prompt {
     display: none;
   }
 }
@@ -826,19 +418,19 @@ div.input_prompt {
   color: #303F9F;
   border-top: 1px solid transparent;
 }
-div.input_area > div.highlight {
+div.input_area &gt; div.highlight {
   margin: 0.4em;
   border: none;
   padding: 0px;
   background-color: transparent;
 }
-div.input_area > div.highlight > pre {
+div.input_area &gt; div.highlight &gt; pre {
   margin: 0px;
   border: none;
   padding: 0px;
   background-color: transparent;
 }
-/* The following gets added to the <head> if it is detected that the user has a
+/* The following gets added to the &lt;head&gt; if it is detected that the user has a
  * monospace font with inconsistent normal/bold/italic height.  See
  * notebookmain.js.  Such fonts will have keywords vertically offset with
  * respect to the rest of the text.  The user should select a better font.
@@ -899,7 +491,7 @@ div.input_area > div.highlight > pre {
 }
 /*
 
-Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+Original style from softwaremaniacs.org (c) Ivan Sagalaev &lt;Maniac@SoftwareManiacs.Org&gt;
 Adapted from GitHub theme
 
 */
@@ -1143,7 +735,7 @@ div.output_area img.unconfined,
 div.output_area svg.unconfined {
   max-width: none;
 }
-div.output_area .mglyph > img {
+div.output_area .mglyph &gt; img {
   max-width: none;
 }
 /* This is needed to protect the pre formating from global settings such
@@ -1381,7 +973,7 @@ div.text_cell {
   align-items: stretch;
 }
 @media (max-width: 540px) {
-  div.text_cell > div.prompt {
+  div.text_cell &gt; div.prompt {
     display: none;
   }
 }
@@ -1453,8 +1045,8 @@ h6:hover .anchor-link {
   font-size: 100%;
   font-style: italic;
 }
-</style>
-<style type="text/css">.highlight .hll { background-color: #ffffcc }
+&lt;/style&gt;
+&lt;style type="text/css"&gt;.highlight .hll { background-color: #ffffcc }
 .highlight  { background: #f8f8f8; }
 .highlight .c { color: #408080; font-style: italic } /* Comment */
 .highlight .err { border: 1px solid #FF0000 } /* Error */
@@ -1522,8 +1114,8 @@ h6:hover .anchor-link {
 .highlight .vg { color: #19177C } /* Name.Variable.Global */
 .highlight .vi { color: #19177C } /* Name.Variable.Instance */
 .highlight .vm { color: #19177C } /* Name.Variable.Magic */
-.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
-<style type="text/css">
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */&lt;/style&gt;
+&lt;style type="text/css"&gt;
 /* Temporary definitions which will become obsolete with Notebook release 5.0 */
 .ansi-black-fg { color: #3E424D; }
 .ansi-black-bg { background-color: #3E424D; }
@@ -1559,325 +1151,445 @@ h6:hover .anchor-link {
 .ansi-white-intense-bg { background-color: #A1A6B2; }
 
 .ansi-bold { font-weight: bold; }
-</style>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><em>This work is supported by the Université Paris-Saclay Center for Data Science</em></p>
+&lt;/style&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
+&lt;p&gt;
+Short summary: the upcoming 0.7.0 release of GeoPandas will start using &lt;code&gt;pyproj.CRS&lt;/code&gt; to represent the Coordinate Reference System of a GeoDataFrame. This brings along a better user interface, many changes and improvements from PROJ 6, but might also require some changes in your code (getting rid of proj4 strings).
+&lt;/p&gt;
 
-<p>
-Short summary: an improved categorical encoder has landed in scikit-learn (<a href="https://github.com/scikit-learn/scikit-learn/pull/9151">the PR</a> has been merged in master and this will be included in the next release). 
-</p>
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="What-is-PROJ-?"&gt;What is PROJ ?&lt;a class="anchor-link" href="#What-is-PROJ-?"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;To quote from their &lt;a href="https://proj.org/index.html"&gt;website&lt;/a&gt;, PROJ is "a generic coordinate transformation software that transforms geospatial coordinates from one coordinate reference system (CRS) to another. This includes cartographic projections as well as geodetic transformations".&lt;br&gt;
+PROJ is a foundational piece of the open source geospatial ecosystem providing the functionality to transform coordinates in many projects such as GDAL, QGIS, PostGIS, ... and also in GeoPandas.&lt;/p&gt;
+&lt;p&gt;Over the last years, PROJ has seen a lot of improvements (through the &lt;a href="https://gdalbarn.com/"&gt;GDAL barn&lt;/a&gt; fundraising): a unified CRS database (now included in PROJ), better WKT2 support for describing a CRS in a standardized way ("Well Known Text" format), and more accurate transformations between CRS with different datums. This culminated in the PROJ 6 release (see the &lt;a href="https://proj.org/news.html#id106"&gt;release notes&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;Following the changes in PROJ, the &lt;a href="https://pyproj4.github.io/pyproj/stable/"&gt;&lt;code&gt;pyproj&lt;/code&gt;&lt;/a&gt; package (which provides python bindings to PROJ) introduced the &lt;code&gt;pyproj.CRS&lt;/code&gt; object to represent a Coordinate Reference System with a user-friendly interface. This has some consequences, that I will try to explain below.&lt;/p&gt;
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<hr>
-<p><strong>Update</strong>: the original version of this post mentioned the <code>CategoricalEncoder</code> object, but this was renamed to <code>OneHotEncoder</code> / <code>OrdinalEncoder</code> before the final release of scikit-learn 0.20.</p>
-<hr>
-<p>When working with prediction problems, in many cases your dataset will contain categorical variables. These are non-numeric variables -- or if numeric, the values should not be interpreted as numeric values -- that typically consist of a limited number of unique values (the categories or the levels). 
-On the other hand, most machine learning models require numeric input data. Therefore, categorical variables are <em>encoded</em>: they are converted to one or multiple numeric features.
-A well known example is one-hot or dummy encoding.</p>
-<p>Currently there is no good out-of-the-box solution in scikit-learn. There is the <code>OneHotEncoder</code> which provides one-hot encoding, but because it only works on integer columns and has a bit of an awkward API, it is rather limited in practice. 
-Chris Mofitt recently wrote a nice guide on how to encode categorical variables in python (<a href="http://pbpython.com/categorical-encoding.html">see his blogpost</a>). He shows different ways to solve this: by (mis)using the <code>LabelEncoder</code> (which is actually meant for the target variable, not for encoding features) or using pandas' <code>get_dummies</code>, etc.
-But none of these solutions are ideal for the simple cases or can readily be integrated in scikit-learn pipelines.</p>
-<p>The newly added categorical encoding options try to solve this: provide a built-in way to encode your categorical variables with some common options (either a one-hot or dummy encoding with the improved <code>OneHotEncoder</code> or an ordinal encoding with the <code>OrdinalEncoder</code>).</p>
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Back-to-GeoPandas:-how-was/is-CRS-information-stored?"&gt;Back to GeoPandas: how was/is CRS information stored?&lt;a class="anchor-link" href="#Back-to-GeoPandas:-how-was/is-CRS-information-stored?"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;In GeoPandas, the &lt;code&gt;.crs&lt;/code&gt; attribute stores the CRS of the GeoDataFrame, and up to now (version 0.6), this was stored as a &lt;strong&gt;"proj4 string"&lt;/strong&gt; (or a dictionary representation of it).&lt;/p&gt;
+&lt;p&gt;For example, you would see things like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;gdf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;naturalearth_cities&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;init&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;epsg:4326&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The above is the dictionary form of "+init=epsg:4326", a proj4 string using an &lt;a href="https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset"&gt;EPSG code&lt;/a&gt; to describe the CRS. And a full form proj4 string could for example look like this (for the projected CRS EPSG:31370 used in Belgium):&lt;/p&gt;
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Example">Example<a class="anchor-link" href="#Example">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>To illustrate the basic usage of this new transformer, let's load the titanic survival dataset:</p>
+&lt;pre&gt;&lt;code&gt;"+proj=lcc +lat_0=90 +lon_0=4.36748666666667 +lat_1=51.1666672333333 +lat_2=49.8333339 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +units=m +no_defs +type=crs"&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The above is now the past: &lt;strong&gt;starting with GeoPandas 0.7&lt;/strong&gt;, the CRS information will be stored as a &lt;strong&gt;&lt;code&gt;pyproj.CRS&lt;/code&gt; object&lt;/strong&gt;, which is a richer representation of a coordinate reference system.&lt;br&gt;
+Repeating the code sample from above, but now using the upcoming GeoPandas 0.7 in combination with pyproj 2.4, we get:&lt;/p&gt;
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">titanic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/amueller/scipy-2017-sklearn/master/notebooks/datasets/titanic3.csv&quot;</span><span class="p">)</span>
-<span class="n">titanic</span> <span class="o">=</span> <span class="n">titanic</span><span class="p">[[</span><span class="s1">&#39;pclass&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sibsp&#39;</span><span class="p">,</span> <span class="s1">&#39;parch&#39;</span><span class="p">,</span> <span class="s1">&#39;fare&#39;</span><span class="p">,</span> <span class="s1">&#39;embarked&#39;</span><span class="p">,</span> <span class="s1">&#39;survived&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-</pre></div>
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[2]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;geopandas&lt;/span&gt;
+&lt;span class="n"&gt;gdf&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;geopandas&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;naturalearth_cities&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-    </div>
-</div>
-</div>
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">titanic</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
 
 
-<div class="output_area">
+&lt;div class="output_area"&gt;
 
-    <div class="prompt output_prompt">Out[2]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>pclass</th>
-      <th>sex</th>
-      <th>age</th>
-      <th>sibsp</th>
-      <th>parch</th>
-      <th>fare</th>
-      <th>embarked</th>
-      <th>survived</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1</td>
-      <td>female</td>
-      <td>29.0000</td>
-      <td>0</td>
-      <td>0</td>
-      <td>211.3375</td>
-      <td>S</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>male</td>
-      <td>0.9167</td>
-      <td>1</td>
-      <td>2</td>
-      <td>151.5500</td>
-      <td>S</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>1</td>
-      <td>female</td>
-      <td>2.0000</td>
-      <td>1</td>
-      <td>2</td>
-      <td>151.5500</td>
-      <td>S</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>1</td>
-      <td>male</td>
-      <td>30.0000</td>
-      <td>1</td>
-      <td>2</td>
-      <td>151.5500</td>
-      <td>S</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>1</td>
-      <td>female</td>
-      <td>25.0000</td>
-      <td>1</td>
-      <td>2</td>
-      <td>151.5500</td>
-      <td>S</td>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This dataset contains two categorical variables ("sex" and "embarked"). Now we can use the <code>OneHotEncoder</code> to transform those two columns into one-hot encoded or dummy columns (the "sex" feature results in 2 dummy columns for female/male, the "embarked" feature in 3 columns, which together gives the resulting transformed array with 5 columns):</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">encoder</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">encoder</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titanic</span><span class="p">[[</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;embarked&#39;</span><span class="p">]])</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[5]:</div>
+    &lt;div class="prompt output_prompt"&gt;Out[2]:&lt;/div&gt;
 
 
 
 
-<div class="output_text output_subarea output_execute_result">
-<pre>array([[ 1.,  0.,  0.,  0.,  1.],
-       [ 0.,  1.,  0.,  0.,  1.],
-       [ 1.,  0.,  0.,  0.,  1.],
-       ..., 
-       [ 0.,  1.,  1.,  0.,  0.],
-       [ 0.,  1.,  1.,  0.,  0.],
-       [ 0.,  1.,  0.,  0.,  1.]])</pre>
-</div>
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;&amp;lt;Geographic 2D CRS: EPSG:4326&amp;gt;
+Name: WGS 84
+Axis Info [ellipsoidal]:
+- Lat[north]: Geodetic latitude (degree)
+- Lon[east]: Geodetic longitude (degree)
+Area of Use:
+- name: World
+- bounds: (-180.0, -90.0, 180.0, 90.0)
+Datum: World Geodetic System 1984
+- Ellipsoid: WGS 84
+- Prime Meridian: Greenwich&lt;/pre&gt;
+&lt;/div&gt;
 
-</div>
+&lt;/div&gt;
 
-</div>
-</div>
+&lt;/div&gt;
+&lt;/div&gt;
 
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">encoder</span><span class="o">.</span><span class="n">categories_</span>
-</pre></div>
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[3]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-    </div>
-</div>
-</div>
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[6]:</div>
-
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
 
 
+&lt;div class="output_area"&gt;
 
-<div class="output_text output_subarea output_execute_result">
-<pre>[array([&#39;female&#39;, &#39;male&#39;], dtype=object), array([&#39;C&#39;, &#39;Q&#39;, &#39;S&#39;], dtype=object)]</pre>
-</div>
+    &lt;div class="prompt output_prompt"&gt;Out[3]:&lt;/div&gt;
 
-</div>
 
-</div>
-</div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>See the <a href="http://scikit-learn.org/dev/modules/preprocessing.html#encoding-categorical-features">development docs</a> for more information.</p>
-<p>Having this conversion available as a sklearn transformer also makes it easier to put in a <code>Pipeline</code>. Although, this is at the moment not yet fully straightforward because we need to combine the output of this categorical encoder with the other numeric columns. Currently you can already use the <a href="http://scikit-learn.org/stable/auto_examples/hetero_feature_union.html">FeatureUnion</a> or the <a href="https://github.com/scikit-learn-contrib/sklearn-pandas#transformation-mapping">DataFrameMapper</a> from the sklearn-pandas project, but the future <code>ColumnTransformer</code> will provide a built-in way to make this much easier (this is another PR I am working on: <a href="https://github.com/scikit-learn/scikit-learn/pull/9012">https://github.com/scikit-learn/scikit-learn/pull/9012</a>).</p>
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>! This is brand new functionality in scikit-learn, so feedback is very welcome! (the <a href="https://github.com/scikit-learn/scikit-learn/pull/9151">PR</a>)</strong></p>
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;pyproj.crs.CRS&lt;/pre&gt;
+&lt;/div&gt;
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Want-more-categorical-encoders?">Want more categorical encoders?<a class="anchor-link" href="#Want-more-categorical-encoders?">&#182;</a></h3><p>The <code>OneHotEncoder</code> and <code>OrdinalEncoder</code> only provide two ways to encode, but there are many more possible ways to convert your categorical variables into numeric features suited to feed into models. The <a href="http://contrib.scikit-learn.org/categorical-encoding/">Category Encoders</a> is a scikit-learn-contrib package that provides a whole suite of scikit-learn compatible transformers for different types of categorical encodings.</p>
+&lt;/div&gt;
 
-</div>
-</div>
-</div>
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Moving-away-from-&amp;quot;proj4-strings&amp;quot;"&gt;Moving away from "proj4 strings"&lt;a class="anchor-link" href="#Moving-away-from-&amp;quot;proj4-strings&amp;quot;"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;With the changes in PROJ 6, the PROJ community wants to move away from using proj4 strings to represent a CRS, as we did up to now. &lt;em&gt;Why?&lt;/em&gt; Because the proj4 string is limited and cannot faithfully describe a certain CRS. Using a proj4 string (instead of e.g. a WKT string) loses valuable information about the CRS (e.g. the name, the exact datum, the area of use, etc), possibly resulting in less precise transformations.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;What should be used instead?&lt;/em&gt; The most recommended formats are "Well Known Text" (WKT) strings and AUTHORITY:CODE identifiers (where the authority typically is EPSG). In practice, using the EPSG code will work in many cases. For example "EPSG:4326" for geographical coordinates (WGS84) or "EPSG:3857" for projected coordinates in the Web Mercator projection.&lt;/p&gt;
+&lt;p&gt;See also: &lt;a href="https://proj.org/faq.html#what-is-the-best-format-for-describing-coordinate-reference-systems"&gt;https://proj.org/faq.html#what-is-the-best-format-for-describing-coordinate-reference-systems&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;(Sidenote: there are still use cases for proj4 strings, such as for describing transformation pipelines in PROJ, or in cases you don't care about the specific datum, but in general &lt;em&gt;not&lt;/em&gt; for describing a CRS).&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="The-new-pyproj.CRS-class"&gt;The new &lt;code&gt;pyproj.CRS&lt;/code&gt; class&lt;a class="anchor-link" href="#The-new-pyproj.CRS-class"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;As shown above, the &lt;code&gt;.crs&lt;/code&gt; attribute now returns a &lt;code&gt;pyproj.CRS&lt;/code&gt;. And you can already see that the representation of this objects is much more informative than the proj4 string before (it includes its name, whether it is geographic or projected, the area of use, the datum, ...):&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[4]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt output_prompt"&gt;Out[4]:&lt;/div&gt;
+
+
+
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;&amp;lt;Geographic 2D CRS: EPSG:4326&amp;gt;
+Name: WGS 84
+Axis Info [ellipsoidal]:
+- Lat[north]: Geodetic latitude (degree)
+- Lon[east]: Geodetic longitude (degree)
+Area of Use:
+- name: World
+- bounds: (-180.0, -90.0, 180.0, 90.0)
+Datum: World Geodetic System 1984
+- Ellipsoid: WGS 84
+- Prime Meridian: Greenwich&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;This object now provides a much richer and more user-friendly interface compared to the old proj4 strings/dicts. Apart from the repr, the above information is also available through attributes or methods:&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[5]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt output_prompt"&gt;Out[5]:&lt;/div&gt;
+
+
+
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;&amp;#39;WGS 84&amp;#39;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[6]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datum&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt output_prompt"&gt;Out[6]:&lt;/div&gt;
+
+
+
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;DATUM[&amp;#34;World Geodetic System 1984&amp;#34;,
+    ELLIPSOID[&amp;#34;WGS 84&amp;#34;,6378137,298.257223563,
+        LENGTHUNIT[&amp;#34;metre&amp;#34;,1]],
+    ID[&amp;#34;EPSG&amp;#34;,6326]]&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Or for a projected CRS:&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[7]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pyproj&lt;/span&gt;
+&lt;span class="n"&gt;crs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pyproj&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CRS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;EPSG:31370&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;crs&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt output_prompt"&gt;Out[7]:&lt;/div&gt;
+
+
+
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;&amp;lt;Projected CRS: EPSG:31370&amp;gt;
+Name: Belge 1972 / Belgian Lambert 72
+Axis Info [cartesian]:
+- X[east]: Easting (metre)
+- Y[north]: Northing (metre)
+Area of Use:
+- name: Belgium - onshore
+- bounds: (2.5, 49.5, 6.4, 51.51)
+Coordinate Operation:
+- name: Belgian Lambert 72
+- method: Lambert Conic Conformal (2SP)
+Datum: Reseau National Belge 1972
+- Ellipsoid: International 1924
+- Prime Meridian: Greenwich&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[8]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_geographic&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt output_prompt"&gt;Out[8]:&lt;/div&gt;
+
+
+
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;False&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[9]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_projected&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt output_prompt"&gt;Out[9]:&lt;/div&gt;
+
+
+
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;True&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;For more, see the pyproj docs: &lt;a href="https://pyproj4.github.io/pyproj/stable/api/crs.html#pyproj-crs"&gt;https://pyproj4.github.io/pyproj/stable/api/crs.html#pyproj-crs&lt;/a&gt;&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Will-this-change-break-my-code?"&gt;Will this change break my code?&lt;a class="anchor-link" href="#Will-this-change-break-my-code?"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is a big change for GeoPandas, one that is required to follow the PROJ community but I think also a nice change that improves the usability. Unfortunately, it will also require some transition work depending on your workflow.&lt;/p&gt;
+&lt;p&gt;When reading geospatial files with &lt;code&gt;geopandas.read_file&lt;/code&gt;, things should mostly work out of the box. But when specifying the CRS manually in your code, this will require a first clear change. Currently, a lot of people (and also the GeoPandas docs showed that) specify the EPSG code using the "init" proj4 string:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;## OLD&lt;/span&gt;
+&lt;span class="n"&gt;GeoDataFrame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;init&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;epsg:4326&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;span class="c1"&gt;# or&lt;/span&gt;
+&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;init&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;epsg:4326&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="c1"&gt;# or&lt;/span&gt;
+&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_crs&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;init&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;epsg:4326&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The above will now raise a deprecation warning from pyproj, and instead of the "init" proj4 string, you should use only the EPSG code itself as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;## NEW&lt;/span&gt;
+&lt;span class="n"&gt;GeoDataFrame&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;EPSG:4326&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# or&lt;/span&gt;
+&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;EPSG:4326&amp;quot;&lt;/span&gt;
+&lt;span class="c1"&gt;# or&lt;/span&gt;
+&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_crs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;EPSG:4326&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;See the &lt;a href="https://pyproj4.github.io/pyproj/stable/gotchas.html#init-auth-auth-code-should-be-replaced-with-auth-auth-code"&gt;pyproj docs&lt;/a&gt; for more on this. If you used a full proj4 string, it is also recommended to change it with an EPSG code if possible.&lt;/p&gt;
+&lt;p&gt;One actual breaking change is that the returned value from &lt;code&gt;crs&lt;/code&gt; is no longer a string or dict. So if you relied on this aspect, an update will be needed. For example, I have seen this code in the wild to get the EPSG code:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;init&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="c1"&gt;# or &lt;/span&gt;
+&lt;span class="s1"&gt;&amp;#39;init&amp;#39;&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;gdf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;crs&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This will no longer work. To get the EPSG code from a &lt;code&gt;crs&lt;/code&gt; object, you can use the &lt;code&gt;to_epsg()&lt;/code&gt; method. And there are many other methods available on the CRS class to get information about the CRS.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;There are probably other (unforeseen) cases that might require updating your code. &lt;strong&gt;If you encounter any problems when upgrading to GeoPandas 0.7, please provide feedback on &lt;a href="https://github.com/geopandas/geopandas/issues"&gt;Github&lt;/a&gt;!&lt;/strong&gt; That way we can try to smooth this migration with ironing out issues or improving the documentation on how to upgrade.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Thanks-to-the-PROJ-and-pyproj-communities!"&gt;Thanks to the PROJ and pyproj communities!&lt;a class="anchor-link" href="#Thanks-to-the-PROJ-and-pyproj-communities!"&gt;&amp;#182;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is an important change for GeoPandas, providing better and more user-friendly handling of Coordinate Reference Systems. And all that is only possible thanks to the PROJ and pyproj projects (and special thanks to &lt;a href="https://twitter.com/EvenRouault"&gt;Even Rouault&lt;/a&gt; for a lot of the PROJ work, and to &lt;a href="https://github.com/snowman2"&gt;Alan Snow&lt;/a&gt; for his work on pyproj and integrating this in GeoPandas).&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
  
 
 
-<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var mathjaxscript = document.createElement('script');
     mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
     mathjaxscript.type = 'text/javascript';
@@ -1904,113 +1616,4 @@ But none of these solutions are ideal for the simple cases or can readily be int
         "}); ";
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
-</script>
-        </div>
-
-        <div class="meta">
-            <div>
-                    <a href="https://jorisvandenbossche.github.io/tag/python.html" class="tag">python</a>
-                    <a href="https://jorisvandenbossche.github.io/tag/scikit-learn.html" class="tag">scikit-learn</a>
-                    <a href="https://jorisvandenbossche.github.io/tag/machine-learning.html" class="tag">machine learning</a>
-            </div>
-        </div>
-    </article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
-    <script type="text/javascript">
-      var disqus_shortname = 'jorisvandenbossche-blog';
-      var disqus_identifier = '/blog/2017/11/20/categorical-encoder/';
-      var disqus_url = 'https://jorisvandenbossche.github.io/blog/2017/11/20/categorical-encoder/';
-      var disqus_title = 'A new categorical encoder for handling categorical features in scikit-learn';
-      (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = "//" + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-      })();
-    </script>
-  </section>
-
-</div>
-
-<style type="text/css">
-{
-    max-width: 700px;
-}
-
-.text_cell .prompt {
-    display: none;
-}
-
-div.cell {
-    padding: 0;
-}
-
-div.text_cell_render {
-    padding: 0;
-}
-
-div.prompt {
-    font-size: 13px;
-    min-width: 10ex;
-}
-
-div.input_prompt {
-    padding: .7em 0.2em;
-}
-
-div.output_prompt {
-    padding: .4em .2em;
-}
-
-div.input_area {
-    margin: .2em 0.4em;
-/*    max-width: 580px; */
-}
-
-table.dataframe {
-    font-family: Arial, sans-serif;
-    font-size: 13px;
-    line-height: 20px;
-}
-
-table.dataframe th, td {
-    padding: 4px;
-    text-align: left;
-}
-
-pre code {
-    background-color: inherit;
-}</style>
-
-        </div>
-<!--
-    <footer>
-      <p>
-        © 2012-2017 Joris Van den Bossche, license <a href=""> </a>
-        unless otherwise noted.
-        Generated by <a href= "http://docs.getpelican.com/">Pelican</a>.
-      </p>
-    </footer>
--->
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-106868563-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-106868563-1');
-    ga('send', 'pageview');
-</script>
-    </body>
-</html>
+&lt;/script&gt;</content><category term="python"></category><category term="geospatial"></category><category term="geopandas"></category><category term="pyproj"></category></entry></feed>
