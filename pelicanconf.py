@@ -36,7 +36,7 @@ MARKDOWN = {
         'markdown.extensions.codehilite': {'css_class': 'highlight'},
         'markdown.extensions.extra': {},
         'markdown.extensions.meta': {},
-        'markdown.extensions.toc': {'anchorlink': True},
+        'markdown.extensions.toc': {'permalink': True},
     },
     'output_format': 'html5',
 }
