@@ -3,7 +3,7 @@
 	url = https://github.com/getpelican/pelican-themes
 [submodule "plugins/ipynb"]
 	path = plugins/ipynb
-	url = git://github.com/danielfrg/pelican-ipynb.git
+	url = https://github.com/danielfrg/pelican-ipynb
 [submodule "plugins/pelican-plugins"]
 	path = plugins/pelican-plugins
 	url = https://github.com/getpelican/pelican-plugins

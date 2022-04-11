@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*- #
-from __future__ import unicode_literals
-
 AUTHOR = 'Joris Van den Bossche'
 SITENAME = 'Joris Van den Bossche'
 SITEURL = ''
@@ -54,17 +50,11 @@ TWITTER_USERNAME = 'jorisvdbossche'
 GITHUB_USERNAME = 'jorisvandenbossche'
 STACKOVERFLOW_ADDRESS = 'https://stackoverflow.com/users/653364/joris'
 AUTHOR_BLOG = 'http://jorisvandenbossche.github.io'
-#SHOW_ARCHIVES = True
-#SHOW_FEED = False  # Need to address large feeds
-
-
-
-PELICAN_SOBER_ABOUT = "Pandas core developer. Working at the Paris-Saclay Center for Data Science"
 
 # Blogroll
-# LINKS = (('Pelican', 'http://getpelican.com/'),
-#          ('Python.org', 'http://python.org/'),
-#          ('Jinja2', 'http://jinja.pocoo.org/'),
+# LINKS = (('Pelican', 'https://getpelican.com/'),
+#          ('Python.org', 'https://www.python.org/'),
+#          ('Jinja2', 'https://palletsprojects.com/p/jinja/'),
 #          ('You can modify those links in your config file', '#'),)
 
 # Social widget
@@ -74,6 +64,4 @@ SOCIAL = (('github', 'https://github.com/jorisvandenbossche/'),
 DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
-RELATIVE_URLS = True
-
-LOAD_CONTENT_CACHE = False
+#RELATIVE_URLS = True
