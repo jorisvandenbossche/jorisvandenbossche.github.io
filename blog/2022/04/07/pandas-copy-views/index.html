@@ -431,7 +431,7 @@ h6:hover .headerlink {
 
 <p></em></p>
 <h3 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h3>
-<p>The infamous "SettingWithCopyWarning" has probably confused / annoyed / enraged (delete what does not apply for you) many users of pandas. This can also be seen by the <a href="https://www.dataquest.io/blog/settingwithcopywarning/">many</a> <a href="https://realpython.com/pandas-settingwithcopywarning/">blogposts</a> <a href="https://www.geeksforgeeks.org/how-to-fix-settingwithcopywarning-in-pandas/">on</a> <a href="https://towardsdatascience.com/explaining-the-settingwithcopywarning-in-pandas-ebc19d799d25">this</a> <a href="https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas">topic</a> that go into the details on what it is and how to deal with it.</p>
+<p>The infamous "SettingWithCopyWarning" has probably confused / annoyed / enraged (delete what does not apply for you) many users of pandas. This can also be seen by the <a href="https://www.dataquest.io/blog/settingwithcopywarning/">many</a> <a href="https://realpython.com/pandas-settingwithcopywarning/">lengthy</a> <a href="https://www.metasnake.com/blog/pydata-assign.html">blogposts</a> <a href="https://www.geeksforgeeks.org/how-to-fix-settingwithcopywarning-in-pandas/">on</a> <a href="https://towardsdatascience.com/explaining-the-settingwithcopywarning-in-pandas-ebc19d799d25">this</a> <a href="https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas">topic</a> that go into the details on what it is and how to deal with it.</p>
 <!-- Users of pandas probably have run into the infamous “SettingWithCopyWarning”. Several lengthy blog posts and popular stack overflow questions go into the details on what it is and how to deal with it. At the core of this, pandas’ current behavior on whether indexing returns a view or copy is confusing.  Pandas’ internals will, for most users, be kind of a black box, and it is hard to reason about how the column’s memory is stored. Even for experienced users, it’s hard to tell whether a view or copy will be returned. -->
 
 <p>As a quick recap, let's consider the following example where we filter a DataFrame <code>df</code> to create <code>subset</code>, and then modify <code>subset</code>:</p>
@@ -464,7 +464,7 @@ And because this is not always clear, pandas warns users with the SettingWithCop
 <ul>
 <li>A simpler, more consistent user experience</li>
 <li>We can get rid of the SettingWithCopyWarning (since there is no confusion about whether we are mutating a view or a copy)</li>
-<li>We would no longer need defensive copying in many places in pandas, improving memory usage</li>
+<li>We would no longer need defensive copying in many places in pandas, improving memory usage (using "Copy-on-Write")</li>
 </ul>
 <p>I will go into more detail on those different aspects in follow-up blog posts.</p>
 <p><strong>Important!</strong> This is only a <em>proposal</em>, and not yet reality in pandas. Does this sound interesting? Then you can read the full proposal <a href="https://docs.google.com/document/d/1ZCQ9mx3LBMy-nhwRl33_jgcvWo9IWdEfxDNQ2thyTb0/edit#heading=h.iexejdstiz8u">here</a>, and feedback is very welcome!</p>
