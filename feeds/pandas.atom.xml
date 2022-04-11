@@ -1,5 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Joris Van den Bossche - pandas</title><link href="https://jorisvandenbossche.github.io/" rel="alternate"></link><link href="https://jorisvandenbossche.github.io/feeds/pandas.atom.xml" rel="self"></link><id>https://jorisvandenbossche.github.io/</id><updated>2019-11-30T09:00:00+01:00</updated><entry><title>Towards consistent missing value handling in Pandas</title><link href="https://jorisvandenbossche.github.io/blog/2019/11/30/pandas-consistent-missing-values/" rel="alternate"></link><published>2019-11-30T09:00:00+01:00</published><updated>2019-11-30T09:00:00+01:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2019-11-30:/blog/2019/11/30/pandas-consistent-missing-values/</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Joris Van den Bossche - pandas</title><link href="https://jorisvandenbossche.github.io/" rel="alternate"></link><link href="https://jorisvandenbossche.github.io/feeds/pandas.atom.xml" rel="self"></link><id>https://jorisvandenbossche.github.io/</id><updated>2022-04-07T09:00:00+02:00</updated><entry><title>On copies and views: getting rid of the SettingWithCopyWarning</title><link href="https://jorisvandenbossche.github.io/blog/2022/04/07/pandas-copy-views/" rel="alternate"></link><published>2022-04-07T09:00:00+02:00</published><updated>2022-04-07T09:00:00+02:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2022-04-07:/blog/2022/04/07/pandas-copy-views/</id><summary type="html">
+&lt;p&gt;Pandas' current behavior on whether indexing returns a view or copy is confusing, even for experienced users. But it doesn’t have to be this way. We can make this aspect of pandas easier to grasp by simplifying the copy/view rules, and at the same time make pandas more memory-efficient. And get rid of the SettingWithCopyWarning.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;&lt;em&gt;&lt;/p&gt;
+
+&lt;p&gt;Pandas' current behavior on whether indexing returns a view or copy is confusing, even for experienced users. But it doesn’t have to be this way. We can make this aspect of pandas easier to grasp by simplifying the copy/view rules, and at the same time make pandas more memory-efficient. And get rid of the SettingWithCopyWarning.&lt;/p&gt;
+
+&lt;p&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id="context"&gt;Context&lt;a class="headerlink" href="#context" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The infamous "SettingWithCopyWarning" has probably confused / annoyed / enraged (delete what does not apply for you) many users of pandas. This can also be seen by the &lt;a href="https://www.dataquest.io/blog/settingwithcopywarning/"&gt;many&lt;/a&gt; &lt;a href="https://realpython.com/pandas-settingwithcopywarning/"&gt;blogposts&lt;/a&gt; &lt;a href="https://www.geeksforgeeks.org/how-to-fix-settingwithcopywarning-in-pandas/"&gt;on&lt;/a&gt; &lt;a href="https://towardsdatascience.com/explaining-the-settingwithcopywarning-in-pandas-ebc19d799d25"&gt;this&lt;/a&gt; &lt;a href="https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas"&gt;topic&lt;/a&gt; that go into the details on what it is and how to deal with it.&lt;/p&gt;
+&lt;!-- Users of pandas probably have run into the infamous “SettingWithCopyWarning”. Several lengthy blog posts and popular stack overflow questions go into the details on what it is and how to deal with it. At the core of this, pandas’ current behavior on whether indexing returns a view or copy is confusing.  Pandas’ internals will, for most users, be kind of a black box, and it is hard to reason about how the column’s memory is stored. Even for experienced users, it’s hard to tell whether a view or copy will be returned. --&gt;
+
+&lt;p&gt;As a quick recap, let's consider the following example where we filter a DataFrame &lt;code&gt;df&lt;/code&gt; to create &lt;code&gt;subset&lt;/code&gt;, and then modify &lt;code&gt;subset&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;&amp;gt;&amp;gt;&amp;gt; &lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DataFrame&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;B&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;C&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]})&lt;/span&gt;
+&lt;span class="gp"&gt;&amp;gt;&amp;gt;&amp;gt; &lt;/span&gt;&lt;span class="n"&gt;subset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="gp"&gt;&amp;gt;&amp;gt;&amp;gt; &lt;/span&gt;&lt;span class="n"&gt;subset&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;C&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;
+&lt;span class="go"&gt;SettingWithCopyWarning: &lt;/span&gt;
+&lt;span class="go"&gt;A value is trying to be set on a copy of a slice from a DataFrame.&lt;/span&gt;
+&lt;span class="go"&gt;Try using .loc[row_indexer,col_indexer] = value instead&lt;/span&gt;
+
+&lt;span class="go"&gt;See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Does this last line only change &lt;code&gt;subset&lt;/code&gt;, or also &lt;code&gt;df&lt;/code&gt;?&lt;/p&gt;
+&lt;p&gt;In general, it is not always clear when a new object (&lt;code&gt;subset&lt;/code&gt; in the example above) is a &lt;em&gt;view&lt;/em&gt; on the original data (&lt;code&gt;df&lt;/code&gt;) or a &lt;em&gt;copy&lt;/em&gt;. With a &lt;em&gt;view&lt;/em&gt;, we mean the new object isn't a copy of the original data but is "viewing" the same data in memory. That means that when you edit this view, you are actually updating the original data as well.&lt;/p&gt;
+&lt;p&gt;Even expert pandas developers (let alone new users) probably won't be able to correctly predict this in all cases whether a certain operation will result in a view or a copy. 
+And because this is not always clear, pandas warns users with the SettingWithCopyWarning about potential unexpected behaviour.&lt;/p&gt;
+&lt;h3 id="a-proposal-for-a-simpler-behaviour"&gt;A proposal for a simpler behaviour&lt;a class="headerlink" href="#a-proposal-for-a-simpler-behaviour" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Therefore, here is a new proposal to simplify this situation and move towards a single rule: &lt;strong&gt;any DataFrame or Series derived from another in any way (e.g. with an indexing operation) always &lt;em&gt;behaves as&lt;/em&gt; a copy&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;A single rule, but one that we can phraze in different ways. For example, an implication of this is: &lt;strong&gt;mutating a DataFrame only changes the object itself, and not any other.&lt;/strong&gt; Or, put differently in another way: if you want to change values in a DataFrame or Series, you can only do that by directly mutating the DataFrame/Series at hand.&lt;/p&gt;
+&lt;p&gt;So with this in mind, we can go back to the original example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="gp"&gt;&amp;gt;&amp;gt;&amp;gt; &lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DataFrame&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;B&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;C&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]})&lt;/span&gt;
+&lt;span class="gp"&gt;&amp;gt;&amp;gt;&amp;gt; &lt;/span&gt;&lt;span class="n"&gt;subset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="gp"&gt;&amp;gt;&amp;gt;&amp;gt; &lt;/span&gt;&lt;span class="n"&gt;subset&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;C&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;and try to answer the question again: will mutating &lt;code&gt;subset&lt;/code&gt; also modify &lt;code&gt;df&lt;/code&gt;? Following this proposed new rule, we can say: since &lt;code&gt;subset&lt;/code&gt; is not the same object as &lt;code&gt;df&lt;/code&gt;, mutating &lt;code&gt;subset&lt;/code&gt; will not change &lt;code&gt;df&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id="several-advantages"&gt;Several advantages&lt;a class="headerlink" href="#several-advantages" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;This proposal has several advantages:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A simpler, more consistent user experience&lt;/li&gt;
+&lt;li&gt;We can get rid of the SettingWithCopyWarning (since there is no confusion about whether we are mutating a view or a copy)&lt;/li&gt;
+&lt;li&gt;We would no longer need defensive copying in many places in pandas, improving memory usage&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I will go into more detail on those different aspects in follow-up blog posts.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Important!&lt;/strong&gt; This is only a &lt;em&gt;proposal&lt;/em&gt;, and not yet reality in pandas. Does this sound interesting? Then you can read the full proposal &lt;a href="https://docs.google.com/document/d/1ZCQ9mx3LBMy-nhwRl33_jgcvWo9IWdEfxDNQ2thyTb0/edit#heading=h.iexejdstiz8u"&gt;here&lt;/a&gt;, and feedback is very welcome!&lt;/p&gt;</content><category term="misc"></category><category term="python"></category><category term="pandas"></category></entry><entry><title>Towards consistent missing value handling in Pandas</title><link href="https://jorisvandenbossche.github.io/blog/2019/11/30/pandas-consistent-missing-values/" rel="alternate"></link><published>2019-11-30T09:00:00+01:00</published><updated>2019-11-30T09:00:00+01:00</updated><author><name>Joris Van den Bossche</name></author><id>tag:jorisvandenbossche.github.io,2019-11-30:/blog/2019/11/30/pandas-consistent-missing-values/</id><summary type="html">
 &lt;p&gt;This blogpost gives some background and motivation for my proposal on better
 missing value support in pandas, and the changes that have been merged in the
 development version (to be released in pandas 1.0): a new &lt;code&gt;pd.NA&lt;/code&gt; scalar is
@@ -22,7 +66,7 @@ have resulted in floats before) when using the new nullable integer dtype:&lt;/p
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;See below for more examples.&lt;/p&gt;
-&lt;h3 id="background"&gt;&lt;a class="toclink" href="#background"&gt;Background&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 id="background"&gt;Background&lt;a class="headerlink" href="#background" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;The handling of missing values in pandas is currently a bit "messy", so to say.
 The biggest gotcha is that a column with integer data cannot hold missing
 values. If for some reason a missing value gets introduced (e.g. as a result of
@@ -69,7 +113,7 @@ for more details). Along with this effort, some new data types, such as an
 &lt;a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/integer_na.html"&gt;integer dtype&lt;/a&gt;
 with missing value support, were implemented. And those new dtypes give us a
 chance to experiment with better missing value support in pandas!&lt;/p&gt;
-&lt;h3 id="a-proposal-for-a-new-na-scalar-to-represent-missing-values"&gt;&lt;a class="toclink" href="#a-proposal-for-a-new-na-scalar-to-represent-missing-values"&gt;A proposal for a new NA scalar to represent missing values&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 id="a-proposal-for-a-new-na-scalar-to-represent-missing-values"&gt;A proposal for a new NA scalar to represent missing values&lt;a class="headerlink" href="#a-proposal-for-a-new-na-scalar-to-represent-missing-values" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;With the above background in mind, I wrote up a proposal to introduce &lt;strong&gt;a new NA
 value for representing scalar missing values&lt;/strong&gt; that can be used consistently
 across all data types.&lt;/p&gt;
@@ -100,7 +144,7 @@ in a Series or DataFrame).&lt;/p&gt;
 &lt;p&gt;See the full &lt;a href="https://hackmd.io/@jorisvandenbossche/Sk0wMeAmB"&gt;proposal&lt;/a&gt; and the
 &lt;a href="https://github.com/pandas-dev/pandas/issues/28095"&gt;GitHub issue&lt;/a&gt; where it has
 been discussed for more details.&lt;/p&gt;
-&lt;h3 id="a-few-examples"&gt;&lt;a class="toclink" href="#a-few-examples"&gt;A few examples&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 id="a-few-examples"&gt;A few examples&lt;a class="headerlink" href="#a-few-examples" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;Basic support for &lt;code&gt;pd.NA&lt;/code&gt; has landed in the development version of pandas now
 (to be released in pandas 1.0), while we are still working on further
 integration. But so we can already show a few examples of how it looks like.&lt;/p&gt;
@@ -153,7 +197,7 @@ on this new dtype):&lt;/p&gt;
 &lt;span class="n"&gt;dtype&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;bool&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;h3 id="how-does-this-work"&gt;&lt;a class="toclink" href="#how-does-this-work"&gt;How does this work?&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 id="how-does-this-work"&gt;How does this work?&lt;a class="headerlink" href="#how-does-this-work" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;The integer and boolean data types shown above are still based on numpy arrays,
 and numpy still doesn't support missing values. So how does this work then?&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;pd.NA&lt;/code&gt; value is the scalar, user-facing object. It is returned when
@@ -163,7 +207,7 @@ stored as such under the hood.&lt;/p&gt;
 implementation uses a "masked array" approach: one numpy array to store the
 integer values, and one boolean numpy array (mask) to store for each value
 whether it is a valid value or a missing value.&lt;/p&gt;
-&lt;h3 id="how-can-i-use-this-feedback-welcome"&gt;&lt;a class="toclink" href="#how-can-i-use-this-feedback-welcome"&gt;How can I use this? Feedback welcome!&lt;/a&gt;&lt;/h3&gt;
+&lt;h3 id="how-can-i-use-this-feedback-welcome"&gt;How can I use this? Feedback welcome!&lt;a class="headerlink" href="#how-can-i-use-this-feedback-welcome" title="Permanent link"&gt;&amp;para;&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;For now, &lt;code&gt;pd.NA&lt;/code&gt; as missing value is only used in some of the new,
 ExtensionArray-based data types for integers, bools and strings (but we are
 planning to add support for more data types).&lt;/p&gt;

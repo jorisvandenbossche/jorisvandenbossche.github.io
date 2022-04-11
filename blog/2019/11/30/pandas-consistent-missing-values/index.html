@@ -375,6 +375,20 @@ article .meta a.comments_btn:hover {
 .col-lg-12 {
   padding-right: 0px;
   padding-left: 0px;
+}
+
+a.headerlink:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .headerlink,
+h2:hover .headerlink,
+h3:hover .headerlink,
+h4:hover .headerlink,
+h5:hover .headerlink,
+h6:hover .headerlink {
+  visibility: visible;
 }</style>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -429,7 +443,7 @@ have resulted in floats before) when using the new nullable integer dtype:</p>
 </code></pre></div>
 
 <p>See below for more examples.</p>
-<h3 id="background"><a class="toclink" href="#background">Background</a></h3>
+<h3 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h3>
 <p>The handling of missing values in pandas is currently a bit "messy", so to say.
 The biggest gotcha is that a column with integer data cannot hold missing
 values. If for some reason a missing value gets introduced (e.g. as a result of
@@ -476,7 +490,7 @@ for more details). Along with this effort, some new data types, such as an
 <a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/integer_na.html">integer dtype</a>
 with missing value support, were implemented. And those new dtypes give us a
 chance to experiment with better missing value support in pandas!</p>
-<h3 id="a-proposal-for-a-new-na-scalar-to-represent-missing-values"><a class="toclink" href="#a-proposal-for-a-new-na-scalar-to-represent-missing-values">A proposal for a new NA scalar to represent missing values</a></h3>
+<h3 id="a-proposal-for-a-new-na-scalar-to-represent-missing-values">A proposal for a new NA scalar to represent missing values<a class="headerlink" href="#a-proposal-for-a-new-na-scalar-to-represent-missing-values" title="Permanent link">&para;</a></h3>
 <p>With the above background in mind, I wrote up a proposal to introduce <strong>a new NA
 value for representing scalar missing values</strong> that can be used consistently
 across all data types.</p>
@@ -507,7 +521,7 @@ in a Series or DataFrame).</p>
 <p>See the full <a href="https://hackmd.io/@jorisvandenbossche/Sk0wMeAmB">proposal</a> and the
 <a href="https://github.com/pandas-dev/pandas/issues/28095">GitHub issue</a> where it has
 been discussed for more details.</p>
-<h3 id="a-few-examples"><a class="toclink" href="#a-few-examples">A few examples</a></h3>
+<h3 id="a-few-examples">A few examples<a class="headerlink" href="#a-few-examples" title="Permanent link">&para;</a></h3>
 <p>Basic support for <code>pd.NA</code> has landed in the development version of pandas now
 (to be released in pandas 1.0), while we are still working on further
 integration. But so we can already show a few examples of how it looks like.</p>
@@ -560,7 +574,7 @@ on this new dtype):</p>
 <span class="n">dtype</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
-<h3 id="how-does-this-work"><a class="toclink" href="#how-does-this-work">How does this work?</a></h3>
+<h3 id="how-does-this-work">How does this work?<a class="headerlink" href="#how-does-this-work" title="Permanent link">&para;</a></h3>
 <p>The integer and boolean data types shown above are still based on numpy arrays,
 and numpy still doesn't support missing values. So how does this work then?</p>
 <p>The <code>pd.NA</code> value is the scalar, user-facing object. It is returned when
@@ -570,7 +584,7 @@ stored as such under the hood.</p>
 implementation uses a "masked array" approach: one numpy array to store the
 integer values, and one boolean numpy array (mask) to store for each value
 whether it is a valid value or a missing value.</p>
-<h3 id="how-can-i-use-this-feedback-welcome"><a class="toclink" href="#how-can-i-use-this-feedback-welcome">How can I use this? Feedback welcome!</a></h3>
+<h3 id="how-can-i-use-this-feedback-welcome">How can I use this? Feedback welcome!<a class="headerlink" href="#how-can-i-use-this-feedback-welcome" title="Permanent link">&para;</a></h3>
 <p>For now, <code>pd.NA</code> as missing value is only used in some of the new,
 ExtensionArray-based data types for integers, bools and strings (but we are
 planning to add support for more data types).</p>

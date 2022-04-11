@@ -375,6 +375,20 @@ article .meta a.comments_btn:hover {
 .col-lg-12 {
   padding-right: 0px;
   padding-left: 0px;
+}
+
+a.headerlink:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .headerlink,
+h2:hover .headerlink,
+h3:hover .headerlink,
+h4:hover .headerlink,
+h5:hover .headerlink,
+h6:hover .headerlink {
+  visibility: visible;
 }</style>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -405,6 +419,32 @@ article .meta a.comments_btn:hover {
         <div id="wrap">
 <div class="container index">
 
+  <article>
+    <header>
+      <h2><a href="https://jorisvandenbossche.github.io/blog/2022/04/07/pandas-copy-views/">On copies and views: getting rid of the SettingWithCopyWarning</a></h2>
+      <time datetime="" title="2022-04-07T09:00:00+02:00" pubdate>do 07 april 2022</time>
+    </header>
+
+    <div class="article_content">
+      
+<p>Pandas' current behavior on whether indexing returns a view or copy is confusing, even for experienced users. But it doesn’t have to be this way. We can make this aspect of pandas easier to grasp by simplifying the copy/view rules, and at the same time make pandas more memory-efficient. And get rid of the SettingWithCopyWarning.</p>
+
+    </div>
+
+    <div class="meta">
+      <div>
+        <a href="https://jorisvandenbossche.github.io/blog/2022/04/07/pandas-copy-views/" class="read_more">Read more &#8594;</a>
+      </div>
+
+      <div>
+            <a href="https://jorisvandenbossche.github.io/tag/python.html" class="tag">python</a>
+            <a href="https://jorisvandenbossche.github.io/tag/pandas.html" class="tag">pandas</a>
+      </div>
+
+    </div>
+
+  </article>
+  <div class="separator"></div>
   <article>
     <header>
       <h2><a href="https://jorisvandenbossche.github.io/blog/2020/02/11/geopandas-pyproj-crs/">GeoPandas now uses pyproj.CRS and catches up with PROJ 6</a></h2>

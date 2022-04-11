@@ -375,6 +375,20 @@ article .meta a.comments_btn:hover {
 .col-lg-12 {
   padding-right: 0px;
   padding-left: 0px;
+}
+
+a.headerlink:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .headerlink,
+h2:hover .headerlink,
+h3:hover .headerlink,
+h4:hover .headerlink,
+h5:hover .headerlink,
+h6:hover .headerlink {
+  visibility: visible;
 }</style>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -418,13 +432,13 @@ article .meta a.comments_btn:hover {
 
 
 <p>Note: what I show here is <em>not yet</em> available in the released version of GeoPandas.</p>
-<h2 id="what-is-geopandas-used-for"><a class="toclink" href="#what-is-geopandas-used-for">What is GeoPandas used for?</a></h2>
+<h2 id="what-is-geopandas-used-for">What is GeoPandas used for?<a class="headerlink" href="#what-is-geopandas-used-for" title="Permanent link">&para;</a></h2>
 <!-- [intro]
 Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). Python stack. -->
 
 <p>The goal of <a href="http://geopandas.readthedocs.io/en/latest/">GeoPandas</a> is to make working with geospatial data in python easier. GeoPandas extends the pandas data analysis library to work with tables of geospatially annotated data. GeoPandas enables you to easily do operations in python that would otherwise require a spatial database such as PostGIS.</p>
 <p>GeoPandas combines the capabilities of pandas with Python's 'geospatial stack' (<a href="https://shapely.readthedocs.io/en/stable/">Shapely</a> to manage geometries like points, linestrings, and polygons; <a href="http://toblerity.org/fiona/">Fiona</a> to handle data import and export, ...). This stack consists of packages that provide intuitive Python wrappers around the OSGeo C/C++ libraries (GDAL/OGR, GEOS, ...) which power virtually every open source geospatial library or application, like PostGIS, QGIS, etc.</p>
-<h3 id="small-demo"><a class="toclink" href="#small-demo">Small demo</a></h3>
+<h3 id="small-demo">Small demo<a class="headerlink" href="#small-demo" title="Permanent link">&para;</a></h3>
 <p>For example, we can use GeoPandas to load and plot the <a href="https://opendata.paris.fr/explore/dataset/quartier_paris/">Paris districts</a>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;quartier_paris.geojson&quot;</span><span class="p">)</span>
@@ -521,7 +535,7 @@ Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). P
 
 <p><img src="https://jorisvandenbossche.github.io/figures/quartiers-paris-bike-stations.png"></p>
 <p>A larger demo on the basic functionality of GeoPandas, expanding the example above, can be found in this <a href="http://nbviewer.jupyter.org/github/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_demo.ipynb">demo notebook</a> from my recent <a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">EuroScipy presentation</a>.</p>
-<h2 id="current-design-of-geopandas"><a class="toclink" href="#current-design-of-geopandas">Current design of GeoPandas</a></h2>
+<h2 id="current-design-of-geopandas">Current design of GeoPandas<a class="headerlink" href="#current-design-of-geopandas" title="Permanent link">&para;</a></h2>
 <p>Today a GeoDataFrame basically is a pandas dataframe with a special <code>object</code>-dtype column that
 stores Shapely geometries (the 'geometry' column). Shapely geometries are Python objects that provide
 a Python interface and reference to GEOS Geometry objects in C and provide all the spatial operations:</p>
@@ -539,7 +553,7 @@ a Python interface and reference to GEOS Geometry objects in C and provide all t
 
 <p>Where each <code>geom</code> object in this iteration is an individual Shapely object, and the distance method of this Shapely objects calls into the GEOS library.</p>
 <p>This simple design has made GeoPandas a very lightweight and easy-to-develop library, and is possible because GeoPandas can build upon the existing geospatial libraries. But, this simple design has also become a performance bottleneck.</p>
-<h2 id="performance-bottleneck"><a class="toclink" href="#performance-bottleneck">Performance bottleneck</a></h2>
+<h2 id="performance-bottleneck">Performance bottleneck<a class="headerlink" href="#performance-bottleneck" title="Permanent link">&para;</a></h2>
 <p>GeoPandas is slow, which limits its usability for working with larger datasets. This slow performance is because of the current design of GeoPandas shown above: wrapping each geometry (like a point, line, or polygon) with a Shapely object, storing all of those objects in an object-dtype column, and iterating through those objects when performing spatial operations.</p>
 <p>The iteration over the individual Shapely geometries is inefficient for two reasons:</p>
 <ol>
@@ -547,7 +561,7 @@ a Python interface and reference to GEOS Geometry objects in C and provide all t
 <li>Calling the geospatial operation on the Shapely Python object gives overhead compared to calling the underlying GEOS C operation directly.</li>
 </ol>
 <p>Additionally, the Shapely python objects can take up a significant amount of RAM relative to the GEOS Geometry objects that they wrap.</p>
-<h4 id="some-timings"><a class="toclink" href="#some-timings">Some timings</a></h4>
+<h4 id="some-timings">Some timings<a class="headerlink" href="#some-timings" title="Permanent link">&para;</a></h4>
 <p>Let's explore this bad performance with a small benchmark:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
@@ -566,7 +580,7 @@ a Python interface and reference to GEOS Geometry objects in C and provide all t
 <p>This may not seem that much, but you have to be aware that geospatial datasets quickly become larger than 100,000 points, and that in more complex analyses those basic operations such as distance computations and set operations often are done many times.</p>
 <p>Below, I also compare the performance of GeoPandas to <a href="http://postgis.net/">PostGIS</a>, the standard
 geospatial plugin for the popular PostgreSQL database. While GeoPandas can often be as expressive as PostGIS, we will see that the current version of GeoPandas is also much slower than PostGIS.</p>
-<h2 id="cythonizing-geopandas"><a class="toclink" href="#cythonizing-geopandas">Cythonizing GeoPandas</a></h2>
+<h2 id="cythonizing-geopandas">Cythonizing GeoPandas<a class="headerlink" href="#cythonizing-geopandas" title="Permanent link">&para;</a></h2>
 <p>Fortunately, we can improve upon this by accelerating GeoPandas using
 Cython to perform the for loops in C and to call the underlying C library GEOS directly.</p>
 <p>As an example, the distance function now looks like the following Cython implementation (some liberties taken for brevity):</p>
@@ -588,7 +602,7 @@ Cython to perform the for loops in C and to call the underlying C library GEOS d
 </code></pre></div>
 
 <p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a> on this topic.</p>
-<h2 id="new-geopandas-design"><a class="toclink" href="#new-geopandas-design">New GeoPandas design</a></h2>
+<h2 id="new-geopandas-design">New GeoPandas design<a class="headerlink" href="#new-geopandas-design" title="Permanent link">&para;</a></h2>
 <p>To use such cython implementations of the spatial operations, we redesigned the internals of GeoPandas.
 Instead of using a Pandas <code>object</code>-dtype column that <em>holds shapely objects</em>,
 we instead store a NumPy array of <em>direct pointers to the GEOS objects</em> (images by Matthew Rocklin).</p>
@@ -608,14 +622,14 @@ or C to write these loops directly provides a significant speedup.</p>
 <li>Operations on the array iterate through those pointers in C / Cython.</li>
 <li>The geometries are wrapped into Python shapely objects on access.</li>
 </ul>
-<h2 id="new-benchmarks"><a class="toclink" href="#new-benchmarks">New benchmarks</a></h2>
+<h2 id="new-benchmarks">New benchmarks<a class="headerlink" href="#new-benchmarks" title="Permanent link">&para;</a></h2>
 <p>When we run the same simple benchmarks from <a href="#some-timings">above</a>, we get the following speed-up with the new implementation:</p>
 <p><img src="https://jorisvandenbossche.github.io/figures/timings_distance_all.png" width="49%">
 <img src="https://jorisvandenbossche.github.io/figures/timings_within_all.png" width="49%"></p>
 <p>This shows a big improvement, depending on the exact operation. For the within operation, we get a 70x speed-up for this example.</p>
 <!-- TODO exact numbers -->
 
-<h4 id="comparison-to-postgis"><a class="toclink" href="#comparison-to-postgis">Comparison to PostGIS</a></h4>
+<h4 id="comparison-to-postgis">Comparison to PostGIS<a class="headerlink" href="#comparison-to-postgis" title="Permanent link">&para;</a></h4>
 <p>The above benchmarks are timings for basic operations, but let's see what speed-up we see for more complex operations.
 To this end, I have taken an example of a spatial join from the <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless PostGIS tutorial</a> (CC BY SA). <a href="http://postgis.net/">PostGIS</a> is the standard
 geospatial plugin for the popular PostgreSQL database, and also uses the GEOS library under the hood.</p>
@@ -648,7 +662,7 @@ geospatial plugin for the popular PostgreSQL database, and also uses the GEOS li
 <p>We can see that the new implementation gives a nice speed-up compared to the current GeoPandas, ánd is now also comparable to the performance of PostGIS.
 This is not surprising because PostGIS is using the same GEOS library
 internally.</p>
-<h2 id="outlook"><a class="toclink" href="#outlook">Outlook</a></h2>
+<h2 id="outlook">Outlook<a class="headerlink" href="#outlook" title="Permanent link">&para;</a></h2>
 <p>In this blog post I have shown some promising results, but we have to emphasize this is still a work in progress and there is plenty of work to do. Some of the issues we have to tackle:</p>
 <ul>
 <li>Robust integration with pandas</li>
@@ -672,7 +686,7 @@ issue tracker).</p>
 <!-- + opens up the ability to parallellize and distributed e.g. using dask (reference to Matthew's blogpost -> exploration of this) -->
 
 <p>Last, the <code>GeometryArray</code> concept might be more broadly useful than just for GeoPandas. If you have such use cases, we would love to hear about that!</p>
-<h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out!</a></h3>
+<h3 id="trying-this-out">Trying this out!<a class="headerlink" href="#trying-this-out" title="Permanent link">&para;</a></h3>
 <p>We would love you to try out the new cythonized GeoPandas version, test it on some real use cases and provide feedback.</p>
 <p>Installing the new version currently requires building it from source with Cython. However, if you already have the released version of GeoPandas installed, Cython should be the only additional dependency (the GEOS library to build against should then already be installed). And in that case, the following steps should suffice:</p>
 <div class="highlight"><pre><span></span><code>git clone https://github.com/geopandas/geopandas
