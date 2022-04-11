@@ -3,6 +3,7 @@ Date: 2022-04-07 09:00
 Tags: python, pandas
 Slug: pandas-copy-views
 Comments: false
+Githubcomments: true
 
 <em>
 <!-- PELICAN_BEGIN_SUMMARY -->

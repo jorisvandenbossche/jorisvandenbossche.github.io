@@ -32,7 +32,24 @@
         </div>
     </article>
 
-  {% include '_includes/disqus_thread.html' %}
+  {% if article.comments == "true" %}
+    {% include '_includes/disqus_thread.html' %}
+  {% elif article.githubcomments == "true" %}
+    <script src="https://giscus.app/client.js"
+        data-repo="jorisvandenbossche/jorisvandenbossche.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkxMDQxMjE0Mzk="
+        data-category="Blog post comments"
+        data-category-id="DIC_kwDOBjTEX84COhgj"
+        data-mapping="title"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+    </script>
+  {% endif %}
 
 </div>
 
