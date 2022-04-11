@@ -407,7 +407,7 @@ article .meta a.comments_btn:hover {
     <article>
         <header>
             <h1>GeoPandas developments: redesign and improved performance using Cython</h1>
-            <time datetime="article.date.isoformat()" pubdate>Di 19 September 2017</time>
+            <time datetime="article.date.isoformat()" pubdate>di 19 september 2017</time>
         </header>
 
         <div class="article_content">
@@ -426,11 +426,10 @@ Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). P
 <p>GeoPandas combines the capabilities of pandas with Python's 'geospatial stack' (<a href="https://shapely.readthedocs.io/en/stable/">Shapely</a> to manage geometries like points, linestrings, and polygons; <a href="http://toblerity.org/fiona/">Fiona</a> to handle data import and export, ...). This stack consists of packages that provide intuitive Python wrappers around the OSGeo C/C++ libraries (GDAL/OGR, GEOS, ...) which power virtually every open source geospatial library or application, like PostGIS, QGIS, etc.</p>
 <h3 id="small-demo"><a class="toclink" href="#small-demo">Small demo</a></h3>
 <p>For example, we can use GeoPandas to load and plot the <a href="https://opendata.paris.fr/explore/dataset/quartier_paris/">Paris districts</a>:</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;quartier_paris.geojson&quot;</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-
+</code></pre></div>
 
 <div>
 <style>
@@ -503,7 +502,7 @@ Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). P
 </div>
 
 <p>Now, let's assume we want to know how many stations of the public bicycle sharing system Vélib (<a href="https://opendata.paris.fr/explore/dataset/stations-velib-disponibilites-en-temps-reel/information/">open data</a>) are located in each of the districts. For this, we also load the open data on the bicycle stations, and perform a <em>spatial join</em> with the districts dataframe:</p>
-<div class="highlight"><pre><span></span><span class="c1"># load the bicycle stations information</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># load the bicycle stations information</span>
 <span class="n">stations</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;stations-velib-disponibilites-en-temps-reel.geojson&quot;</span><span class="p">)</span>
 <span class="c1"># spatial join: determine in which district each stations is located</span>
 <span class="n">stations</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">stations</span><span class="p">,</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;l_qu&#39;</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]],</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;within&#39;</span><span class="p">)</span>
@@ -513,14 +512,12 @@ Geospatial data analysis. Vector data. Open source libraries (GDAL/OGR, GEOS). P
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;n_stations&#39;</span><span class="p">))</span>
 <span class="c1"># calculate the relative number of bike stations divided by the area</span>
 <span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;n_stations&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>And now we can make a choropleth plot of the districts of Paris based on the number of bicycle stations:</p>
-<div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><span class="n">ax</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;n_stations_relative&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
-</pre></div>
-
+</code></pre></div>
 
 <p><img src="https://jorisvandenbossche.github.io/figures/quartiers-paris-bike-stations.png"></p>
 <p>A larger demo on the basic functionality of GeoPandas, expanding the example above, can be found in this <a href="http://nbviewer.jupyter.org/github/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_demo.ipynb">demo notebook</a> from my recent <a href="https://jorisvandenbossche.github.io/talks/2017_EuroScipy_geopandas/#1">EuroScipy presentation</a>.</p>
@@ -531,16 +528,14 @@ a Python interface and reference to GEOS Geometry objects in C and provide all t
 <p><img src="https://jorisvandenbossche.github.io/images/geopandas-shapely-1.svg"
      width="50%"></p>
 <p>The easy-to-use vectorized operations that GeoPandas provides, such as calculating the distance from every geometry in my dataframe to a certain point:</p>
-<div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">some_point</span><span class="p">)</span>
+</code></pre></div>
 
 <p>are actually simply small wrappers around Python for loops over shapely calls. So the above method call is roughly implemented as the following:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">geom</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="k">for</span> <span class="n">geom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Where each <code>geom</code> object in this iteration is an individual Shapely object, and the distance method of this Shapely objects calls into the GEOS library.</p>
 <p>This simple design has made GeoPandas a very lightweight and easy-to-develop library, and is possible because GeoPandas can build upon the existing geospatial libraries. But, this simple design has also become a performance bottleneck.</p>
@@ -554,20 +549,18 @@ a Python interface and reference to GEOS Geometry objects in C and provide all t
 <p>Additionally, the Shapely python objects can take up a significant amount of RAM relative to the GEOS Geometry objects that they wrap.</p>
 <h4 id="some-timings"><a class="toclink" href="#some-timings">Some timings</a></h4>
 <p>Let's explore this bad performance with a small benchmark:</p>
-<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
 <span class="n">s</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoSeries</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100000</span><span class="p">)])</span>
 <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">([(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>We have a GeoSeries of 100,000 points and a single polygon. For those objects we calculate the distance from all the points to the polygon, and whether each point lies within the polygon:</p>
-<div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">s</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
 <span class="n">s</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Both of these operations take roughly 1 second to compute.</p>
 <p>This may not seem that much, but you have to be aware that geospatial datasets quickly become larger than 100,000 points, and that in more complex analyses those basic operations such as distance computations and set operations often are done many times.</p>
@@ -577,7 +570,7 @@ geospatial plugin for the popular PostgreSQL database. While GeoPandas can often
 <p>Fortunately, we can improve upon this by accelerating GeoPandas using
 Cython to perform the for loops in C and to call the underlying C library GEOS directly.</p>
 <p>As an example, the distance function now looks like the following Cython implementation (some liberties taken for brevity):</p>
-<div class="highlight"><pre><span></span><span class="n">cpdef</span> <span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="n">cpdef</span> <span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
     <span class="n">cdef</span> <span class="nb">int</span> <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
     <span class="n">cdef</span> <span class="n">double</span><span class="p">[:]</span> <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">cdef</span> <span class="n">GEOSGeometry</span> <span class="o">*</span><span class="n">left_geom</span>
@@ -592,8 +585,7 @@ Cython to perform the for loops in C and to call the underlying C library GEOS d
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">out</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
     <span class="k">return</span> <span class="n">out</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>For a more complete example how to use Cython to interface directly with GEOS to speed-up shapely operations, see my <a href="https://jorisvandenbossche.github.io/blog/2017/03/18/vectorized-shapely-cython/">previous blogpost</a> on this topic.</p>
 <h2 id="new-geopandas-design"><a class="toclink" href="#new-geopandas-design">New GeoPandas design</a></h2>
@@ -628,27 +620,25 @@ or C to write these loops directly provides a significant speedup.</p>
 To this end, I have taken an example of a spatial join from the <a href="http://workshops.boundlessgeo.com/postgis-intro/">Boundless PostGIS tutorial</a> (CC BY SA). <a href="http://postgis.net/">PostGIS</a> is the standard
 geospatial plugin for the popular PostgreSQL database, and also uses the GEOS library under the hood.</p>
 <p><strong>PostGIS Query</strong></p>
-<div class="highlight"><pre><span></span><span class="c1">-- What is the population and racial make-up of the neighborhoods of Manhattan?</span>
-<span class="k">SELECT</span>
-  <span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span> <span class="k">AS</span> <span class="n">neighborhood_name</span><span class="p">,</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">)</span> <span class="k">AS</span> <span class="n">population</span><span class="p">,</span>
-  <span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_white</span><span class="p">)</span> <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span> <span class="k">AS</span> <span class="n">white_pct</span><span class="p">,</span>
-  <span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_black</span><span class="p">)</span> <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span> <span class="k">AS</span> <span class="n">black_pct</span>
-<span class="k">FROM</span> <span class="n">nyc_neighborhoods</span> <span class="k">AS</span> <span class="n">neighborhoods</span>
-<span class="k">JOIN</span> <span class="n">nyc_census_blocks</span> <span class="k">AS</span> <span class="n">census</span>
-<span class="k">ON</span> <span class="n">ST_Intersects</span><span class="p">(</span><span class="n">neighborhoods</span><span class="p">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">census</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
-<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span>
-<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">white_pct</span> <span class="k">DESC</span><span class="p">;</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code><span class="c1">-- What is the population and racial make-up of the neighborhoods of Manhattan?</span>
+<span class="k">SELECT</span><span class="w"></span>
+<span class="w">  </span><span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">neighborhood_name</span><span class="p">,</span><span class="w"> </span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">population</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_white</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">white_pct</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_black</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="k">Sum</span><span class="p">(</span><span class="n">census</span><span class="p">.</span><span class="n">popn_total</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">black_pct</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">nyc_neighborhoods</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">neighborhoods</span><span class="w"></span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">nyc_census_blocks</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">census</span><span class="w"></span>
+<span class="k">ON</span><span class="w"> </span><span class="n">ST_Intersects</span><span class="p">(</span><span class="n">neighborhoods</span><span class="p">.</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="n">census</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">neighborhoods</span><span class="p">.</span><span class="n">name</span><span class="w"></span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">white_pct</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span><span class="w"></span>
+</code></pre></div>
 
 <p><strong>GeoPandas Code</strong></p>
-<div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">nyc_neighborhoods</span><span class="p">,</span> <span class="n">nyc_census_blocks</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;intersects&#39;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">sjoin</span><span class="p">(</span><span class="n">nyc_neighborhoods</span><span class="p">,</span> <span class="n">nyc_census_blocks</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="s1">&#39;intersects&#39;</span><span class="p">)</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;NAME&#39;</span><span class="p">)[[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_BLACK&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
 <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;POPN_TOTAL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
 <span class="n">res</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;POPN_WHITE&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>The full code example can be found in <a href="https://github.com/jorisvandenbossche/talks/blob/master/2017_EuroScipy_geopandas/geopandas_postgis_comparison.ipynb">this notebook</a>. <strong>DISCLAIMER</strong>: this is just a dummy comparison and no real performance benchmark, and I am not a PostGIS expert.</p>
 <p>Timing this spatial join with both PostGIS and the current and cythonized GeoPandas, we get the following result:</p>
@@ -685,11 +675,10 @@ issue tracker).</p>
 <h3 id="trying-this-out"><a class="toclink" href="#trying-this-out">Trying this out!</a></h3>
 <p>We would love you to try out the new cythonized GeoPandas version, test it on some real use cases and provide feedback.</p>
 <p>Installing the new version currently requires building it from source with Cython. However, if you already have the released version of GeoPandas installed, Cython should be the only additional dependency (the GEOS library to build against should then already be installed). And in that case, the following steps should suffice:</p>
-<div class="highlight"><pre><span></span><span class="err">git clone https://github.com/geopandas/geopandas</span>
-<span class="err">git checkout geopandas-cython</span>
-<span class="err">make install</span>
-</pre></div>
-
+<div class="highlight"><pre><span></span><code>git clone https://github.com/geopandas/geopandas
+git checkout geopandas-cython
+make install
+</code></pre></div>
 
 <p>You can find more information and track future progress on this effort at
 <a href="https://github.com/geopandas/geopandas/issues/473">geopandas/geopandas #473</a>. Also feedback can be posted there, and if you have troubles while trying it out, don't hesitate to ask questions at the <a href="https://gitter.im/geopandas/geopandas">geopandas gitter channel</a>.</p>

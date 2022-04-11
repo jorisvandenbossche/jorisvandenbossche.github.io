@@ -407,7 +407,7 @@ article .meta a.comments_btn:hover {
     <article>
         <header>
             <h1>Towards consistent missing value handling in Pandas</h1>
-            <time datetime="article.date.isoformat()" pubdate>Sa 30 November 2019</time>
+            <time datetime="article.date.isoformat()" pubdate>za 30 november 2019</time>
         </header>
 
         <div class="article_content">
@@ -421,13 +421,12 @@ introduced that can be used consistently across all data types..</p>
 
 <p>For example, we can now have missing values in an integer Series (which would
 have resulted in floats before) when using the new nullable integer dtype:</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
 <span class="mi">0</span>     <span class="mi">1</span>
 <span class="mi">1</span>     <span class="mi">2</span>
 <span class="mi">2</span>    <span class="n">NA</span>
 <span class="n">dtype</span><span class="p">:</span> <span class="n">Int64</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>See below for more examples.</p>
 <h3 id="background"><a class="toclink" href="#background">Background</a></h3>
@@ -436,7 +435,7 @@ The biggest gotcha is that a column with integer data cannot hold missing
 values. If for some reason a missing value gets introduced (e.g. as a result of
 a certain operation, or just when reading in data), the values are converted to
 floats:</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
 <span class="mi">0</span>    <span class="mi">1</span>
 <span class="mi">1</span>    <span class="mi">2</span>
@@ -449,8 +448,7 @@ floats:</p>
 <span class="mi">1</span>    <span class="mf">2.0</span>
 <span class="mi">2</span>    <span class="mf">3.0</span>
 <span class="n">dtype</span><span class="p">:</span> <span class="n">float64</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>In addition to the above gotcha, there are some other confusing aspects about
 the missing value story in pandas:</p>
@@ -516,7 +514,7 @@ integration. But so we can already show a few examples of how it looks like.</p>
 <p>For example, creating a "nullable" integer Series with missing value support
 (which was already introduced in pandas 0.24, but will now start to use the new
 <code>pd.NA</code>):</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span>
 <span class="mi">0</span>     <span class="mi">1</span>
 <span class="mi">1</span>     <span class="mi">2</span>
@@ -525,33 +523,30 @@ integration. But so we can already show a few examples of how it looks like.</p>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">NA</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>and the same missing value is used for the new dedicated string data type (see
 the <a href="https://dev.pandas.io/docs/whatsnew/v1.0.0.html#dedicated-string-data-type">release notes</a>
 on this new dtype):</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span>
 <span class="mi">0</span>     <span class="n">a</span>
 <span class="mi">1</span>    <span class="n">NA</span>
 <span class="mi">2</span>     <span class="n">b</span>
 <span class="n">dtype</span><span class="p">:</span> <span class="n">string</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>Comparison operations now propagate missing values:</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">&gt;</span> <span class="mi">1</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s1</span> <span class="o">&gt;</span> <span class="mi">1</span>
 <span class="mi">0</span>    <span class="kc">False</span>
 <span class="mi">1</span>     <span class="kc">True</span>
 <span class="mi">2</span>       <span class="n">NA</span>
 <span class="n">dtype</span><span class="p">:</span> <span class="n">boolean</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>while before, when using <code>np.nan</code> as missing value, such comparisons resulted in
 <code>False</code> values:</p>
-<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">s_nan</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s_nan</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s_nan</span>
 <span class="mi">0</span>    <span class="mf">1.0</span>
 <span class="mi">1</span>    <span class="mf">2.0</span>
@@ -563,8 +558,7 @@ on this new dtype):</p>
 <span class="mi">1</span>     <span class="kc">True</span>
 <span class="mi">2</span>    <span class="kc">False</span>
 <span class="n">dtype</span><span class="p">:</span> <span class="nb">bool</span>
-</pre></div>
-
+</code></pre></div>
 
 <h3 id="how-does-this-work"><a class="toclink" href="#how-does-this-work">How does this work?</a></h3>
 <p>The integer and boolean data types shown above are still based on numpy arrays,
